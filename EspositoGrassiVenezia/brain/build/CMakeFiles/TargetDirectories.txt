@@ -1,0 +1,4 @@
+/home/jellyfish/shared-folder/PDE_Project/brain/build/CMakeFiles/main-1D.dir
+/home/jellyfish/shared-folder/PDE_Project/brain/build/CMakeFiles/remove_vtu_files.dir
+/home/jellyfish/shared-folder/PDE_Project/brain/build/CMakeFiles/edit_cache.dir
+/home/jellyfish/shared-folder/PDE_Project/brain/build/CMakeFiles/rebuild_cache.dir
