@@ -168,14 +168,9 @@ jobs:
           expect "$ "
           send "chmod +x ~/singularity/job.sh\r"
           expect "$ "
-          send "sbatch ~/singularity/job.sh > ~/jobid.txt\r"
+          send "sbatch ~/singularity/job.sh\r"
           expect "$ "
-          send "jobid=\$(cat ~/jobid.txt | awk '{print \$4}')\r"
-          expect "$ "
-          send "echo Waiting for job \$jobid to finish...\r"
-          send 'while squeue -j $jobid > /dev/null 2>&1; do sleep 10; done\r'
-          expect "$ "
-          sleep 30
+          sleep 300
           expect "$ "
           send "exit\r"
           expect eof
