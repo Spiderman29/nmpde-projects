@@ -28,7 +28,9 @@ From: ubuntu:22.04
         git \
         libopenmpi-dev \
         openmpi-bin \
-        libdeal.ii-dev
+        libdeal.ii-dev \
+        libboost-filesystem-dev \
+        libboost-system-dev
     rm -rf /var/lib/apt/lists/*
 
     # Create output_images directory and execute build.sh
