@@ -75,7 +75,7 @@ jobs:
   
     - name: Build Singularity Image from def file
       run: |
-        sudo singularity build singularity-image.sif Singularity.def
+        sudo singularity build singularity-image.sif EspositoGrassiVenezia/Singularity.def
 
     - name: Files for cluster
       run: |
