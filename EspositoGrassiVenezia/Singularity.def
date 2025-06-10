@@ -17,7 +17,7 @@ From: ubuntu:22.04
 
 %files
     # Copio quello che mi serve nella dir /container-app
-    ./brain-nD /container-app/brain-nD
+    EspositoGrassiVenezia/brain-nD /container-app/brain-nD
     ./common /container-app/common
     ./mesh /container-app/mesh
     job.sh /container-app/job.sh
