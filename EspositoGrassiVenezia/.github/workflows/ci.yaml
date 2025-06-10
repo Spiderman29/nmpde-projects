@@ -14,6 +14,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Checkout mesh repository
+      uses: actions/checkout@v3
+      with:
+        repository: Spiderman29/brain-mesh
+        token: ${{ secrets.MESH_REPO_TOKEN }}
+        path: mesh
+
+    - name: Create mesh folder two levels above
+      run: mkdir -p ../../mesh
+
+    - name: Copy mesh files to expected folder
+      run: cp -r mesh/* ../../mesh/
+
     - name: install dependencies for Singularity 
       run: |
         sudo apt-get install -y \
