@@ -79,7 +79,9 @@ jobs:
 
     - name: Files for cluster
       run: |
-        mkdir to_send && mv singularity-image.sif to_send/
+        mkdir -p to_send
+        cp singularity-image.sif to_send/
+        cp job.sh to_send/
 
     - name: Upload files to artifacts
       uses: actions/upload-artifact@v4.3.3
