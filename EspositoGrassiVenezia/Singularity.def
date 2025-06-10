@@ -19,7 +19,6 @@ From: ubuntu:22.04
     # Copio quello che mi serve nella dir /container-app
     EspositoGrassiVenezia/brain-nD /container-app/brain-nD
     EspositoGrassiVenezia/common /container-app/common
-    job.sh /container-app/job.sh
 
 %post
     # Install build tools
