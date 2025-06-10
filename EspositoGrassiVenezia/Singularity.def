@@ -18,8 +18,7 @@ From: ubuntu:22.04
 %files
     # Copio quello che mi serve nella dir /container-app
     EspositoGrassiVenezia/brain-nD /container-app/brain-nD
-    ./common /container-app/common
-    ./mesh /container-app/mesh
+    EspositoGrassiVenezia/common /container-app/common
     job.sh /container-app/job.sh
 
 %post
