@@ -166,55 +166,49 @@ jobs:
           expect "$ "
           send "chmod +x ~/singularity/job.sh\r"
           expect "$ "
-          send "sbatch ~/singularity/job.sh\r"
+          send "sbatch ~/singularity/job.sh > ~/jobid.txt\r"
+          expect "$ "
+          send "jobid=\$(cat ~/jobid.txt | awk '{print \$4}')\r"
+          expect "$ "
+          send "echo Waiting for job \$jobid to finish...\r"
+          send 'while squeue -j $jobid > /dev/null 2>&1; do sleep 10; done\r'
+          expect "$ "
           sleep 30
           expect "$ "
           send "exit\r"
           expect eof
           EOF
 
+      - name: Organize output files on cluster
+        env:
+          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
+        run: |
+          expect << EOF
+          spawn ssh cineca-cluster
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          expect "$ "
+          send "mkdir -p ~/output_pvtu\r"
+          expect "$ "
+          send "mv ~/singularity/EspositoGrassiVenezia/brain-nD/build/output_* ~/output_pvtu/\r"
+          expect "$ "
+          send "exit\r"
+          expect eof
+          EOF
+
+
       - name: Download pvtu output files
         env:
           SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
         run: |
           expect << EOF
-          spawn scp -i ~/.ssh/cineca_key cineca-cluster:~/output_pvtu ./output_pvtu
+          spawn scp -r -i ~/.ssh/cineca_key cineca-cluster:~/output_pvtu ./output_pvtu
           expect "Enter passphrase for key"
           send "$SSH_PASSPHRASE\r"
           expect eof
 
-      - name: Download SLURM output files
-        env:
-          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
-        run: |
-          expect << EOF
-          spawn scp -i ~/.ssh/cineca_key cineca-cluster:~/slurm.out ./slurm.out
-          expect "Enter passphrase for key"
-          send "$SSH_PASSPHRASE\r"
-          expect eof
-
-          spawn scp -i ~/.ssh/cineca_key cineca-cluster:~/slurm.err ./slurm.err
-          expect "Enter passphrase for key"
-          send "$SSH_PASSPHRASE\r"
-          expect eof
-          EOF
-
-
-      - name: Upload Output Images
+      - name: Upload output files artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output_grayscale
-          path: output_grayscale
-
-
-      - name: Upload Output log
-        uses: actions/upload-artifact@v4
-        with:
-          name: output
-          path: slurm.out
-
-      - name: Upload Errors log
-        uses: actions/upload-artifact@v4
-        with:
-          name: errors
-          path: slurm.err
+          name: output-files
+          path: output_pvtu
