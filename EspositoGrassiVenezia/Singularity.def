@@ -1,0 +1,47 @@
+#
+# Copyright 2025 Esposito Lorenzo, Frisone Alessandro, Grassi Francesco, Venezia Giorgio
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+Bootstrap:docker
+From: ubuntu:22.04
+
+%files
+    # Copio quello che mi serve nella dir /container-app
+    ./brain-nD /container-app/brain-nD
+    ./common /container-app/common
+    ./mesh /container-app/mesh
+    job.sh /container-app/job.sh
+
+%post
+    # Install build tools
+    apt-get update && apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        libopenmpi-dev \
+        openmpi-bin \
+        libdeal.ii-dev
+    rm -rf /var/lib/apt/lists/*
+
+    # Create output_images directory and execute build.sh
+    cd container-app/brain-nD
+    rm -rf build
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+%runscript
+    # Cambiando contesto mi devo rispostare sulla cartella container-app/
+    cd /container-app/brain-nD/build
+    mpirun -n 16 ./main

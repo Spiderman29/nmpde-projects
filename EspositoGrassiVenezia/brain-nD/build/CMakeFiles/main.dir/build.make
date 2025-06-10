@@ -53,10 +53,10 @@ RM = /u/sw/toolchains/gcc-glibc/11.2.0/base/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jellyfish/shared-folder/PDE_Project/brain-nD
+CMAKE_SOURCE_DIR = /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jellyfish/shared-folder/PDE_Project/brain-nD/build
+CMAKE_BINARY_DIR = /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/main.dir/depend.make
@@ -70,32 +70,32 @@ include CMakeFiles/main.dir/progress.make
 include CMakeFiles/main.dir/flags.make
 
 CMakeFiles/main.dir/src/main.cpp.o: CMakeFiles/main.dir/flags.make
-CMakeFiles/main.dir/src/main.cpp.o: /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/main.cpp
+CMakeFiles/main.dir/src/main.cpp.o: /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/main.cpp
 CMakeFiles/main.dir/src/main.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/src/main.cpp.o"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/src/main.cpp.o -MF CMakeFiles/main.dir/src/main.cpp.o.d -o CMakeFiles/main.dir/src/main.cpp.o -c /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/src/main.cpp.o"
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/src/main.cpp.o -MF CMakeFiles/main.dir/src/main.cpp.o.d -o CMakeFiles/main.dir/src/main.cpp.o -c /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/main.cpp
 
 CMakeFiles/main.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/src/main.cpp.i"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/main.cpp > CMakeFiles/main.dir/src/main.cpp.i
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/main.cpp > CMakeFiles/main.dir/src/main.cpp.i
 
 CMakeFiles/main.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/main.cpp.s"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/main.cpp -o CMakeFiles/main.dir/src/main.cpp.s
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/main.cpp -o CMakeFiles/main.dir/src/main.cpp.s
 
 CMakeFiles/main.dir/src/BRAIN.cpp.o: CMakeFiles/main.dir/flags.make
-CMakeFiles/main.dir/src/BRAIN.cpp.o: /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/BRAIN.cpp
+CMakeFiles/main.dir/src/BRAIN.cpp.o: /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/BRAIN.cpp
 CMakeFiles/main.dir/src/BRAIN.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/src/BRAIN.cpp.o"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/src/BRAIN.cpp.o -MF CMakeFiles/main.dir/src/BRAIN.cpp.o.d -o CMakeFiles/main.dir/src/BRAIN.cpp.o -c /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/BRAIN.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/src/BRAIN.cpp.o"
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/src/BRAIN.cpp.o -MF CMakeFiles/main.dir/src/BRAIN.cpp.o.d -o CMakeFiles/main.dir/src/BRAIN.cpp.o -c /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/BRAIN.cpp
 
 CMakeFiles/main.dir/src/BRAIN.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/src/BRAIN.cpp.i"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/BRAIN.cpp > CMakeFiles/main.dir/src/BRAIN.cpp.i
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/BRAIN.cpp > CMakeFiles/main.dir/src/BRAIN.cpp.i
 
 CMakeFiles/main.dir/src/BRAIN.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/BRAIN.cpp.s"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jellyfish/shared-folder/PDE_Project/brain-nD/src/BRAIN.cpp -o CMakeFiles/main.dir/src/BRAIN.cpp.s
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/src/BRAIN.cpp -o CMakeFiles/main.dir/src/BRAIN.cpp.s
 
 # Object files for target main
 main_OBJECTS = \
@@ -233,7 +233,7 @@ main: /u/sw/toolchains/gcc-glibc/11.2.0/base/lib/libmpi_usempi_ignore_tkr.so
 main: /u/sw/toolchains/gcc-glibc/11.2.0/base/lib/libmpi_mpifh.so
 main: /u/sw/toolchains/gcc-glibc/11.2.0/base/lib/libmpi.so
 main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -245,6 +245,6 @@ CMakeFiles/main.dir/clean:
 .PHONY : CMakeFiles/main.dir/clean
 
 CMakeFiles/main.dir/depend:
-	cd /home/jellyfish/shared-folder/PDE_Project/brain-nD/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jellyfish/shared-folder/PDE_Project/brain-nD /home/jellyfish/shared-folder/PDE_Project/brain-nD /home/jellyfish/shared-folder/PDE_Project/brain-nD/build /home/jellyfish/shared-folder/PDE_Project/brain-nD/build /home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles/main.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles/main.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/main.dir/depend
 

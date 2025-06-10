@@ -1,4 +1,4 @@
-# Install script for directory: /home/jellyfish/shared-folder/PDE_Project/brain-nD
+# Install script for directory: /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

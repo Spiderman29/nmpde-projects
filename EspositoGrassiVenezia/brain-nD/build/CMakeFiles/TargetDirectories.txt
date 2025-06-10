@@ -1,4 +1,4 @@
-/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles/main.dir
-/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles/remove_vtu_files.dir
-/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles/edit_cache.dir
-/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles/main.dir
+/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles/remove_vtu_files.dir
+/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles/rebuild_cache.dir

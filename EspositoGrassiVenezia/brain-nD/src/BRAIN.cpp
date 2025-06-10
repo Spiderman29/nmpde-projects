@@ -144,8 +144,15 @@ void Brain::assemble_system()
   Tensor<2, dim> d_ext_matrix;
   Tensor<2, dim> normal_matrix;
   Tensor<1, dim> normal;
-  Tensor<1, dim> radial_direction;
-  Point<dim> center; // Default is origin (0,0,0)
+  Point<dim> center;
+  // Get mesh bounding box to set center
+  auto bbox = GridTools::compute_bounding_box(mesh);
+  auto boundary_points = bbox.get_boundary_points();
+  for (unsigned int i = 0; i < dim; ++i)
+    center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
+  
+  AxonalDirection axonal_direction(type_of_diffusion);
+  axonal_direction.set_center(center);
   std::vector<double> solution_loc(n_q);
   std::vector<Tensor<1, dim>> solution_gradient_loc(n_q);
   std::vector<double> solution_old_loc(n_q);
@@ -162,6 +169,7 @@ void Brain::assemble_system()
     cell_matrix = 0.0;
     cell_residual = 0.0;
     unsigned int material_id = material_id_map[cell->id()];
+    Tensor<1, dim> normal;
     fe_values.get_function_values(solution, solution_loc);
     fe_values.get_function_gradients(solution, solution_gradient_loc);
     fe_values.get_function_values(solution_old, solution_old_loc);
@@ -175,18 +183,7 @@ void Brain::assemble_system()
       for (unsigned int i = 0; i < dim; ++i)
         d_ext_matrix[i][i] = d_ext_loc;
 
-      radial_direction = fe_values.quadrature_point(q) - center;
-      
-      // Normalize the radial direction to get the normal vector
-      double radius = radial_direction.norm();
-      if (radius > 1e-10) {
-        normal = radial_direction / radius;
-      } else {
-        // If at center point, use default direction
-        normal[0] = 1.0;
-        for (unsigned int d = 1; d < dim; ++d)
-          normal[d] = 0.0;
-      }
+      normal=axonal_direction.compute_direction(fe_values.quadrature_point(q), material_id);
 
       // Create normal_matrix as the tensor product of normal with itself
       for (unsigned int i = 0; i < dim; ++i) {
@@ -296,7 +293,7 @@ void Brain::output(const unsigned int &time_step) const
   data_out.build_patches();
 
   data_out.write_vtu_with_pvtu_record(
-      "./", "output_" + std::to_string(dim) + "_dt" + std::to_string(deltat) + "_alpha" + std::to_string(alpha[0]) + "_dext" + std::to_string(d_ext[0]), time_step, MPI_COMM_WORLD, 3);
+      "./", "output_" + std::to_string(dim) + "D_dt" + std::to_string(deltat) + "_alpha" + std::to_string(alpha[0]) + "_dext" + std::to_string(d_ext[0]) + "_diffusion-"+type_of_diffusion, time_step, MPI_COMM_WORLD, 3);
 }
 
 void Brain::solve()

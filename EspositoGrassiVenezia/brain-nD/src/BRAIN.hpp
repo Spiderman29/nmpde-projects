@@ -202,13 +202,13 @@ public:
     {
       /*
         Measure limits on paraview
-        -63.8802 to 66.974 (delta: 130.854)
-        -107.998 to 61.8228 (delta: 169.82)
-        -57.3737 to 80.4985 (delta: 137.872)
+        x: -63.8802 to 66.974 (delta: 130.854)
+        y: -107.998 to 61.8228 (delta: 169.82)
+        z: -57.3737 to 80.4985 (delta: 137.872)
       */
       if (p[0] >= -5.0 && p[0] <= 5.0 &&  
           p[1] >= -15.0 && p[1] <= -10.0 && 
-          p[2] >= -45.0 && p[2] <= -40.0)  
+          p[2] >= -2.5 && p[2] <= 2.5)  
       {
         return 0.1;
       }
@@ -216,12 +216,87 @@ public:
       {
         return 0.0;
       }
-      /*if (p[1] >= -25.0 && p[1] <= -22.0)
-        return 0.1;
-      else
-        return 0.0;
-        */
+      
+
     }
+  };
+
+  class AxonalDirection{
+  public:
+    AxonalDirection(std::string type_of_diffusion) : str_axonal_direction(type_of_diffusion) {};
+
+    void set_center(const Point<dim> &center_) {
+      center = center_;
+    }
+
+    Tensor<1, dim> compute_direction(const Point<dim> &p, const unsigned int material_id) const{
+      if (str_axonal_direction == "radial") {
+        return radial_direction(p);
+      }
+      else if (str_axonal_direction == "circumferential") {
+        return circumferential_direction(p);
+      }
+      else if (str_axonal_direction == "axonal") {
+        return axonal_direction(p, material_id);
+      }
+      else {
+        throw std::invalid_argument("Unknown axonal direction type");
+      }
+    }
+
+    private:
+      std::string str_axonal_direction;
+
+      Point<dim> center;
+
+      Tensor<1, dim> radial_direction(const Point<dim> &p) const {
+        Tensor<1, dim> normal;
+        Tensor<1, dim> radial_direction;
+        radial_direction = p - center;
+        double radius = radial_direction.norm();
+        if (radius > 1e-10) {
+          normal = radial_direction / radius;
+        } else {
+          // If at center point, use default direction
+          normal[0] = 1.0;
+          for (unsigned int d = 1; d < dim; ++d)
+            normal[d] = 0.0;
+        }
+        return normal;
+      }
+
+      Tensor<1, dim> circumferential_direction(const Point<dim> &p) const {
+      Tensor<1, dim> normal;
+      Point<dim> projected_point;
+      projected_point[0] = p[0];
+      projected_point[1] = p[1];
+      
+      Tensor<1, dim> radial_xy = projected_point - center;
+      double radial_distance_xy = std::sqrt(radial_xy[0]*radial_xy[0] + radial_xy[1]*radial_xy[1]);
+      
+      if (radial_distance_xy < 1e-10) {
+        normal[0] = 0.0;
+        normal[1] = 1.0;  
+        normal[2] = 0.0;
+        return normal;
+      }
+      
+      normal[0] = -radial_xy[1] / radial_distance_xy;  
+      normal[1] =  radial_xy[0] / radial_distance_xy;  
+      normal[2] = 0.0;
+      
+      return normal;
+  }
+
+      Tensor<1, dim> axonal_direction(const Point<dim> &p, const unsigned int material_id) const {
+        if (material_id == 1) {
+          return circumferential_direction(p);
+        } else if (material_id == 2) { 
+          return radial_direction(p);
+        } else {
+          return Tensor<1, dim>({0.0, 0.0, 0.0});
+        }
+      }
   };
 
   // Constructor. We provide the final time, time step Delta t and theta method
@@ -233,7 +308,8 @@ public:
         const double &theta_,
         const std::vector<double> &d_ext_,
         const std::vector<double> &d_axn_,
-        const std::vector<double> &alpha_)
+        const std::vector<double> &alpha_,
+        const std::string         &type_of_diffusion_)
       : mpi_size(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD)), 
         mpi_rank(Utilities::MPI::this_mpi_process(MPI_COMM_WORLD)), 
         pcout(std::cout, mpi_rank == 0), 
@@ -246,7 +322,9 @@ public:
         d_axn(d_axn_), 
         alpha(alpha_), 
         d_ext_func(d_ext_), 
-        d_axn_func(d_axn_), 
+        d_axn_func(d_axn_),
+        type_of_diffusion(type_of_diffusion_),
+        axonal_direction(type_of_diffusion_),
         reaction_coefficient(alpha_), 
         mesh_file_name(mesh_file_name_),
         time(0.0),
@@ -313,6 +391,8 @@ protected:
 
   ExtracellularDiffusion d_ext_func;
   AxonalTransport d_axn_func;
+  std::string type_of_diffusion;
+  AxonalDirection axonal_direction;
 
   ReactionCoefficient reaction_coefficient;
 

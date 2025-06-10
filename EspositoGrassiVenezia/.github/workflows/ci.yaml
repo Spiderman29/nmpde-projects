@@ -1,0 +1,207 @@
+name: Singularity CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master ] 
+
+  workflow_dispatch:
+
+jobs:
+  run-tests-and-build-singularity:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: install dependencies for Singularity 
+      run: |
+        sudo apt-get install -y \
+          uuid-dev \
+          build-essential \
+          libseccomp-dev \
+          pkg-config \
+          squashfs-tools \
+          cryptsetup \
+          curl wget git \
+
+          
+    - name: Check Go in the cache
+      uses: actions/cache@v4
+      id: go_cache
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+      
+    - name: Set up Go
+      if: steps.go_cache.outputs.cache-hit != 'true'
+      uses: actions/setup-go@v5.0.1
+      with:
+        go-version: '1.21.10'
+        cache-dependency-path: |
+            subdir/go.sum
+            tools/go.sum
+      id: go
+
+    - name: Install Singularity
+      run: |
+        export VERSION=3.8.7 && # adjust this as necessary \
+        wget https://github.com/hpcng/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz \
+        && sudo tar -xzf singularity-${VERSION}.tar.gz \
+        && cd singularity-${VERSION} \
+        && sudo ./mconfig \
+        && sudo make -C builddir \
+        && sudo make -C builddir install
+        
+    - name: verifyVersion
+      run: singularity --version
+  
+    - name: Build Singularity Image from def file
+      run: |
+        sudo singularity build singularity-image.sif Singularity.def
+
+    - name: Files for cluster
+      run: |
+        mkdir to_send && mv job.sh singularity-image.sif to_send/
+
+    - name: Upload files to artifacts
+      uses: actions/upload-artifact@v4.3.3
+      with:
+        name: cluster-files
+        path: ./to_send
+        if-no-files-found: error
+        compression-level: 9
+        overwrite: true
+
+  upload-and-run-container-to-cluster:
+    needs: run-tests-and-build-singularity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+      
+      - name: Download container and job
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: cluster-files
+          
+      - name: Setup SSH Certificate
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/cineca_key
+          echo "${{ secrets.SSH_CERTIFICATE }}" > ~/.ssh/cineca_key-cert.pub
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/cineca_key.pub
+          chmod 600 ~/.ssh/cineca_key
+          chmod 644 ~/.ssh/cineca_key-cert.pub
+          chmod 644 ~/.ssh/cineca_key.pub
+          cat >> ~/.ssh/config << EOF
+          Host cineca-cluster
+            HostName ${{ secrets.CLUSTER_HOST }}
+            User ${{ secrets.CLUSTER_USERNAME }}
+            IdentityFile ~/.ssh/cineca_key
+            CertificateFile ~/.ssh/cineca_key-cert.pub
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Install SSH utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass expect rsync
+
+      - name: Test SSH Connection
+        env:
+          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
+          SSH_CLUSTER: ${{ secrets.CLUSTER_USERNAME }}@${{ secrets.CLUSTER_HOST }}
+        run: |
+          expect << EOF
+          spawn ssh cineca-cluster
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          expect eof
+          EOF
+
+      - name: Upload Singularity container and job script
+        env:
+          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
+          SSH_CLUSTER: ${{ secrets.CLUSTER_USERNAME }}@${{ secrets.CLUSTER_HOST }}
+        run: |
+          expect << EOF
+          spawn rsync -avz --progress ./job.sh ./singularity-image.sif cineca-cluster:~/singularity/
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          sleep 10
+          expect eof
+          EOF
+
+      - name: Submit and run job on cluster
+        env:
+          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
+        run: |
+          expect << EOF
+          spawn ssh -i ~/.ssh/cineca_key cineca-cluster
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          expect "$ "
+          send "chmod +x ~/singularity/job.sh\r"
+          expect "$ "
+          send "sbatch ~/singularity/job.sh\r"
+          sleep 30
+          expect "$ "
+          send "exit\r"
+          expect eof
+          EOF
+
+      - name: Download pvtu output files
+        env:
+          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
+        run: |
+          expect << EOF
+          spawn scp -i ~/.ssh/cineca_key cineca-cluster:~/output_pvtu ./output_pvtu
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          expect eof
+
+      - name: Download SLURM output files
+        env:
+          SSH_PASSPHRASE: ${{ secrets.SSH_PWD }}
+        run: |
+          expect << EOF
+          spawn scp -i ~/.ssh/cineca_key cineca-cluster:~/slurm.out ./slurm.out
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          expect eof
+
+          spawn scp -i ~/.ssh/cineca_key cineca-cluster:~/slurm.err ./slurm.err
+          expect "Enter passphrase for key"
+          send "$SSH_PASSPHRASE\r"
+          expect eof
+          EOF
+
+
+      - name: Upload Output Images
+        uses: actions/upload-artifact@v4
+        with:
+          name: output_grayscale
+          path: output_grayscale
+
+
+      - name: Upload Output log
+        uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: slurm.out
+
+      - name: Upload Errors log
+        uses: actions/upload-artifact@v4
+        with:
+          name: errors
+          path: slurm.err

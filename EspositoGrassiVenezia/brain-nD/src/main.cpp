@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     // const std::string mesh_file_name = "../../mesh/brain-h3.0.msh";
 
     const unsigned int degree = 1;
-    const double T = 12.0;
+    const double T = 20.0;
     const double theta = 1.0;
  
 
@@ -28,13 +28,14 @@ int main(int argc, char *argv[])
         std::vector<double> alpha = {0.3, 0.6};
         std::vector<double> d_ext = {1.5, 1.5};
         std::vector<double> d_axn = {0, 3};
-        Brain problem(mesh_file_name, degree, T, deltat, theta, d_ext, d_axn, alpha);
+        Brain problem(mesh_file_name, degree, T, deltat, theta, d_ext, d_axn, alpha, "axonal");
         problem.setup();
         problem.solve();
     }
 
     // // Configuration 2
     // {
+    //     const std::vector<std::string> anisotropic_axonal_transport_types={"circumferential", "radial", "axonal"};
     //     std::vector<double> deltats = {0.025, 0.05, 0.1, 0.2, 0.3, 0.4};
     //     double alpha = 2.0;
     //     double d = 0.0002;

@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/jellyfish/shared-folder/PDE_Project/brain/src/BRAIN-1D.cpp" "CMakeFiles/main-1D.dir/src/BRAIN-1D.cpp.o" "gcc" "CMakeFiles/main-1D.dir/src/BRAIN-1D.cpp.o.d"
-  "/home/jellyfish/shared-folder/PDE_Project/brain/src/main-1D.cpp" "CMakeFiles/main-1D.dir/src/main-1D.cpp.o" "gcc" "CMakeFiles/main-1D.dir/src/main-1D.cpp.o.d"
+  "/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain/src/BRAIN-1D.cpp" "CMakeFiles/main-1D.dir/src/BRAIN-1D.cpp.o" "gcc" "CMakeFiles/main-1D.dir/src/BRAIN-1D.cpp.o.d"
+  "/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain/src/main-1D.cpp" "CMakeFiles/main-1D.dir/src/main-1D.cpp.o" "gcc" "CMakeFiles/main-1D.dir/src/main-1D.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

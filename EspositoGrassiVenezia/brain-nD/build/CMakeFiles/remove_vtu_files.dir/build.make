@@ -53,10 +53,10 @@ RM = /u/sw/toolchains/gcc-glibc/11.2.0/base/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jellyfish/shared-folder/PDE_Project/brain-nD
+CMAKE_SOURCE_DIR = /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jellyfish/shared-folder/PDE_Project/brain-nD/build
+CMAKE_BINARY_DIR = /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build
 
 # Utility rule file for remove_vtu_files.
 
@@ -67,8 +67,8 @@ include CMakeFiles/remove_vtu_files.dir/compiler_depend.make
 include CMakeFiles/remove_vtu_files.dir/progress.make
 
 CMakeFiles/remove_vtu_files:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Removing all .pvtu and .vtu files from the build directory"
-	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/cmake -E remove /home/jellyfish/shared-folder/PDE_Project/brain-nD/build/*.pvtu /home/jellyfish/shared-folder/PDE_Project/brain-nD/build/*.vtu /home/jellyfish/shared-folder/PDE_Project/brain-nD/build/*.vtk
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Removing all .pvtu and .vtu files from the build directory"
+	/u/sw/toolchains/gcc-glibc/11.2.0/base/bin/cmake -E remove /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/*.pvtu /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/*.vtu /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/*.vtk
 
 remove_vtu_files: CMakeFiles/remove_vtu_files
 remove_vtu_files: CMakeFiles/remove_vtu_files.dir/build.make
@@ -83,6 +83,6 @@ CMakeFiles/remove_vtu_files.dir/clean:
 .PHONY : CMakeFiles/remove_vtu_files.dir/clean
 
 CMakeFiles/remove_vtu_files.dir/depend:
-	cd /home/jellyfish/shared-folder/PDE_Project/brain-nD/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jellyfish/shared-folder/PDE_Project/brain-nD /home/jellyfish/shared-folder/PDE_Project/brain-nD /home/jellyfish/shared-folder/PDE_Project/brain-nD/build /home/jellyfish/shared-folder/PDE_Project/brain-nD/build /home/jellyfish/shared-folder/PDE_Project/brain-nD/build/CMakeFiles/remove_vtu_files.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build /mnt/c/Users/giorg/OneDrive/Documenti/GIORGIO/SCUOLA/UNIVERSITA/MAGISTRALE/NMPDE/PDE_Project/brain-nD/build/CMakeFiles/remove_vtu_files.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/remove_vtu_files.dir/depend
 
