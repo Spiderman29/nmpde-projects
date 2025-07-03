@@ -1,822 +1,604 @@
-\documentclass[12pt, a4paper, twoside, openright]{report}
-\input{preamble.tex}
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{float}
+\geometry{margin=2.5cm}
 
-\title{\textbf{Fisher-Kolmogorov}\\equation for neurodegenerative diseases}
-\author{Lorenzo Esposito 10765981, Francesco Grassi 10841139, Giorgio Venezia 10807335}
+% \title{Fisher-Kolmogorov equation for neurodegenerative diseases}
+% \author{Based on handwritten notes by Ema and reconstructed in LaTeX}
+% \date{}
+
+\title{\huge \textbf{Fisher-Kolmogorov Equation} \\[0.2em] 
+       \huge \textbf{A Mathematical Model for Neurodegenerative Diseases} \\[0.8em]
+       \Large Numerical Analysis for PDE Project}
+\author{Emanuele Severino, Nicola Noventa, Matteo Arrigo}
 \date{\today}
 
-
 \begin{document}
+\maketitle
 
-\begin{textblock*}{\textwidth}(2.98cm,1.5cm)
-  \begin{center}
-    \maketitle
-    Version 1.1.0
-  \end{center}
-\end{textblock*}
-
-
-\blankpage
-
-% ============== Indice ============== %
-\pagenumbering{roman}
+% Generate the Table of Contents
 \tableofcontents
-\afterpage{\blankpage}
-\newpage
-\pagenumbering{arabic}
+\newpage  % Start content on a new page
 
-\chapter{Introduction}
-\section{The problem}
+\section{Introduction}
+Create a model that explains the growth and spreading of misfolded proteins. This type of modeling is particularly relevant in the context of neurodegenerative diseases, where the accumulation and propagation of misfolded proteins can trigger pathological cascades.
 
-\section{The goal}
-
-We want to dynamically modify the duration of traffic lights on the main
-roads in the city depending on the directions from where we observe the
-main traffic movements. For instance, if, at a certain point in time, we
-observe that the traffic flow on a certain road A is significantly
-higher than in the crossing roads, then we may decide to extend, for
-instance, for one hour, the duration of green lights on A (and,
-consequently, extend the duration of red lights in the crossing
-roads).\\
-We want to analyze the daily traffic patterns and identify possible
-optimizations in terms of one-way roads, traffic lights configuration,
-and public transport schedule.\\
-We want to collect information about the planning of events attracting
-large crowds (e.g., important sport events, concerts, fairs) and define
-event-specific configurations for traffic lights, roads and public
-transport schedules.
-
-\section{Stakeholders}
+\section{Mathematical Modelling}
+\subsection{Kinetics of Prion-like Spreading}
+Let:
 \begin{itemize}
-  \item Drivers: benefit from reduced waiting times and improved traffic flow.
-  \item Citizens: benefit from lower air pollution and enhanced public transport.
-  \item Urban Area Managers: responsible for optimizing city mobility and approving changes.
-  \item Event Planners: coordinate with the system for efficient management of large events.
+    \item $\rho$ be the concentration of healthy proteins.
+    \item $\tilde{\rho}$ be the concentration of misfolded proteins.
 \end{itemize}
 
-\chapter{Requirement Analysis}
+We consider the protein conversion reaction:
+\begin{equation}
+    \rho + \tilde{\rho} \xrightarrow{k_{12}} \tilde{\rho} + \tilde{\rho}
+\end{equation}
+This autocatalytic reaction models the idea that a misfolded protein can convert a healthy one upon interaction.
 
-\section{Actors}
-\subsection{Human Actors}
+\paragraph{Parameter:}
 \begin{itemize}
-  \item Drivers: use the traffic light system.
-  \item Citizens: access the EcoTraffic public portal to view traffic reports and use public transport services.
-  \item Urban Area Manager (UAM): responsible for approving or rejecting traffic light configurations and optimizations.
+    \item $k_{12}$: rate of conversion from healthy to misfolded proteins, proportional to both $\rho$ and $\tilde{\rho}$.
 \end{itemize}
 
+\subsection{Governing Equations}
+The spatio-temporal evolution of the concentrations is modeled as:
+\begin{align}
+    \frac{d \rho}{dt} &= \nabla \cdot (D_{\rho} \nabla \rho) + k_0 - k_1 \rho - k_{12} \rho \tilde{\rho} \\
+    \frac{d \tilde{\rho}}{dt} &= \nabla \cdot (D_{\tilde{\rho}} \nabla \tilde{\rho}) + k_{12} \rho \tilde{\rho} - \tilde{k}_1 \tilde{\rho}
+\end{align}
+These equations include production, clearance, diffusion, and nonlinear reaction terms.
 
-\subsection{Non-Human Actors}
+\paragraph{Where:}
 \begin{itemize}
-  \item Traffic Lights Control System: receives traffic light configurations from the EcoTraffic system.
-  \item Sensor Infrastructure: sends sensor information to the EcoTraffic system via data bus.
-  \item Public Transport Microservice: sends public transport schedule to the EcoTraffic system via function calls.
-  \item News Channel: transmits information about city events to the EcoTraffic system.
+    \item $k_0$: production rate of healthy protein $\rho$ (e.g., from synthesis).
+    \item $k_1$: clearance rate of $\rho$ (e.g., degradation or dilution).
+    \item $\tilde{k}_1$: clearance rate of $\tilde{\rho}$.
+    \item $k_{12}$: nonlinear conversion rate.
+    \item $D_{\rho}, D_{\tilde{\rho}}$: diffusion coefficients that characterize the spatial spread.
 \end{itemize}
 
-\section{Use Cases}\label{sec:use-cases}
-\subsection{Scenarios}\label{subsec:scenarios}
+\subsection{Stationary States}
+\paragraph{Healthy state ($\tilde{\rho} = 0$):}
+No misfolded proteins are present, and the system reaches equilibrium for $\rho$:
+\begin{equation}
+    \frac{d \rho}{dt} = 0 \Rightarrow k_0 - k_1 \rho = 0 \Rightarrow \rho = \frac{k_0}{k_1}
+\end{equation}
+This is the baseline equilibrium in the absence of pathological proteins.
 
-\subsubsection{Traffic light duration adjustment}\label{subsubsec:traffic-light-duration}
+\paragraph{Initial state ($\tilde{\rho} \ll \rho$):}
+When misfolded proteins are rare, we can assume a quasi-steady state for $\rho$:
+\begin{equation}
+    \frac{d \rho}{dt} \approx 0, \quad \nabla \cdot (D_{\rho} \nabla \rho) \approx 0
+\end{equation}
+Leading to:
+\begin{equation}
+    k_0 - k_1 \rho - k_{12} \rho \tilde{\rho} = 0 \Rightarrow \rho = \frac{k_0}{k_1 + k_{12} \tilde{\rho}}
+\end{equation}
+This gives a rational expression for $\rho(\tilde{\rho})$ which reflects the feedback inhibition induced by $\tilde{\rho}$.
 
+\paragraph{Linear Approximation:}
+If $\tilde{\rho} \ll 1$, then using a Taylor expansion:
+\begin{equation}
+    \frac{1}{k_1 + k_{12} \tilde{\rho}} \approx \frac{1}{k_1} \left(1 - \frac{k_{12}}{k_1} \tilde{\rho} \right)
+\end{equation}
+Therefore,
+\begin{equation}
+    \rho \approx \frac{k_0}{k_1} \left(1 - \frac{k_{12}}{k_1} \tilde{\rho} \right)
+\end{equation}
+This approximation will be useful for simplifying the equations governing $\tilde{\rho}$.
+
+\subsection{Reduced Equation and Normalization}
+Substitute the linear approximation of $\rho$ into the equation for $\tilde{\rho}$:
+\begin{align}
+    \frac{d \tilde{\rho}}{dt} &= \nabla \cdot (D_{\tilde{\rho}} \nabla \tilde{\rho}) + \left( \frac{k_{12} k_0}{k_1} - \tilde{k}_1 \right) \tilde{\rho} - \frac{k_{12}^2 k_0}{k_1^2} \tilde{\rho}^2
+\end{align}
+This is a reaction-diffusion equation with logistic-type growth and saturation.
+
+\paragraph{Normalization:}
+Define the maximum misfolded concentration $\tilde{\rho}_{\max}$ and the relative concentration:
+\begin{equation}
+    c = \frac{\tilde{\rho}}{\tilde{\rho}_{\max}}, \quad 0 \leq c \leq 1
+\end{equation}
+Then the equation becomes:
+\begin{equation}
+    \frac{\partial c}{\partial t} = \nabla \cdot (D \nabla c) + \alpha c (1 - c), \quad \text{with } \alpha = \frac{k_{12} k_0}{k_1} - \tilde{k}_1
+\end{equation}
+This is the classical Fisher-KPP equation, modeling the propagation of concentration fronts.
+
+\subsection{Steady Solutions}
+Setting \( \partial c/\partial t = 0 \), we obtain the stationary form:
+\begin{equation}
+    \nabla \cdot (D \nabla c) + \alpha c(1 - c) = 0
+\end{equation}
+This admits equilibrium solutions $c = 0$ (unstable) and $c = 1$ (stable), which represent the absence or saturation of misfolded proteins in the tissue.
+
+\subsection{Diffusion Term Details}
+\begin{itemize}
+    \item \textbf{Isotropic diffusion:} the diffusion tensor $D$ is scalar, uniform in all directions:
+    \begin{equation}
+        \nabla \cdot (D \nabla c)
+    \end{equation}
+    \item \textbf{Anisotropic diffusion:} maximal along preferred direction $\bm{m}$:
+    \begin{equation}
+        D = D_{\text{const}} (I + d_{\text{an}} \bm{m} \otimes \bm{m})
+    \end{equation}
+    and the diffusion term becomes:
+    \begin{equation}
+        \nabla \cdot (D \nabla c) = \nabla \cdot \left[ D_{\text{const}} (I + d_{\text{an}} \bm{m} \otimes \bm{m}) \nabla c \right]
+    \end{equation}
+\end{itemize}
+This form accounts for directional spreading influenced by structural anisotropies (e.g., in tissue).
+
+\section{Mathematical Model: Generalized Fisher–Kolmogorov Equation}
+
+The proposed model is a nonlinear anisotropic reaction--diffusion equation that describes the evolution of the concentration \( c = c(\mathbf{x}, t) \) of misfolded proteins over space and time. It reads as follows:
+
+\begin{equation}
+\begin{cases}
+\displaystyle \frac{\partial c}{\partial t} - \nabla \cdot (D \nabla c) - \alpha c (1 - c) = 0 & \text{in } \Omega, \\
+D \nabla c \cdot \mathbf{n} = 0 & \text{on } \partial \Omega, \\
+c(t=0) = c_0 & \text{in } \Omega.
+\end{cases}
+\label{eq:fisher-kolmogorov}
+\end{equation}
+
+\subsection{Weak Formulation}
+
+To derive the weak formulation of the Fisher--Kolmogorov equation, we begin by introducing the appropriate functional setting. The natural Hilbert space for both the solution and the test functions is defined as:
+\[
+V := H^1(\Omega) = \left\{ v \in L^2(\Omega) \, : \, \nabla v \in \left[L^2(\Omega)\right]^d \right\},
+\]
+where \( L^2(\Omega) \) denotes the space of square-integrable functions over the domain \( \Omega \), and \( d \) is the dimension of the spatial domain.
+
+\medskip
+
+\noindent
+\textbf{Step 1: Multiplication by a test function and integration over the domain.}
+
+\smallskip
+
+Let \( v \in H^1(\Omega) \) be a test function. Multiplying the strong form of the equation by \( v \) and integrating over \( \Omega \), we obtain:
+\[
+\int_\Omega \frac{\partial c}{\partial t} v \, dx 
+- \int_\Omega \nabla \cdot (D \nabla c) \, v \, dx 
+- \int_\Omega \alpha c(1 - c) v \, dx = 0
+\qquad \forall v \in H^1(\Omega).
+\]
+
+\medskip
+
+\noindent
+\textbf{Step 2: Integration by parts of the diffusion term.}
+
+\smallskip
+
+The second term, involving the divergence of the flux, is integrated by parts:
+\[
+- \int_\Omega \nabla \cdot (D \nabla c) \, v \, dx 
+= - \int_{\partial \Omega} (D \nabla c \cdot \mathbf{n}) v \, d\sigma 
++ \int_\Omega D \nabla c \cdot \nabla v \, dx.
+\]
+
+\noindent
+Using the homogeneous Neumann boundary condition
+\[
+D \nabla c \cdot \mathbf{n} = 0 \quad \text{on } \partial \Omega,
+\]
+the boundary integral vanishes, leaving only the volume term.
+
+\medskip
+
+\noindent
+\textbf{Final weak formulation.}
+
+\smallskip
+
+We can now state the weak formulation as follows:
+
+Find \( c \in H^1(\Omega) \) such that
+\begin{equation}
+\int_\Omega \frac{\partial c}{\partial t} \, v \, dx 
++ \int_\Omega D \nabla c \cdot \nabla v \, dx 
+- \int_\Omega \alpha c(1 - c) v \, dx = 0, 
+\qquad \forall v \in H^1(\Omega)
+\label{eq:weak-continuous}
+\end{equation}
+
+\subsection{Time Discretization: Backward Euler Scheme}
+
+To numerically approximate the solution of the time-dependent weak formulation, we begin by discretizing the temporal domain and constructing a sequence of variational problems at discrete time levels.
+
+\subsubsection*{Temporal partitioning}
+
+Let \( T > 0 \) be the final simulation time. We partition the time interval \( [0, T] \) uniformly into \( N \) subintervals of equal length \( \Delta t = \frac{T}{N} \), and define the discrete time instants as
+\[
+t^n := n \Delta t, \qquad \text{for } n = 0, 1, \dots, N
+\]
+
+At each time level \( t^n \), we aim to compute an approximation \( c^n \approx c(t^n) \) of the exact solution \( c(x, t^n) \).
+
+\subsubsection*{Approximation of the time derivative}
+
+The time derivative \( \frac{\partial c}{\partial t} \) is approximated using the backward (implicit) Euler scheme, evaluated at time \( t^{n+1} \):
+\[
+\left. \frac{\partial c}{\partial t} \right|_{t^{n+1}} \approx \frac{c^{n+1} - c^n}{\Delta t} 
+\]
+
+This transforms the time-dependent problem into a sequence of quasi-static (elliptic-type) problems. At each time step, we compute the unknown \( c^{n+1} \) given the known solution at the previous time step \( c^n \).
+
+\subsubsection*{Fully discrete variational problem}
+
+Starting from the weak formulation of the continuous problem \eqref{eq:weak-continuous} we replace the time derivative by using the backward Euler approximation.
+
+The resulting time-discrete variational problem reads:
+
+
+\textbf{Given} \( c^n \in H^1(\Omega) \), \textbf{find} \( c^{n+1} \in H^1(\Omega) \) such that:
+\begin{equation}
+\int_\Omega \frac{c^{n+1} - c^n}{\Delta t} \, v \, dx
++ \int_\Omega D \nabla c^{n+1} \cdot \nabla v \, dx
+- \int_\Omega \alpha c^{n+1}(1 - c^{n+1}) v \, dx = 0,
+\qquad \forall v \in H^1(\Omega)
+\label{eq:BE_applied}
+\end{equation}
+
+\medskip
+
+This problem is nonlinear in \( c^{n+1} \) due to the reaction term \( \alpha c^{n+1}(1 - c^{n+1}) \). It must be solved at each time step, starting from the initial condition \( c^0 = c_0 \in H^1(\Omega) \).
+
+\subsection{Linearization via Fréchet Derivative}
+
+% Given the nonlinear variational problem derived from the backward Euler time discretization:
+
+% \begin{quote}
+% \textbf{Given} \( c^n \in H^1(\Omega) \), \textbf{find} \( c^{n+1} \in H^1(\Omega) \) such that
+% \[
+% \int_\Omega \frac{c^{n+1} - c^n}{\Delta t} v \, dx + \int_\Omega D \nabla c^{n+1} \cdot \nabla v \, dx - \int_\Omega \alpha c^{n+1}(1 - c^{n+1}) v \, dx = 0 \qquad \forall v \in H^1(\Omega),
+% \]
+% \end{quote}
+
+Given \eqref{eq:BE_applied} we define the associated \textbf{residual functional} \( R \colon H^1(\Omega) \to H^1(\Omega)' \) by:
+\[
+R(c, v) := \int_\Omega \frac{c - c^n}{\Delta t} v \, dx + \int_\Omega D \nabla c \cdot \nabla v \, dx - \int_\Omega \alpha c(1 - c) v \, dx.
+\]
+
+Solving the variational problem is equivalent to finding \( c^{n+1} \in H^1(\Omega) \) such that:
+\[
+R(c^{n+1}, v) = 0 \qquad \forall v \in H^1(\Omega).
+\]
+
+\subsubsection*{Fréchet derivative: definition}
+
+To solve the nonlinear problem, we linearize the residual \( R \) via its \textbf{Fréchet derivative}. Let \( \delta \in H^1(\Omega) \) be a perturbation direction. The Fréchet derivative of \( R \) at a point \( c \in H^1(\Omega) \) in the direction \( \delta \) is defined as:
+\[
+R'(c)(\delta, v) := \left. \frac{d}{d\varepsilon} R(c + \varepsilon \delta, v) \right|_{\varepsilon = 0}.
+\]
+
+This way it can be seen that holds
+\begin{equation}
+R(c + \delta, v) = R(c, v) + R'(c)(\delta, v)
+\qquad as \ \delta \rightarrow 0
+\label{frechet_approx}
+\end{equation}
+
+\subsubsection*{Computation of the derivative}
+
+We expand the residual functional evaluated at a perturbed function \( c + \delta \):
+\[
+R(c + \delta, v) = \int_\Omega \frac{c + \delta - c^n}{\Delta t} v \, dx + \int_\Omega D \nabla(c + \delta) \cdot \nabla v \, dx - \int_\Omega \alpha (c + \delta)(1 - c - \delta) v \, dx.
+\]
+
+Focusing on the nonlinear reaction term:
+\[
+(c + \delta)(1 - c - \delta) = c(1 - c) - \delta(1 - 2c) - \delta^2.
+\]
+
+Substituting into the residual:
+\begin{align*}
+R(c + \delta, v) &= \int_\Omega \left( \frac{c - c^n}{\Delta t} + \frac{\delta}{\Delta t} \right) v \, dx 
++ \int_\Omega D (\nabla c + \nabla \delta) \cdot \nabla v \, dx \\
+&\quad - \int_\Omega \alpha \left[ c(1 - c) - \delta(1 - 2c) - \delta^2 \right] v \, dx.
+\end{align*}
+
+Grouping terms:
+\begin{align*}
+R(c + \delta, v) &= R(c, v) + \int_\Omega \frac{\delta}{\Delta t} v \, dx + \int_\Omega D \nabla \delta \cdot \nabla v \, dx - \int_\Omega \alpha (1 - 2c) \delta v \, dx + \mathcal{O}(\|\delta\|^2).
+\end{align*}
+
+Taking \( \delta \in H^1(\Omega) \) so that \( \delta \rightarrow 0\), the remainder \( \mathcal{O}(\|\delta\|^2) \) can be neglected in the linear approximation. Therefore, comparing with \eqref{frechet_approx}, the Fréchet derivative is:
+
+\[
+R'(c)(\delta, v) = \int_\Omega \frac{\delta}{\Delta t} v \, dx + \int_\Omega D \nabla \delta \cdot \nabla v \, dx - \int_\Omega \alpha (1 - 2c) \delta v \, dx.
+\]
+
+\subsection{Application of Newton's method}
+
+To solve the nonlinear problem \( R(c^{n+1}, v) = 0 \), we apply the Newton method. Starting from an initial guess \( c^{(0)} \), we iterate:
+
+\begin{quote}
+\textbf{At each iteration} \( k \), find \( \delta^{(k)} \in H^1(\Omega) \) such that
+\[
+R'(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v) \qquad \forall v \in H^1(\Omega),
+\]
+and update the approximation:
+\[
+c^{(k+1)} = c^{(k)} + \delta^{(k)}.
+\]
+\end{quote}
+
+The iteration is repeated until convergence, e.g., when \( \|\delta^{(k)}\| \) or \( \|R(c^{(k)}, \cdot)\|_{H^1(\Omega)'} \) is below a fixed tolerance.
+
+\subsubsection{Finite Element Discretization and Assembly of the Newton System}
+
+We now discretize the problem in space using the Galerkin finite element method. Let \( V_h \subset H^1(\Omega) \) be a finite-dimensional subspace spanned by a basis \( \{\phi_j\}_{j=1}^N \). We approximate \( c^{(k)} \) and \( \delta^{(k)} \) as:
+
+\[
+c^{(k)}(x) = \sum_{j=1}^N c_j^{(k)} \phi_j(x), \qquad \delta^{(k)}(x) = \sum_{j=1}^N \delta_j^{(k)} \phi_j(x).
+\]
+
+Choosing the test functions \( v = \phi_i \), for \( i = 1, \dots, N \), we project the weak formulation onto the space \( V_h \), resulting in a linear system of the form:
+
+\[
+\mathbf{A}^{(k)} \delta^{(k)} = -\mathbf{R}^{(k)},
+\]
+
+where:
+
+\begin{itemize}
+  \item \( \delta^{(k)} = (\delta_1^{(k)}, \dots, \delta_N^{(k)})^T \) is the vector of unknown Newton corrections,
+  \item \( \mathbf{A}^{(k)} \in \mathbb{R}^{N \times N} \) is the Jacobian matrix (the discretization of the Fréchet derivative),
+  \item \( \mathbf{R}^{(k)} \in \mathbb{R}^N \) is the residual vector evaluated at \( c^{(k)} \).
+\end{itemize}
+
+The entries of the matrix \( \mathbf{A}^{(k)} \) are given by:
+
+\[
+A_{ij}^{(k)} = \int_\Omega \frac{1}{\Delta t} \phi_j \phi_i \, dx 
++ \int_\Omega D \nabla \phi_j \cdot \nabla \phi_i \, dx 
+- \int_\Omega \alpha (1 - 2c^{(k)}) \phi_j \phi_i \, dx,
+\]
+
+and the residual vector by:
+
+\[
+R_i^{(k)} = \int_\Omega \frac{c^{(k)} - c^n}{\Delta t} \phi_i \, dx 
++ \int_\Omega D \nabla c^{(k)} \cdot \nabla \phi_i \, dx 
+- \int_\Omega \alpha c^{(k)} (1 - c^{(k)}) \phi_i \, dx.
+\]
+
+At each Newton iteration \( k \), the linear system \( \mathbf{A}^{(k)} \delta^{(k)} = -\mathbf{R}^{(k)} \) is solved, and the solution is updated:
+
+\[
+c^{(k+1)} = c^{(k)} + \delta^{(k)}.
+\]
+
+
+
+\section{Computational Methods}
+
+\subsection{Computational Problem Formulation}
+To sum up, the problem is formalized as the Fisher–Kolmogorov Equation, a specific nonlinear partial differential equation (PDE) over a domain in \(\mathbb{R}^3\) representing the brain. The boundary conditions are homogeneous Neumann conditions on the entire surface of the 3D domain, and the initial condition is provided.
+
+The solver starts from the initial solution and iterates over time until reaching a specified endpoint, using a discretization determined by a time step. At each time step, our software solves the linear system corresponding to the linearized weak formulation of the PDE, discretized in space using the finite element method (FEM). Specifically, the solver assembles the system matrix and the right-hand side vector and then solves the system using a linear solver.
+
+We construct the initial condition as a function with a nonzero constant value (initial seed) only within a defined region (initial seed region). To simplify the modeling, we support an initial seed region that is cubic in shape (and intersected with the domain), with a fixed edge length.
+
+\subsection{Simulation Setup}
+
+The inputs and parameters of the problem are:
 \begin{enumerate}
-  \item
-    During peak traffic hours, vehicles take more than necessary to cross a
-    particular intersection coming from a busy road, while the crossing
-    road is less used.
-  \item
-    The traffic system sensor measures crossing times and publishes them on the
-    message bus.
-  \item
-    EcoTraffic retrieves and stores the data in a database.
-  \item
-    EcoTraffic analyzes the crossing times to detect imbalances in traffic flow.
-  \item
-    If an imbalance is detected, EcoTraffic computes adjusted green light durations for the affected intersections.
-  \item
-    EcoTraffic sends the updated timings to the traffic light control system.
-  \item
-    EcoTraffic records the modifications performed in a log file.
-\end{enumerate}
-
-\subsubsection{Daily Analysis and optimization}\label{subsubsec:daily-analysis}
-
-\begin{enumerate}
-  \item
-    At 00:10 AM, EcoTraffic retrieve daily data from the
-    database.
-  \item
-    EcoTraffic analyzes this data to detect daily traffic patterns and to
-    find possible optimization in terms of one-way roads, traffic light
-    configuration, and public transport schedules.
-  \item
-    EcoTraffic retrieves the current transport schedules via the public transport microservice.
-  \item
-    Suggested changes are stored in the database for review by the Urban Area Manager (UAM).
-  \item
-    Once the UAM accesses the system, suggestions are displayed for approval or rejection.
-  \item
-    EcoTraffic records the Urban Area Manager's decision in a log file for yearly reporting.
-  \item
-    EcoTraffic sends the accepted suggestions to the traffic light control system.
-\end{enumerate}
-
-\subsubsection{Traffic Zone Optimization}\label{subsubsec:traffic-zone}
-
-\begin{enumerate}
-  \item
-    The Urban Area Manager asks to EcoTraffic to verify if a certain zone
-    is optimized in terms of one-way roads, traffic lights configuration,
-    and public transport schedule.
-  \item
-    EcoTraffic retrieves the traffic patterns of the
-    zone from the database.
-  \item
-    EcoTraffic analyzes the data suggest improvements to one-way roads and traffic light configuration.
-  \item
-    EcoTraffic retrieves the current transport schedules via the public transport microservice
-    to get all the bus lines that have a stop
-    into the area to optimize.
-  \item
-    Using this data, EcoTraffic proposes an optimized configuration. (i.e.
-    if in the zone there's a school, then the system could anticipate the
-    timetable of the stops near that to avoid the students arriving late
-    or could suggest increasing the number of buses in the area).
-  \item
-    EcoTraffic presents to the UAM the recommendations and waits till the
-    UAM decides to accept or reject the recommendation and stores the
-    decision.
-  \item
-    EcoTraffic records the Urban Area Manager's decision in a log file for yearly reporting.
-  \item
-    EcoTraffic sends the accepted suggestions to the traffic light control system.
-\end{enumerate}
-
-\subsubsection{Event-specific configurations}\label{subsubsec:event-specific}
-
-\begin{enumerate}
-  \item
-    News channel publishes information about upcoming events with the
-    expected attendance.
-  \item
-    EcoTraffic receives event information from the news channel, categorizes it by expected attendance, location, and scheduled time.
-  \item
-    EcoTraffic analyzes historical traffic patterns from similar events.
-  \item
-    EcoTraffic retrieves public transport schedules.
-  \item
-    EcoTraffic generates event-specific configuration recommendations for
-    traffic lights and roads.
-  \item
-    The UAM accesses to EcoTraffic and reviews the suggestions proposed
-    and decides to accept or reject them.
-  \item
-    EcoTraffic records the Urban Area Manager's decision in a log file for yearly reporting.
-  \item
-    EcoTraffic sends the accepted suggestions to the traffic light control system.
-\end{enumerate}
-
-\subsubsection{Citizen views public traffic reports}\label{subsubsec:citizen-views}
-
-\begin{enumerate}
-  \item
-    A citizen accesses the EcoTraffic public portal and selects either daily or yearly traffic reports.
-
-    \begin{enumerate}
-      \item
-        The citizen selects "Daily Traffic Reports" and chooses the date and
-        time.
-        \begin{enumerate}
-          \item
-            EcoTraffic retrieves daily report data from the database service.
-          \item
-            EcoTraffic displays report showing:
-
-            \begin{enumerate}
-                \def\labelenumiv{\alph{enumiv}.}
-              \item
-                Average traffic flow on main roads.
-              \item
-                Visualization of peak congestion periods.
-              \item
-                List of actions taken automatically.
-            \end{enumerate}
-        \end{enumerate}
-      \item
-        The citizen selects the "Yearly Reports" option.
-
-        \begin{enumerate}
-          \item
-            EcoTraffic displays yearly report options.
-          \item
-            EcoTraffic retrieves yearly report data from the database service.
-          \item
-            EcoTraffic displays a comprehensive report showing:
-
-            \begin{enumerate}
-                \def\labelenumiv{\alph{enumiv}.}
-              \item
-                Suggested actions that were accepted.
-              \item
-                Suggested actions that were rejected.
-            \end{enumerate}
-        \end{enumerate}
+    \item \textbf{Numerical Parameters}
+    \begin{enumerate}[label=-]
+        \item \textbf{T}: Final time of the simulation.
+        \item \textbf{\( \Delta t \)}: Time step for time discretization.
+        \item \textbf{Mesh}: A 3D discretized representation of the domain in \(\mathbb{R}^3\).
+        \item \textbf{Degree}: The polynomial degree of the finite elements used to construct the FEM space over the mesh.
+    \end{enumerate}
+    \item \textbf{Biological Parameters}
+    \begin{enumerate}[label=-]
+        \item \textbf{d\_ext}: Isotropic extracellular diffusion coefficient.
+        \item \textbf{d\_axn}: Anisotropic axonal transport along axonal fiber directions.
+        \item \textbf{Diffusion Type}: Defines the predefined axonal fiber direction to be considered.
+        \begin{itemize}
+            \item Isotropic
+            \item Circumferential
+            \item Radial
+        \end{itemize}
+        \item \textbf{$\alpha$}: Growth rate of misfolded protein concentration.
+        \item \textbf{Initial Seed}: Value of the initial nonzero concentration.
+        \item \textbf{Seed Point}: Center of the initial seed region.
     \end{enumerate}
 \end{enumerate}
+All parameters are assumed to remain constant over time.
 
-\subsubsection{UAM views optimization to approve or reject}\label{subsubsec:uam-views}
+\textbf{Outputs}: The solver outputs \texttt{.vtk} and \texttt{.pvtk} files representing the mesh with the computed solution at each time step. These results can be visualized using ParaView.
 
-\begin{enumerate}
-  \item
-    UAM access to EcoTraffic public portal.
-  \item
-    EcoTraffic presents the list of pending optimization suggestions awaiting UAM approval or rejection.
-  \item
-    The UAM analyzes each suggestion and decide to approve or reject
-    choosing an option displayed.
-  \item
-    EcoTraffic records the UAM's decision in a log file for yearly reporting.
-\end{enumerate}
-
-\subsection{Use case diagrams}
-\subsubsection{Traffic light duration adjustment}
-
-\includegraphics[width=\linewidth]{images/svg/TLDA_usecase.pdf}
-
-\rowcolors{3}{gray!10}{white}
-
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-  \toprule
-  \textbf{Aspect} & \textbf{Description} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{2}{r}{\textit{Continues on next page}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-
-  Actors & Sensors, Control System \\
-  Entry condition & After sensors measure new crossing times, new data arrives on the bus. \\
-  Flow of events &
-  \begin{enumerate}
-    \item EcoTraffic reads data from the message bus.
-    \item EcoTraffic stores the received data.
-    \item EcoTraffic compares the crossing times of the roads in the crossings.
-    \item If EcoTraffic detects traffic load imbalance, it computes the green light duration to optimize vehicle flow in the more congested direction.
-  \end{enumerate}
-  \\
-  Exit condition & The system sends the adjusted times to the traffic lights control system. \\
-\end{longtable}
-
-
-\subsubsection{Traffic zone optimization}
-
-\includegraphics[width=\linewidth]{images/svg/TZO_usecase.pdf}
-
-\rowcolors{3}{gray!10}{white}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-  \toprule
-  \textbf{Aspect} & \textbf{Description} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{2}{r}{\textit{Continues on next page}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-
-  Actors & Urban Area Manager, Public Transport Microservice, Control System \\
-  Entry condition & UAM accesses the EcoTraffic public portal and decides to request optimization of a certain area. \\
-  Flow of events &
-  \begin{enumerate}
-    \item EcoTraffic analyzes the crossing times of the zone indicated by the UAM to identify potential optimizations
-      regarding one-way roads and traffic light configurations.
-    \item EcoTraffic retrieves public transport schedules via microservice using getScheduleByStreet and getScheduleByLine operations.
-    \item EcoTraffic tries to find better schedules for the public transport line.
-    \item The system sends the new scheduling and configuration proposal to the UAM for approval.
-    \item When the decision is taken, the answer is written into a log file.
-    \item If the decision is to accept the proposal, EcoTraffic sends the new configuration to the traffic light control system.
-  \end{enumerate}
-  \\
-  Exit condition & Successful write of the log and successful communication with the traffic light control system. \\
-\end{longtable}
-
-\subsubsection{Event-specific configurations}
-
-\includegraphics[width=\linewidth]{images/svg/ESC_usecase.pdf}
-
-\rowcolors{3}{gray!10}{white}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-  \toprule
-  \textbf{Aspect} & \textbf{Description} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{2}{r}{\textit{Continues on next page}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-
-  Actors & News channel, UAM, Public Transport Microservice \\
-  Entry condition & News channel publishes information about upcoming events. \\
-  Flow of events &
-  \begin{enumerate}
-    \item EcoTraffic categorizes the scale of the event by attendance.
-    \item EcoTraffic analyzes historical traffic patterns and reviews past decisions for similar events.
-    \item EcoTraffic retrieves public transport schedules via microservice using getScheduleByStreet and getScheduleByLine operations.
-    \item EcoTraffic generates event-specific configurations that are optimized in terms of one-way roads, traffic light configurations, public transport schedules.
-  \end{enumerate}
-  \\
-  Exit condition & The system writes into the database the possible optimization found. \\
-\end{longtable}
-
-
-\subsubsection{Daily Analysis and Optimization}
-
-\rowcolors{3}{gray!10}{white}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-  \toprule
-  \textbf{Aspect} & \textbf{Description} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{2}{r}{\textit{Continues on next page}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-
-  Actors & Webservice, Database \\
-  Entry condition & It's ten past midnight. \\
-  Flow of events &
-  \begin{enumerate}
-    \item EcoTraffic analyzes the crossing times measured the day before retrieved to obtain traffic patterns.
-    \item EcoTraffic analyzes the traffic patterns to identify potential optimizations regarding one-way roads and traffic light configurations.
-    \item EcoTraffic retrieves public transport schedules via microservice using getScheduleByStreet and getScheduleByLine operations.
-    \item EcoTraffic tries to find better schedules for the public transport line.
-  \end{enumerate}
-  \\
-  Exit condition & The logs the possible optimization found. \\
-\end{longtable}
-
-\subsubsection{Citizen views public traffic reports}
-
-\rowcolors{3}{gray!10}{white}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-  \toprule
-  \textbf{Aspect} & \textbf{Description} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{2}{r}{\textit{Continues on next page}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-
-  Actors & Citizen \\
-  Entry condition & Citizen accesses EcoTraffic public portal. \\
-  Flow of events &
-  \begin{enumerate}
-    \item EcoTraffic presents options for viewing reports.
-    \item The citizen selects the type of information that they want to be displayed.
-    \item EcoTraffic retrieves daily or yearly data from the database service.
-    \item EcoTraffic elaborates the data to facilitate interpretation.
-    \item EcoTraffic displays a report with the elaborated data.
-    \item The citizen chooses between seeing more information or exiting the portal.
-  \end{enumerate}
-  \\
-  Exit condition & The citizen exits the portal. \\
-\end{longtable}
-
-\subsubsection{UAM views optimization to approve or reject}
-
-\rowcolors{3}{gray!10}{white}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-  \toprule
-  \textbf{Aspect} & \textbf{Description} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{2}{r}{\textit{Continues on next page}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-
-  Actors & UAM \\
-  Entry condition & UAM accesses the EcoTraffic public portal and decides to view the optimization waiting for approval. \\
-  Flow of events &
-  \begin{enumerate}
-    \item EcoTraffic finds the optimization proposals waiting for approval.
-    \item EcoTraffic displays all the decisions to be taken.
-    \item EcoTraffic waits for the UAM to answer to each request.
-    \item Every time a decision is taken EcoTraffic stores it into a log file.
-    \item If the decision is to accept the proposal, EcoTraffic applies the modifications.
-  \end{enumerate}
-  \\
-  Exit condition & All the decisions have been taken. \\
-\end{longtable}
-
-\section{Domain assumption}
-\begin{domain_assumption}
-\item
-  The sensor infrastructure works correctly and at low latency 24/7.
-\item
-  The traffic lights are not faulty and set their state correctly in
-  time from the EcoTraffic system.
-\item
-  Drivers behave according to the traffic light state.
-\item
-  No car can obstruct the passage in the crossing no matter the reason.
-\item
-  Events planners always report to the news channel up-to-date events in
-  the city.
-\item
-  The public transport microservice always returns the right timetable
-  given a line or the name of a street.
-\item
-  The public transport microservice, the sensor infrastructure, the database and the traffic light control system
-  are always available and responds in a timely manner.
-\item
-  The traffic light control system is able to schedule future adjustments in the traffic light state.
-
-\end{domain_assumption}
-\section{Requirements}
-\subsection{Functional Requirements}
-
-\begin{functional_requirements}
-\item
-  In any circumstance, the system must not allow two orthogonal traffic
-  lights to be green at the same time.
-\item
-  The system must modify the duration of the green lights to reduce
-  traffic.
-\item
-  The system shall process and aggregate traffic data to identify
-  traffic flow patterns.
-\item
-  The system should send adjustment commands to the traffic light
-  control system.
-\item
-  The system should be able to write to a log file what is needed.
-\item
-  The system must generate optimization suggestions for one-way road
-  and traffic light configurations.
-\item
-  The system must generate optimization suggestions for public
-  transport schedules.
-\item
-  The system shall continuously receive data from both the message bus
-  and the news channel.
-\item
-  The system must gather data from the microservice.
-\item
-  The system must assess the potential traffic impact of planned events.
-\item
-  The system must generate event-specific suggestions for public
-  transport adjustments.
-\item
-  The system shall present suggestions to urban area managers for
-  review.
-\item
-  The system shall record and apply the acceptance or rejection of the
-  proposal by the urban area managers.
-\item
-  The system must generate daily reports on average traffic flow.
-\item
-  The system must generate yearly reports on suggestions proposed and
-  their outcome.
-\item
-  The system shall publish reports for public access.
-\end{functional_requirements}
-
-\subsection{Non-Functional Requirements}
-
-\begin{non_functional_requirements}
-\item
-  The system shall process sensor data in real-time.
-\item
-  The system should be available 24/7.
-\item
-  The system shall implement traffic light adjustments in 15 seconds.
-\item
-  The system shall generate reports within 1 hour after midnight.
-\item
-  The system should maintain data consistency during communication with
-  external systems.
-\item
-  The system should be scalable to support the addition of new sensors and bus lines
-  without requiring significant changes to the architecture.
-\item
-  The system dashboard should be web-based and accessible from any device.
-\end{non_functional_requirements}
-
-\subsection{Constraints}
-
-\begin{constraints}
-\item
-  The setLight function must be atomical.
-\item
-  The call to the microservice must be done using an API REST.
-\item
-  All data must be stored in a PostgreSQL database.
-\item
-  The frontend must use only open-source libraries.
-\end{constraints}
-
-\chapter{Design}
-
-\section{Architecture}
-\subsection{Components diagram}
-
-\includegraphics[width=\linewidth]{images/svg/ComponentDiagram.pdf}
-There have been inserted multiple interfaces named "Database" for readability. Actually, there is only one database that is used by all the components.
-Its structure is shown in the next diagram:\\
-\includegraphics[width=\linewidth]{images/svg/DiagrammaER_V2.pdf}
-\subsection{Subsystems and components}
-
-The EcoTrafficManagers subsystem includes the following components:
-
-
-\begin{itemize}
-  \item
-    \textbf{ApacheKafkaCluster:} the component is based on a framework for
-    the event-driven paradigm and it includes primitives to create event
-    producers and consumers and a runtime infrastructure to handle event
-    transfer. This component it's the one responsible for receiving the data
-    from the sensors system and from the news channel and to distribute
-    them to the right components, which will then process and analyze them.
-    More information can be found at \url{https://kafka.apache.org/}. In this case,
-    the synchronization it's of the "at least once" type, so the component is able to
-    resend the messages in case of failure.
-  \item
-    \textbf{PlannerManager:} this component receives the data
-    measured by the sensors system from the ApacheKafkaCluster and
-    provides a method to analyze this data to find unbalanced traffic loads
-    into a crossing, to compute the new time in which the green light is
-    switched on to reduce traffic congestion, to store into the database
-    of the system the data obtained from the ApacheKafkaCluster and to
-    connect to the TrafficLightManager to apply the right
-    modifications. Due to the big amount of data that the component has to
-    process, it is designed to work in a multi-threaded way, so it can
-    process multiple messages at the same time.
-  \item
-    \textbf{EventManager:} this component receives the event specification
-    from the ApacheKafkaCluster after the news channel has published
-    them. This component provides methods to retrieve information (such
-    as the event type, the date, the place and the expected attendance)
-    and a method to call the TrafficPatternManager component to optimize
-    the event configuration to reduce traffic load.
-  \item
-    \textbf{TrafficPatternManager:} this component could be called by
-    three events. The first is when the EventManager calls it to perform
-    event-based optimization, in this case, the component queries the
-    database to find similar events and the daily traffic patterns in the
-    zone where the event takes place, then generate possible optimizations
-    from this data and from the timetables obtained after the
-    getScheduleByStreet() and the getScheduleByLine() calls to the
-    microservice. The second is when the UrbanAreaManagerController asks
-    for an optimization around a specific zone, in this case, the component
-    queries the daily traffic patterns in the zone and the timetables and
-    tries to optimize the traffic loads. The third takes place
-    automatically ten minutes after midnight, in this case, the
-    component queries the daily crossing time in all the crossings of the
-    area and finds traffic patterns, after that, it tries to optimize in
-    terms of one-way roads, traffic lights configuration, and public
-    transport schedule.
-  \item
-    \textbf{TrafficLightManager:} this component is responsible for
-    managing the traffic lights. It receives immediate adjustments from the
-    PlannerManager and new schedules from the UrbanAreaManagerController.
+The primary objects in the implementation include:
+\begin{itemize}[label=-, itemsep=0pt, parsep=5pt]
+    \item \textbf{Residual Vector}: Corresponds to \( R \), representing the right-hand side (RHS) of the linearized system.
+    \item \textbf{Jacobian Matrix}: Corresponds to \( A \), representing the left-hand side (LHS) matrix of the linearized system.
+    \item \textbf{Delta}: Corresponds to \( \delta \), representing the unknown increment in the linearized system.
+    \item \textbf{Solution}: Corresponds to \( c \), representing the global solution of the problem.
 \end{itemize}
 
-The Dashboard subsystem includes the following components:
+\subsection{Implementation of the 1D Solver}
 
-\begin{itemize}
-  \item
-    \textbf{CitizenDashboard:} this component shows to the citizen an
-    interface from where it can be decided to see the daily reports or the
-    yearly ones. After choosing, the component calls the CitizenController
-    to get the reports. When the response arrives, the component shows to
-    the user the reports.
-  \item
-    \textbf{CitizenController:} this component receives the request from
-    the citizen dashboard and then queries the database to satisfy the
-    request. After, the data are elaborated and sent to the dashboard.
-  \item
-    \textbf{UrbanAreaManagerDashboard:} this component shows the UAM an
-    interface from where it can decided if to see the pending
-    suggestions or to ask the system to optimize all the configurations in
-    a specific zone. If the first option is chosen, it calls the
-    UrbanAreaManagerController to get the pending suggestions. When the
-    response arrives, the component shows to the user the reports and
-    waits till all the decisions are taken. When each decision is taken,
-    the component sends the answer to the controller. If the second option
-    is taken, the dashboard presents the zones in the area and waits for
-    the UAM's decision, after it arrives the component sends to the
-    controller the requests and waits for the answer, after this arrives
-    it displays to the UAM the suggestions, when the decision is taken,
-    the component sends the answer to the controller.
-  \item
-    \textbf{UrbanAreaManagerController:} this component is responsible for
-    managing the requests arriving from the dashboard and redirecting them
-    either to the database if the UAM wants to see the pending suggestions
-    or to the TrafficPatternManager if the UAM wants an optimization for a
-    specific zone or to the TrafficLightManager if the UAM wants to
-    set a new schedule directly to the traffic lights. After the responses arrive, the component sends them to
-    the dashboard. If the answer is an optimization the component waits
-    for the approval or the rejection and stores the decision.
+To validate our approach, we first implemented the solver for a corresponding 1D problem, as the authors of the reference paper did. In this case, the problem parameters are simplified:
+\begin{itemize}[itemsep=0pt, parsep=5pt]
+    \item The domain is 1D: we consider the interval \([-1,1] \subset \mathbb{R}\) as the fixed domain.
+    \item The diffusion term \( D \) reduces to a scalar parameter \( d \).
+    \item The initial seed region consists of a single point at the center of the domain (\( x = 0 \)).
 \end{itemize}
 
-\section{Sequence Diagrams}
-\subsubsection{Traffic Lights Adjustment}
+The structure of the code follows the template used in our laboratory sessions. The mesh is created in the given interval with \( N = 200 \) mesh elements and \( \text{degree} = 1 \), resulting in \( 201 \) total degrees of freedom (DoFs). After initializing all necessary objects, the method \texttt{solve()} executes the system resolution for each time step and writes the output for that instant.
 
-\includegraphics[width=\linewidth]{images/svg/traffic_light_adjustment.pdf}
+The method \texttt{solve()} calls \texttt{solve\_newton()}, which performs Newton iterations. For each iteration, the system is linearized around the current solution via \texttt{assemble\_system()}, and the resulting linear system is solved using \texttt{solve\_linear\_system()}. This process repeats until convergence is achieved, which we define as when the norm of the residual vector falls below a fixed threshold (\( 10^{-6} \) in our code).
 
-This sequence diagram shows the communication and data flow involved in
-adjusting traffic light timings based on crossing data.
+\textbf{Assemble\_system()} follows the structure of element-wise loops used in the laboratory exercises to compute all contributions to the three integral terms in the LHS matrix (for each pair of FEM basis functions) and the three integral terms in the RHS vector (for each basis function). These terms represent the linearized versions of the original system, which we obtain using the values of the current and previous solutions to compute the relevant quantities.
 
-\begin{enumerate}
-  \item
-    The traffic light sensors system measures a crossing time.
-  \item
-    The traffic light sensors system publishes the crossing time on the
-    message bus and it's received from the Apache Kafa Cluster.
-  \item
-    The Apache Kafka Cluster performs internal operation, in particular, the message is added
-    to a follower broker by the leader broker.
-  \item
-    The Apache Kafka Cluster responds to the traffic light sensor system.
-  \item
-    PlannerManager continuously operates in the background. Note that this diagram has to entry point for
-    clarity, but it's actually the same PlannerManager component that polls
-    for messages repeatedly throughout the system operation.
-  \item
-    PlannerManager tries to get a message.
-  \item
-    The message, if present, is sent to PlannerManager.
-  \item
-    PlannerManager elaborates the message received extracting the
-    important information.
-  \item
-    PlannerManager sends a message to the database to make it store
-    the data received.
-  \item
-    Successful store.
-  \item
-    PlannerManager analyzes the data received to find eventually
-    unbalanced traffic loads. If it finds them, then it computes also the
-    new green light time for a particular traffic light.
-  \item
-    PlannerManager sends a message to the TrafficLightManager with the modifications to perform.
-  \item
-    TrafficLightManager sends a the instructions to the traffic light control system.
-  \item
-    TrafficLightManager receives the ACK message from the traffic light
-    control system.
-  \item
-    TrafficLightManager sends a message to the PlannerManager to
-    confirm that the modifications have been performed.
-\end{enumerate}
-\subsubsection{Traffic Zone Optimization}
-\includegraphics[width=\linewidth]{images/svg/traffic_zone_optimization.pdf}
-This sequence diagram illustrates the data flow between TrafficPatternManager, database, and Microservice components for optimizing traffic zones, including both road traffic and public transportation optimization.
-\begin{enumerate}
-  \item The process starts when the TrafficPatternManager receives an "afterMidnight" trigger.
-  \item TrafficPatternManager requests data from the database collected on the date passed as an argument.
-  \item The database responds by returning the data to the TrafficPatternManager.
-  \item TrafficPatternManager analyzes the data to identify traffic patterns.
-  \item TrafficPatternManager tries to optimize the road traffic lights to reduce the traffic loads.
-  \item	TrafficPatternManager asks for the timetables of the streets to the microsystem provided by the state.
-  \item	The microsystem returns the street timetables.
-  \item	TrafficPatternManager asks for the timetables of the lines to the microsystem.
-  \item	The microsystem returns the line timetables.
-  \item TrafficPatternManager tries to optimize public transportation schedules.
-  \item TrafficPatternManager logs the suggestions and stores them in the database.
-  \item The Microservice responds with an "ok" confirmation message, completing the sequence.
-\end{enumerate}
+Since homogeneous Neumann boundary conditions introduce no additional terms in the mathematical formulation, and no Dirichlet conditions are imposed, the code does not explicitly handle boundary conditions.
 
-\subsubsection{Event-specific Configuration}
-\includegraphics[width=\linewidth]{images/svg/event-specific_configurations.pdf}
-This sequence diagram illustrates the data flow between the News Channel, EventManager, Apache Kafka Cluster,
-TrafficPatternManager, Database, and Microservice components for event-specific traffic optimization.
+\textbf{Solve\_linear\_system()} assumes that the LHS matrix and RHS vector are correctly assembled. Since the problem is symmetric, we use the Conjugate Gradient (CG) method to numerically solve the resulting linear system. Moreover, an SSOR preconditioner is applied to accelerate convergence.
 
-\begin{enumerate}
-  \item The process starts when the News Channel triggers a "New Event".
-  \item The News Channel publishes the event message to Apache Kafka with relevant parameters.
-    In particular, the message is added to a follower broker by the leader broker.
-  \item Apache Kafka acknowledges and elaborates the message.
-  \item News Channel confirms receipt with an "ok".
-  \item EventManager it's working.
-  \item EventManager queries Apache Kafka to retrieve messages related to the event.
-  \item Apache Kafka returns the corresponding messages.
-  \item EventManager elaborates on the event data.
-  \item It sends a request to the TrafficPatternManager to optimize traffic based on event details
-    (event, date, place, and expected attendance).
-  \item The TrafficPatternManager fetches from the database any previous optimizations for similar conditions.
-  \item The database returns past optimization results.
-  \item TrafficPatternManager requests road data from the Database.
-  \item The Database returns the road dataset.
-  \item TrafficPatternManager attempts to optimize road traffic light configurations and one-way road configurations.
-  \item TrafficPatternManager performs the getScheduleByStreet operation from the Microservice.
-  \item The Microservice provides street timetables.
-  \item TrafficPatternManager performs the getScheduleByLine operation from the Microservice.
-  \item The Microservice responds with line timetables.
-  \item TrafficPatternManager optimizes public transportation schedules based on the retrieved data.
-  \item It logs the Urban Area Manager suggestions into the Database.
-  \item The Microservice responds with an "ok", completing the sequence.
-\end{enumerate}
+\subsection{Implementation of the 3D Solver}
+
+The primary differences in the 3D solver involve parallelization, data representation, and the linear solver.
+
+\subsubsection{Parallelization Strategy}
+
+The computational complexity of the 3D solver is significantly higher due to the large number of nodes in the 3D mesh, the nonlinearity of the problem, and the large number of time steps required. Therefore, parallelization is necessary to accelerate simulations and make them computationally feasible.
+
+Our parallelization strategy follows the approach covered in our course. Many objects are converted into their parallel equivalents, particularly those related to linear algebra, which are now wrapped using Trilinos. Trilinos facilitates parallel computations using MPI. The mesh is partitioned among MPI processes, with each process handling its owned and relevant DoFs while ensuring correct communication between DoFs at partition boundaries. The solution and delta vectors are managed similarly, abstracting much of the parallel complexity.
+
+\subsubsection{Data Representation and Mesh Handling}
+In 3D, data representation is more complex, as we now deal with functions over a three-dimensional domain with a nontrivial geometry. The mesh is read from an external file rather than being generated within the code. We processed the mesh provided alongside the reference paper and converted it into a valid \texttt{.msh} file.
+
+Due to the absence of real-world data and for simplicity, we did not distinguish between grey and white matter regions in the brain.
+
+\textbf{FunctionD} computes the \( 3 \times 3 \) diffusion matrix \( D \) for each node in the mesh using predefined models. The normal vector is obtained through \texttt{compute\_normal\_vector(const Point<dim> \&p)}, following three possible models of fiber orientation. Due to the lack of real axonal fiber data, we could not implement a biologically accurate fiber orientation model.
+
+\textbf{FunctionAlpha} remains a constant function throughout the domain.
+
+\textbf{FunctionU0} computes the initial seed region as the intersection of a cubic area centered at the given seed point and the domain mesh.
+
+\subsubsection{Changes in the Solver}
+
+Since the system matrix in 3D is not guaranteed to be symmetric, we switched from the CG method to the GMRES method, which is more robust for non-symmetric systems. Consequently, we also replaced the SSOR preconditioner with an ILU preconditioner.
 
 
-\subsubsection{Citizen views public reports}
+
+\section{Stability, Convergence}
+
+\section{Benchmark}
+
+\subsection{Introduction}
+This section presents the benchmarking results of the Fisher-Kolmogorov solver, with a focus on parallel performance. The objective is to evaluate the scalability of the implementation and the impact of parallelization on execution time.
 
 
-\includegraphics[width=\linewidth]{images/svg/citizen_views_public_traffic_reports.pdf}
+The analysis was conducted on two different platforms:
+\begin{itemize}
+    \item A local workstation, to evaluate the solver's behaviour in a standard desktop environment.
+    \item The MareNostrum 5 supercomputer, to assess the scalability on a high-performance computing system.
+\end{itemize}
 
-This sequence diagram shows the communication and data flow involved in
-citizens viewing public traffic reports.
+\subsection{Benchmarking Setup}
+
+The benchmarking tests were conducted on two platforms with different hardware configurations, summarized in Table~\ref{tab:hardware}. On the local workstation, the solver was executed within a WSL2 virtualized environment, while on MareNostrum 5 the tests were run on dedicated compute nodes.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        Platform & CPU Model & Cores & RAM per Node & Network \\
+        \hline
+        Local workstation & Intel Core i7-1165G7 & 4 & 8 GB & Shared memory \\
+        MareNostrum 5 & 2 × Xeon 8480+ (Sapphire Rapids) & 112 & 256 GB & NDR200 (100 Gb/s) \\
+        \hline
+    \end{tabular}
+    \caption{Hardware configuration of the platforms used for benchmarking.}
+    \label{tab:hardware}
+\end{table}
 
 
-\subsubsection{UAM configuration}
+The problem size was kept constant for all tests, with a mesh of 634,472 elements and 111,951 degrees of freedom. The simulation covered a total physical time of \( T = 10 \) with a time step size of \( \Delta t = 0.1 \), resulting in 100 time steps.
 
-\includegraphics[width=\linewidth]{images/svg/uam_configuration.pdf}
+The number of MPI processes used during the benchmarking was:
+\begin{itemize}
+    \item Local workstation: 1, 2, and 4 tasks.
+    \item MareNostrum 5: from 1 up to 256 tasks.
+\end{itemize}
 
-This sequence diagram shows the communication and data flow involved in
-UAM configuration and how the UAM can approve or reject the suggestions proposed by the system.
-\begin{enumerate}
-  \item The sequence starts.
-  \item The UAM's access the system's dashboard.
-  \item It confirms with an ACK message.
-  \item The UrbanAreaManagerController shows to the UAM all possible action that can be taken
-  \item The UAM choose what to do.
-  \item If the UAM chooses to see the pending suggestions, the dashboard asks to the controller to retrieve them.
-  \item The controller queries the system for pending optimizations to manage.
-  \item The database returns the pending decision.
-  \item The controller then requests related event data to manage.
-  \item Event data is provided in response.
-  \item Suggestions to manage are returned to the controller.
-  \item If The UAM chooses to optimize a zone, the UrbanAreaManagerDashboard asks the UAM to indicate the zone to optimize.
-  \item The UAM indicates the zone to optimize.
-  \item The UrbanAreaManagerDashboard sends the request to the UrbanAreaManagerController.
-  \item The UrbanAreaManagerController asks to the TrafficPatternManager to optimize the zone.
-  \item The TrafficPatternManager queries the database for the zone data.
-  \item The database returns the zone data.
-  \item The TrafficPatternManager tries to optimize the zone for traffic light and one-way road configurations.
-  \item TrafficPatternManager performs the getScheduleByStreet operation from the Microservice.
-  \item The Microservice provides street timetables.
-  \item TrafficPatternManager performs the getScheduleByLine operation from the Microservice.
-  \item The Microservice responds with line timetables.
-  \item TrafficPatternManager optimizes public transportation schedules based on the retrieved data.
-  \item TrafficPatternManager sends optimization for the zone required to the UrbanAreaManagerController.
-  \item The UrbanAreaManagerController sends to the UrbanAreaManagerDashboard the optimization to display them.
-  \item The UrbanAreaManagerDashboard displays the proposed optimization.
-  \item The UAM provides a response to the optimization.
-  \item The response is sent to the UrbanAreaManagerController.
-  \item The response is stored in the database.
-  \item ACK is returned.
-  \item TrafficLightManager receive the adjustment to perform from the UrbanAreaManagerController.
-  \item Instructions are sent to the Traffic Light Control System.
-  \item The control system acknowledges with an "ok".
-  \item TrafficLightManager confirms success.
-  \item UrbanAreaManagerController confirms success.
-  \item UrbanAreaManagerDashboard confirms success.
-\item The sequence ends. \end{enumerate}
-  \section{Critical points and design decisions}
 
-  \rowcolors{3}{gray!10}{white}
+\subsection{Measurement Methodology}
 
-  \begin{longtable}{>{\raggedright\arraybackslash}p{0.45\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
-    \toprule
-    \textbf{Critical Point} & \textbf{Design Decision} \\
-    \midrule
-    \endhead
-    \midrule
-    \multicolumn{2}{r}{\textit{Continues on next page}} \\
-    \endfoot
-    \bottomrule
-    \endlastfoot
+The performance analysis was based on three metrics, each measured separately:
 
-    Analyzing traffic patterns requires complex processing of historical and real-time data. &
-    Our architecture is designed to separate the concerns of data collection, processing, and presentation. The \texttt{TrafficPatternManager} is specialized in creating algorithms to identify common traffic patterns and propose optimizations, while the \texttt{TrafficLightManager} handles the actual traffic light adjustments. \\
+\begin{itemize}
+    \item \textit{Setup time:} time required for mesh loading and partitioning, finite element space initialization, degree of freedom distribution, and matrix and vector allocation. This phase corresponds to the execution of the \texttt{setup()} function.
+    
+    \item \textit{Solve time:} time needed to solve the nonlinear system over all time steps. It includes the application of the initial condition, assembly of system matrices and residuals at each time step, iterative solution of the linear systems, and output writing. It corresponds to the execution of the \texttt{solve()} function.
+    
+    \item \textit{Total time:} overall execution time, including setup and solve phases, as well as MPI initialization and finalization.
+\end{itemize}
 
-    A scalable and efficient communication system is required to handle high-frequency data from sensors and from the news channel. &
-    We decided to use the \texttt{ApacheKafkaCluster} to handle event-driven communication, allowing real-time and asynchronous data processing of a large volume requests. \\
+Timing data were collected using \texttt{MPI\_Wtime()} and recorded in CSV files for post-processing and analysis.
 
-    The system must be able to provide adaptive responses to city events with a minimum latency. &
-    The \texttt{EventManager} component processes the event data and classifies the event based on the expected attendance. It then triggers the \texttt{TrafficPatternManager}, which will provide an appropriate optimization routine. \\
+\subsection{Results and Discussion}
 
-    The system must be able to provide a user-friendly interface for both citizens and urban area managers. &
-    The \texttt{CitizenDashboard} and \texttt{UrbanAreaManagerDashboard} components are designed to provide intuitive interfaces for users to access reports and make decisions. The dashboards are separated from the core logic of the system to ensure modularity and maintainability. \\
+\subsubsection{Local Execution}
 
-    Human stakeholders must be involved in taking decisions for critical changes. &
-    On the \texttt{UrbanAreaManagerDashboard} pop up suggestions for optimizations retrieved directly from the unified database by the \texttt{UrbanAreaManagerController}. The human manager then decides whether to accept or reject the suggestions. When a response is received, the system logs the decisions in the database for future reference. \\
+The following figures show the setup time, solve time, and total execution time measured on the local workstation as a function of the number of MPI tasks. As expected, the solve time decreases when increasing the number of tasks, while the setup time remains approximately constant. The total time follows the same trend as the solve time, as it represents the dominant contribution.
 
-    Supporting future scalability and integration of additional sensors or data sources. &
-    We designed our architecture to be modular, allowing an extension of the sensor net or for new data sources. The \texttt{ApacheKafkaCluster} can easily integrate new actors, ensuring that the system can adapt to future needs without significant modifications. \\
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.32\textwidth}
+        \includegraphics[width=\linewidth]{image/setuplocal.png}
+        \caption{Setup time}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.32\textwidth}
+        \includegraphics[width=\linewidth]{image/solvelocal.png}
+        \caption{Solve time}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.32\textwidth}
+        \includegraphics[width=\linewidth]{image/totallocal.png}
+        \caption{Total time}
+    \end{subfigure}
+    \caption{Execution times on the local workstation.}
+    \label{fig:performance_local}
+\end{figure}
 
-    The system must be able to handle data consistency and coherence during communication with external systems. &
-    We implemented a robust error handling and data validation mechanism in the \texttt{PlannerManager} and \texttt{TrafficPatternManager} components to ensure that only valid data is processed and stored. This helps maintain data integrity and coherence across the system. \\
 
-    The system must be able to report real-time updates to the citizens. &
-    The \texttt{CitizenDashboard} is designed to provide real-time updates on traffic optimizations and possible changes on viability. The system uses a push mechanism to notify citizens of significant changes, ensuring they are always informed. \\
-    Two differents users can acces the system: the UAM and the citizen. They can performs different operations & The system has two different types of distribution: one for the citizen and one for the UAM. The first presents the \texttt{CitizenDashboard}, while the latter the \texttt{UrbanAreaManagerDashboard}. The first one is designed for citizens to view reports, while the second one is tailored for urban area managers to manage traffic optimizations and configurations. \\
-  \end{longtable}
-                                                                                              \end{document}
+The following figures report the setup, solve, and total execution times measured on MareNostrum 5. The results show a good scalability up to 64 tasks, beyond which the communication overhead starts to degrade the parallel efficiency. In particular, the solve time does not decrease significantly when increasing the number of tasks beyond this point, and in some cases it increases due to the cost of inter-node communication.
+
+\begin{figure}[H]
+    \centering
+    \makebox[\linewidth]{ % Forza la tabella a essere centrata
+        \begin{tabular}{c c}
+            \includegraphics[width=0.55\textwidth]{image/output.png} &
+            \includegraphics[width=0.55\textwidth]{image/output3.png} \\
+            \includegraphics[width=0.55\textwidth]{image/output1.png} &
+            \includegraphics[width=0.55\textwidth]{image/output4.png} \\
+            \includegraphics[width=0.55\textwidth]{image/output2.png} &
+            \includegraphics[width=0.55\textwidth]{image/output5.png} \\
+        \end{tabular}
+    }
+    \caption{Comparison of execution times with linear (left) and log-log (right) scales for setup time (top), solve time (middle), and total time (bottom).}
+    \label{fig:performance}
+\end{figure}
+
+\subsection{Scalability Metrics}
+
+To further evaluate the parallel performance of the solver, two classical scalability metrics were computed: the \textit{speedup} and the \textit{parallel efficiency}.
+
+The \textbf{speedup} \( SU_p \) is defined as the ratio between the execution time on a single processor and the execution time on \( p \) processors:
+\begin{equation}
+SU_p(n) = \frac{T_1(n)}{T_p(n)}
+\end{equation}
+where \( T_1(n) \) is the total execution time with one process, and \( T_p(n) \) is the total execution time with \( p \) processes.
+
+The \textbf{parallel efficiency} \( E_p \) is defined as the ratio between the speedup and the number of processors used:
+\begin{equation}
+E_p(n) = \frac{SU_p(n)}{p} = \frac{T_1(n)}{p \times T_p(n)}
+\end{equation}
+
+These metrics provide a quantitative measure of how effectively the solver utilizes the available computational resources.
+
+\subsubsection{Results}
+
+The following table summarizes the speedup and efficiency computed for both the local workstation and MareNostrum 5:
+
+
+The results confirm that the solver achieves good scalability on MareNostrum 5 up to 64 tasks, with an efficiency close to ideal. Beyond this point, efficiency decreases due to increased communication overhead. On the local workstation, the scalability is limited by the low number of physical cores and the virtualization overhead introduced by WSL2.
+
+
+\end{document}
