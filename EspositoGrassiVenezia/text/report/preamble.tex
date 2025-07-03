@@ -1,0 +1,128 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\renewcommand{\chaptername}{}
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{50pt}
+  {\parindent \z@ \raggedright \normalfont
+    \huge\bfseries \thechapter\quad #1\par\nobreak\vskip 40pt}
+}
+\makeatother
+\usepackage[nottoc]{tocbibind}
+\usepackage{geometry}
+\geometry{
+  a4paper,
+    left=3cm,
+    right=3cm,
+    top=3cm,
+    bottom=3cm,
+    heightrounded
+}
+% \usepackage{setspace}               % -> Interlinea
+% \onehalfspacing
+\setcounter{secnumdepth}{2}         % -> Numerazione indice
+\setcounter{tocdepth}{3}
+\usepackage{titlesec}
+\usepackage{graphicx}               % -> Immagini
+\usepackage{longtable}
+\usepackage{tikz}
+% \usepackage{subfigure}
+\usepackage{float}
+% \usepackage{subfigure}
+\usepackage{caption}
+\usepackage{svg}
+% \usepackage{pgfplots}               % -> Plot in latex
+% \pgfplotsset{compat=1.18}
+%\usepgfplotslibrary{external}
+%\tikzexternalize
+\usepackage{listings}
+% \usepackage{lipsum}                 % -> Lorem ipsum
+\usepackage{afterpage}              % -> Blank numbered page
+% \usepackage{newtxtext,newtxmath}    % -> Times new romans
+\usepackage{enumerate}
+\usepackage{enumitem}
+\setlist[enumerate,1]{label=\arabic*.}
+\setlist[enumerate,2]{label*=\arabic*.}
+\setlist[enumerate,3]{label*=\arabic*.}
+\setlist[enumerate,4]{label*=\arabic*.}
+
+\newlist{domain_assumption}{enumerate}{1}
+\setlist[domain_assumption,1]{label=DA\arabic*.}
+
+\newlist{functional_requirements}{enumerate}{1}
+\setlist[functional_requirements,1]{label=FR\arabic*.}
+
+\newlist{non_functional_requirements}{enumerate}{1}
+\setlist[non_functional_requirements,1]{label=NFR\arabic*.}
+
+\newlist{constraints}{enumerate}{1}
+\setlist[constraints,1]{label=C\arabic*.}
+
+\usepackage[RPvoltages]{circuitikz} % -> Schematic design
+\usepackage{xcolor}                 % -> Colori
+\usepackage{fancyvrb}               % -> codice colorato in verbatim
+\usepackage{pdfpages}               % -> Inserisce pdf
+\usepackage{subfiles}
+\usepackage[toc,page]{appendix}     % -> Appendix
+\addto\captionsitalian{%
+  \renewcommand{\appendixtocname}{Appendici}%
+    \renewcommand{\appendixpagename}{Appendici}%
+}
+
+\usepackage{amsfonts}               % -> Math
+\usepackage{amsmath}
+\usepackage{xfrac}                  % -> sfrac
+\usepackage{rsfso}                  % -> Font for the Laplace L
+\usepackage{booktabs}               % -> Tabelle
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{siunitx}                % -> Rappresentzione dei numeri migliore (SI)
+  %    (https://texdoc.org/serve/siunitx/0)
+
+  \usepackage[hidelinks]{hyperref}    % -> Hyperlink
+  % \hypersetup{
+    %     colorlinks=true,
+      %     linkcolor=black,
+      %     filecolor=magenta,
+      %     urlcolor=blue,
+      %     pdfborder={1 0 0},
+      %     linkbordercolor=red,
+      % }
+
+      \hypersetup{
+        colorlinks,
+          linkcolor={black!100!black},
+          citecolor={black!100!black},
+          urlcolor={black!100!black}
+      }
+
+% Line above footer and below header
+\usepackage{fancyhdr}
+
+\usepackage{pdfpages} % Per includere più pagine di PDF
+
+\usepackage[absolute,overlay]{textpos}
+\usepackage{colortbl}
+
+\pagestyle{fancy}   % Change page style to fancy
+\fancyhf{}  % Clear all header and footer fields
+\fancyhead[LE]{\leftmark}
+\fancyhead[RO]{\rightmark}
+\fancyfoot[CO, CE]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt} % Default \headrulewidth is 0.4pt
+\renewcommand{\footrulewidth}{0.4pt} % Default \footrulewidth is 0pt
+\setlength{\headheight}{15pt}
+
+% Roman number
+\makeatletter
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\makeatother
+
+% completely blank page
+\newcommand\blankpage{%
+  \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage
+}
