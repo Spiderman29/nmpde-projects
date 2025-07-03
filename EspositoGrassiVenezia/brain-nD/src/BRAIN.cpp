@@ -72,8 +72,6 @@ void Brain::setup()
 
     pcout << "  Quadrature points per cell = " << quadrature->size()
           << std::endl;
-
-    quadrature_face = std::make_unique<QGaussSimplex<dim - 1>>(fe->degree + 1);
   }
 
   pcout << "-----------------------------------------------" << std::endl;
@@ -128,11 +126,6 @@ void Brain::assemble_system()
                           update_values | update_gradients |
                               update_quadrature_points | update_JxW_values);
 
-  FEFaceValues<dim> fe_face_values(*fe,
-                                   *quadrature_face,
-                                   update_values | update_normal_vectors |
-                                       update_JxW_values);
-
   FullMatrix<double> cell_matrix(dofs_per_cell, dofs_per_cell);
   Vector<double> cell_residual(dofs_per_cell);
 
@@ -146,13 +139,13 @@ void Brain::assemble_system()
   Tensor<1, dim> normal;
   Point<dim> center;
   // Get mesh bounding box to set center
-  auto bbox = GridTools::compute_bounding_box(mesh);
+  /*auto bbox = GridTools::compute_bounding_box(mesh);
   auto boundary_points = bbox.get_boundary_points();
   for (unsigned int i = 0; i < dim; ++i)
     center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
   
   AxonalDirection axonal_direction(type_of_diffusion);
-  axonal_direction.set_center(center);
+  axonal_direction.set_center(center);*/
   std::vector<double> solution_loc(n_q);
   std::vector<Tensor<1, dim>> solution_gradient_loc(n_q);
   std::vector<double> solution_old_loc(n_q);
@@ -168,11 +161,14 @@ void Brain::assemble_system()
 
     cell_matrix = 0.0;
     cell_residual = 0.0;
+
     unsigned int material_id = material_id_map[cell->id()];
     Tensor<1, dim> normal;
+
     fe_values.get_function_values(solution, solution_loc);
     fe_values.get_function_gradients(solution, solution_gradient_loc);
     fe_values.get_function_values(solution_old, solution_old_loc);
+    
     for (unsigned int q = 0; q < n_q; ++q)
     {
       const double d_ext_loc = d_ext_func.value(fe_values.quadrature_point(q), material_id);
@@ -220,12 +216,13 @@ void Brain::assemble_system()
                             D * solution_gradient_loc[q] *
                             fe_values.JxW(q);
 
-        cell_residual(i) += reaction_coefficient_loc * solution_loc[q] * (1 - solution_loc[q]) * fe_values.shape_value(i, q) * fe_values.JxW(q);
+        cell_residual(i) += reaction_coefficient_loc * solution_loc[q] * (1.0 - solution_loc[q]) * fe_values.shape_value(i, q) * fe_values.JxW(q);
       }
     }
 
   
     cell->get_dof_indices(dof_indices);
+
     jacobian_matrix.add(dof_indices, cell_matrix);
     residual_vector.add(dof_indices, cell_residual);
   }
@@ -238,9 +235,9 @@ void Brain::solve_linear_system()
   SolverControl solver_control(1000, 1e-6 * residual_vector.l2_norm());
 
   SolverGMRES<TrilinosWrappers::MPI::Vector> solver(solver_control);
-  TrilinosWrappers::PreconditionSSOR preconditioner;
+  TrilinosWrappers::PreconditionILU preconditioner;
   preconditioner.initialize(
-      jacobian_matrix, TrilinosWrappers::PreconditionSSOR::AdditionalData(1.0));
+      jacobian_matrix/*, TrilinosWrappers::PreconditionSSOR::AdditionalData(1.0)*/);
   solver.solve(jacobian_matrix, delta_owned, residual_vector, preconditioner);
   pcout << "  " << solver_control.last_step() << " GMRES iterations" << std::endl;
 }
@@ -334,6 +331,5 @@ void Brain::solve()
     output(time_step);
 
     pcout << std::endl;
-    solution_old = solution;
   }
 }
