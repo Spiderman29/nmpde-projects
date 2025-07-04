@@ -238,26 +238,18 @@ public:
     Tensor<1, dim> circumferential_direction(const Point<dim> &p) const
     {
       Tensor<1, dim> normal;
-      Point<dim> projected_point;
-      projected_point[0] = p[0];
-      projected_point[1] = p[1];
-
-      Tensor<1, dim> radial_xy = projected_point - center;
-      double radial_distance_xy = std::sqrt(radial_xy[0] * radial_xy[0] + radial_xy[1] * radial_xy[1]);
-
-      if (radial_distance_xy < 1e-10)
-      {
-        normal[0] = 0.0;
-        normal[1] = 1.0;
-        normal[2] = 0.0;
-        return normal;
-      }
-
-      normal[0] = -radial_xy[1] / radial_distance_xy;
-      normal[1] = radial_xy[0] / radial_distance_xy;
-      normal[2] = 0.0;
+      Tensor<1, dim> circumferential;
+      circumferential = p - center;
+      double norm = circumferential.norm();
+      if(norm > 1e-12) circumferential/=norm;
+      normal[0] = circumferential[1];
+      normal[1] = -circumferential[0];
+      if (dim == 3) normal[2] = 0.0;
+      norm = normal.norm();
+      if (norm > 1e-12) normal/=norm;
 
       return normal;
+
     }
 
     Tensor<1, dim> diffusion(const Point<dim> &p, const unsigned int material_id) const

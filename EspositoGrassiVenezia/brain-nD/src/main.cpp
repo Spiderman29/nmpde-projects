@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     // Configuration 1
     {
         Params p{
-            "half-brain-h3.0.msh", //mesh name
+            "../src/brain_gm_wm_cb.msh", //mesh name
             1, // degree
             20.0, // T
             0.1, // deltat
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
             {0.3, 0.6}, // alpha
             {1.5, 1.5}, // d_ext
             {0, 3}, // d_axn
-            "radial"
+            "circumferential" // diffusion type
         };
 
         Brain problem(p);
