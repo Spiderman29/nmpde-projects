@@ -14,12 +14,11 @@ int main(int argc, char *argv[])
     const unsigned int               mpi_rank =
     Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
 
-    const std::string mesh_file_name = "brain_gm_wm_cb.msh";
  
     // Configuration 1
     {
         Params p{
-            "brain_gm_wm_cb.msh", //mesh name
+            "half-brain-h3.0.msh", //mesh name
             1, // degree
             20.0, // T
             0.1, // deltat
