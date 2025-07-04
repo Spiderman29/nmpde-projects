@@ -1,5 +1,5 @@
 #
-# Copyright 2025 Esposito Lorenzo, Frisone Alessandro, Grassi Francesco, Venezia Giorgio
+# Copyright 2025 Esposito Lorenzo, Grassi Francesco, Venezia Giorgio
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -42,6 +42,5 @@ From: ubuntu:22.04
     make
 
 %runscript
-    # Cambiando contesto mi devo rispostare sulla cartella container-app/
     cd /container-app/brain-nD/build
     mpirun -n 16 ./main

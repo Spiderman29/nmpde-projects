@@ -5,6 +5,7 @@
 #include <vector>
 #include "BRAIN.hpp"
 #include <fstream>
+#include "params.hpp"
 
 // Main function.
 int main(int argc, char *argv[])
@@ -13,22 +14,23 @@ int main(int argc, char *argv[])
     const unsigned int               mpi_rank =
     Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
 
-    const std::string mesh_file_name = "../../mesh/brain_gm_wm_cb.msh";
-    // const std::string mesh_file_name = "../../mesh/brain-h3.0.msh";
-
-    const unsigned int degree = 1;
-    const double T = 20.0;
-    const double theta = 1.0;
+    const std::string mesh_file_name = "brain_gm_wm_cb.msh";
  
-
     // Configuration 1
     {
-        double deltat = 0.1;
-        //WHITE, GREY
-        std::vector<double> alpha = {0.3, 0.6};
-        std::vector<double> d_ext = {1.5, 1.5};
-        std::vector<double> d_axn = {0, 3};
-        Brain problem(mesh_file_name, degree, T, deltat, theta, d_ext, d_axn, alpha, "axonal");
+        Params p{
+            "brain_gm_wm_cb.msh", //mesh name
+            1, // degree
+            20.0, // T
+            0.1, // deltat
+            1.0, // theta
+            {0.3, 0.6}, // alpha
+            {1.5, 1.5}, // d_ext
+            {0, 3}, // d_axn
+            "radial"
+        };
+
+        Brain problem(p);
         problem.setup();
         problem.solve();
     }

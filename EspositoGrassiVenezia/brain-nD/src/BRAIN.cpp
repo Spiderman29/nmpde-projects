@@ -139,13 +139,14 @@ void Brain::assemble_system()
   Tensor<1, dim> normal;
   Point<dim> center;
   // Get mesh bounding box to set center
-  /*auto bbox = GridTools::compute_bounding_box(mesh);
+  auto bbox = GridTools::compute_bounding_box(mesh);
   auto boundary_points = bbox.get_boundary_points();
   for (unsigned int i = 0; i < dim; ++i)
     center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
-  
-  AxonalDirection axonal_direction(type_of_diffusion);
-  axonal_direction.set_center(center);*/
+  u_0.set_center(center);
+
+  Diffusion diffusion(type_of_diffusion);
+  diffusion.set_center(center);
   std::vector<double> solution_loc(n_q);
   std::vector<Tensor<1, dim>> solution_gradient_loc(n_q);
   std::vector<double> solution_old_loc(n_q);
@@ -179,7 +180,7 @@ void Brain::assemble_system()
       for (unsigned int i = 0; i < dim; ++i)
         d_ext_matrix[i][i] = d_ext_loc;
 
-      normal=axonal_direction.compute_direction(fe_values.quadrature_point(q), material_id);
+      normal=diffusion.compute_direction(fe_values.quadrature_point(q), material_id);
 
       // Create normal_matrix as the tensor product of normal with itself
       for (unsigned int i = 0; i < dim; ++i) {

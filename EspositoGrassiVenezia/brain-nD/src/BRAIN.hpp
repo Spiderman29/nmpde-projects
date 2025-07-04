@@ -39,6 +39,7 @@
 #include <iostream>
 #include <math.h>
 #include <regex>
+#include "params.hpp"
 
 using namespace dealii;
 
@@ -66,7 +67,7 @@ public:
 
     // Evaluation.
     virtual double
-    value(const Point<dim> &/*p*/,
+    value(const Point<dim> & /*p*/,
           const unsigned int component = 0) const override
     {
       if (component == 1)
@@ -87,27 +88,17 @@ public:
   class AxonalTransport : public Function<dim>
   {
   public:
-     AxonalTransport(const std::vector<double> &d_axn_) : d_axn(d_axn_) {};
-
-    // void set_material_id_map(const std::map<CellId, unsigned int> &material_id_map_)
-    // {
-    //   material_id_map = material_id_map_;
-    // }
-
-    // void set_dof_handler(const DoFHandler<dim> &dof_handler_)
-    // {
-    //   dof_handler = &dof_handler_;
-    // };
+    AxonalTransport(const std::vector<double> &d_axn_) : d_axn(d_axn_) {};
 
     // Evaluation.
     virtual double
-    value(const Point<dim> &/*p*/,
+    value(const Point<dim> & /*p*/,
           const unsigned int component = 0) const override
     {
       if (component == 1)
-        return d_axn[0]; // TODO, GREY MATTER
+        return d_axn[0];
       else if (component == 2)
-        return d_axn[1]; // TODO, WHITE MATTER
+        return d_axn[1];
       else
         return 0;
     }
@@ -124,33 +115,21 @@ public:
   public:
     ReactionCoefficient(const std::vector<double> &alpha_) : alpha(alpha_) {};
 
-    // void set_material_id_map(const std::map<CellId, unsigned int> &material_id_map_)
-    // {
-    //   material_id_map = material_id_map_;
-    // }
-
-    // void set_dof_handler(const DoFHandler<dim> &dof_handler_)
-    // {
-    //   dof_handler = &dof_handler_;
-    // };
-
     // Evaluation.
     virtual double
-    value(const Point<dim> &/*p*/,
+    value(const Point<dim> & /*p*/,
           const unsigned int component = 0) const override
     {
       if (component == 1)
-        return alpha[0]; // TODO, GREY MATTER
+        return alpha[0];
       else if (component == 2)
-        return alpha[1]; // TODO, WHITE MATTER
+        return alpha[1];
       else
         return 0;
     }
 
   protected:
-    // const DoFHandler<dim> *dof_handler=nullptr;
     const std::vector<double> alpha;
-    // std::map<CellId, unsigned int> material_id_map;
   };
 
   // Function for the forcing term.
@@ -165,50 +144,29 @@ public:
     }
   };
 
-  // Function for Dirichlet boundary conditions.
-  class FunctionG : public Function<dim>
-  {
-  public:
-    virtual double
-    value(const Point<dim> & /*p*/,
-          const unsigned int /*component*/ = 0) const override
-    {
-      return 0.0;
-    }
-  };
-
-  // Neumann boundary function
-  class FunctionH : public Function<dim>
-  {
-  public:
-    FunctionH() {}
-
-    // Evaluation.
-    virtual double
-    value(const Point<dim> & /*p*/,
-          const unsigned int /*component*/ = 0) const override
-    {
-      return 0.0;
-    }
-  };
-
   // Initial condition
   class FunctionU0 : public Function<dim>
   {
   public:
+    virtual void set_center(const Point<dim> &center_)
+    {
+      center = center_;
+    }
+
     virtual double
     value(const Point<dim> &p,
           const unsigned int /*component*/ = 0) const override
     {
+
       /*
         Measure limits on paraview
         x: -63.8802 to 66.974 (delta: 130.854)
         y: -107.998 to 61.8228 (delta: 169.82)
         z: -57.3737 to 80.4985 (delta: 137.872)
       */
-      if (p[0] >= -5.0 && p[0] <= 5.0 &&  
-          p[1] >= -15.0 && p[1] <= -10.0 && 
-          p[2] >= -2.5 && p[2] <= 2.5)  
+
+      const double center_radius = 8;
+      if ((p - center).norm_square() <= center_radius * center_radius)
       {
         return 0.1;
       }
@@ -216,117 +174,129 @@ public:
       {
         return 0.0;
       }
-      
-
     }
+
+  private:
+    Point<dim> center;
   };
 
-  class AxonalDirection{
+  class Diffusion
+  {
   public:
-    AxonalDirection(std::string type_of_diffusion) : str_axonal_direction(type_of_diffusion) {};
+    Diffusion(std::string type_of_diffusion) : str_diffusion(type_of_diffusion) {};
 
-    void set_center(const Point<dim> &center_) {
+    void set_center(const Point<dim> &center_)
+    {
       center = center_;
     }
 
-    Tensor<1, dim> compute_direction(const Point<dim> &p, const unsigned int material_id) const{
-      if (str_axonal_direction == "radial") {
+    Tensor<1, dim> compute_direction(const Point<dim> &p, const unsigned int material_id) const
+    {
+      if (str_diffusion == "radial")
+      {
         return radial_direction(p);
       }
-      else if (str_axonal_direction == "circumferential") {
+      else if (str_diffusion == "circumferential")
+      {
         return circumferential_direction(p);
       }
-      else if (str_axonal_direction == "axonal") {
-        return axonal_direction(p, material_id);
+      else if (str_diffusion == "axonal")
+      {
+        return diffusion(p, material_id);
       }
-      else {
+      else
+      {
         throw std::invalid_argument("Unknown axonal direction type");
       }
     }
 
-    private:
-      std::string str_axonal_direction;
+  private:
+    std::string str_diffusion;
 
-      Point<dim> center;
+    Point<dim> center;
 
-      Tensor<1, dim> radial_direction(const Point<dim> &p) const {
-        Tensor<1, dim> normal;
-        Tensor<1, dim> radial_direction;
-        radial_direction = p - center;
-        double radius = radial_direction.norm();
-        if (radius > 1e-10) {
-          normal = radial_direction / radius;
-        } else {
-          // If at center point, use default direction
-          normal[0] = 1.0;
-          for (unsigned int d = 1; d < dim; ++d)
-            normal[d] = 0.0;
-        }
-        return normal;
+    Tensor<1, dim> radial_direction(const Point<dim> &p) const
+    {
+      Tensor<1, dim> normal;
+      Tensor<1, dim> radial_direction;
+      radial_direction = p - center;
+      double radius = radial_direction.norm();
+      if (radius > 1e-10)
+      {
+        normal = radial_direction / radius;
       }
+      else
+      {
+        // If at center point, use default direction
+        normal[0] = 1.0;
+        for (unsigned int d = 1; d < dim; ++d)
+          normal[d] = 0.0;
+      }
+      return normal;
+    }
 
-      Tensor<1, dim> circumferential_direction(const Point<dim> &p) const {
+    Tensor<1, dim> circumferential_direction(const Point<dim> &p) const
+    {
       Tensor<1, dim> normal;
       Point<dim> projected_point;
       projected_point[0] = p[0];
       projected_point[1] = p[1];
-      
+
       Tensor<1, dim> radial_xy = projected_point - center;
-      double radial_distance_xy = std::sqrt(radial_xy[0]*radial_xy[0] + radial_xy[1]*radial_xy[1]);
-      
-      if (radial_distance_xy < 1e-10) {
+      double radial_distance_xy = std::sqrt(radial_xy[0] * radial_xy[0] + radial_xy[1] * radial_xy[1]);
+
+      if (radial_distance_xy < 1e-10)
+      {
         normal[0] = 0.0;
-        normal[1] = 1.0;  
+        normal[1] = 1.0;
         normal[2] = 0.0;
         return normal;
       }
-      
-      normal[0] = -radial_xy[1] / radial_distance_xy;  
-      normal[1] =  radial_xy[0] / radial_distance_xy;  
-      normal[2] = 0.0;
-      
-      return normal;
-  }
 
-      Tensor<1, dim> axonal_direction(const Point<dim> &p, const unsigned int material_id) const {
-        if (material_id == 1) {
-          return circumferential_direction(p);
-        } else if (material_id == 2) { 
-          return radial_direction(p);
-        } else {
-          return Tensor<1, dim>({0.0, 0.0, 0.0});
-        }
+      normal[0] = -radial_xy[1] / radial_distance_xy;
+      normal[1] = radial_xy[0] / radial_distance_xy;
+      normal[2] = 0.0;
+
+      return normal;
+    }
+
+    Tensor<1, dim> diffusion(const Point<dim> &p, const unsigned int material_id) const
+    {
+      if (material_id == 1)
+      {
+        return circumferential_direction(p);
       }
+      else if (material_id == 2)
+      {
+        return radial_direction(p);
+      }
+      else
+      {
+        return Tensor<1, dim>({0.0, 0.0, 0.0});
+      }
+    }
   };
 
   // Constructor. We provide the final time, time step Delta t and theta method
   // parameter as constructor arguments.
-  Brain(const std::string &mesh_file_name_,
-        const unsigned int &r_,
-        const double &T_,
-        const double &deltat_,
-        const double &theta_,
-        const std::vector<double> &d_ext_,
-        const std::vector<double> &d_axn_,
-        const std::vector<double> &alpha_,
-        const std::string         &type_of_diffusion_)
-      : mpi_size(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD)), 
-        mpi_rank(Utilities::MPI::this_mpi_process(MPI_COMM_WORLD)), 
-        pcout(std::cout, mpi_rank == 0), 
-        mesh(MPI_COMM_WORLD), 
-        r(r_), 
-        deltat(deltat_), 
-        theta(theta_), 
-        T(T_), 
-        d_ext(d_ext_), 
-        d_axn(d_axn_), 
-        alpha(alpha_), 
-        d_ext_func(d_ext_), 
-        d_axn_func(d_axn_),
-        type_of_diffusion(type_of_diffusion_),
-        axonal_direction(type_of_diffusion_),
-        reaction_coefficient(alpha_), 
-        mesh_file_name(mesh_file_name_),
+  Brain(const Params p)
+      : mpi_size(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD)),
+        mpi_rank(Utilities::MPI::this_mpi_process(MPI_COMM_WORLD)),
+        pcout(std::cout, mpi_rank == 0),
+        mesh(MPI_COMM_WORLD),
+        r(p.degree),
+        deltat(p.deltat),
+        theta(p.theta),
+        T(p.T),
+        d_ext(p.d_ext),
+        d_axn(p.d_axn),
+        alpha(p.alpha),
+        d_ext_func(p.d_ext),
+        d_axn_func(p.d_axn),
+        type_of_diffusion(p.diffusion),
+        diffusion(p.diffusion),
+        reaction_coefficient(p.alpha),
+        mesh_file_name(p.mesh_file_name),
         time(0.0),
         dof_handler(mesh)
   {
@@ -392,14 +362,12 @@ protected:
   ExtracellularDiffusion d_ext_func;
   AxonalTransport d_axn_func;
   std::string type_of_diffusion;
-  AxonalDirection axonal_direction;
+  Diffusion diffusion;
 
   ReactionCoefficient reaction_coefficient;
 
   // Mesh file name.
   const std::string mesh_file_name;
-
-  FunctionH function_h;
 
   FunctionU0 u_0;
 
@@ -448,7 +416,7 @@ protected:
   // System solution at previous time step.
   TrilinosWrappers::MPI::Vector solution_old;
 
-  //material id map
+  // material id map
   std::map<CellId, unsigned int> material_id_map;
 };
 
