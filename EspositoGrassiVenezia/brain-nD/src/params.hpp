@@ -13,7 +13,6 @@ struct Params{
     const std::vector<double> d_ext;
     const std::vector<double> d_axn;
     const std::string diffusion;
-    
 };
 
 #endif

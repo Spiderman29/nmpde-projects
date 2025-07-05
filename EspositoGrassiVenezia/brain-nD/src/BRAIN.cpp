@@ -185,7 +185,11 @@ void Brain::assemble_system()
   auto boundary_points = bbox.get_boundary_points();
   for (unsigned int i = 0; i < dim; ++i)
     center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
-  u_0.set_center(center);
+
+  const double r_interface = 0.005;
+  const double steepness = 10.0;
+
+  d_axn_func = std::make_shared<AxonalTransport>(d_axn, center, r_interface, steepness);
 
   Diffusion diffusion(type_of_diffusion);
   diffusion.set_center(center);
@@ -215,7 +219,7 @@ void Brain::assemble_system()
     for (unsigned int q = 0; q < n_q; ++q)
     {
       const double d_ext_loc = d_ext_func.value(fe_values.quadrature_point(q), material_id);
-      const double d_axn_loc = d_axn_func.value(fe_values.quadrature_point(q), material_id);
+      const double d_axn_loc = d_axn_func->value(fe_values.quadrature_point(q), material_id);
       const double reaction_coefficient_loc = reaction_coefficient.value(fe_values.quadrature_point(q), material_id);
 
       // Multiply each element of the identity matrix by d_ext_loc
