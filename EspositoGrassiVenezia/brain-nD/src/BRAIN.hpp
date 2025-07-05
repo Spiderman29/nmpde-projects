@@ -113,23 +113,39 @@ public:
   class ReactionCoefficient : public Function<dim>
   {
   public:
-    ReactionCoefficient(const std::vector<double> &alpha_) : alpha(alpha_) {};
+    ReactionCoefficient(const std::vector<double> &alpha_,
+                        const Point<dim> &center_,
+                        const double r_interface_,
+                        const double steepness_ = 10.0)
+      : Function<dim>(),
+        alpha(alpha_),
+        center(center_),
+        r_interface(r_interface_),
+        k(steepness_) {}
 
-    // Evaluation.
-    virtual double
-    value(const Point<dim> & /*p*/,
-          const unsigned int component = 0) const override
+    // Evaluation
+    virtual double value(const Point<dim> &p,
+                        const unsigned int material_id = 0) const override
     {
-      if (component == 1)
+      if (material_id == 1)
         return alpha[0];
-      else if (component == 2)
-        return alpha[1];
+      else if (material_id == 2)
+      {
+        const double r = (p - center).norm();      // distance from the center
+        const double d = r - r_interface;          // distance from the interface
+        const double s = 1.0 / (1.0 + std::exp(-k * d));
+
+        return alpha[0] * (1.0 - s) + alpha[1] * s;
+      }
       else
-        return 0;
+        return 0.0;
     }
 
   protected:
     const std::vector<double> alpha;
+    const Point<dim> center;
+    const double r_interface;
+    const double k;
   };
 
   // Function for the forcing term.
@@ -287,7 +303,7 @@ public:
         //d_axn_func(p.d_axn),
         type_of_diffusion(p.diffusion),
         diffusion(p.diffusion),
-        reaction_coefficient(p.alpha),
+        //reaction_coefficient(p.alpha),
         mesh_file_name(p.mesh_file_name),
         time(0.0),
         dof_handler(mesh)
@@ -360,7 +376,7 @@ protected:
   std::string type_of_diffusion;
   Diffusion diffusion;
 
-  ReactionCoefficient reaction_coefficient;
+  std::shared_ptr<Function<dim>> reaction_coefficient;
 
   // Mesh file name.
   const std::string mesh_file_name;

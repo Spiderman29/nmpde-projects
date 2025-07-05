@@ -190,7 +190,8 @@ void Brain::assemble_system()
   const double steepness = 10.0;
 
   d_axn_func = std::make_shared<AxonalTransport>(d_axn, center, r_interface, steepness);
-
+  reaction_coefficient = std::make_shared<ReactionCoefficient>(alpha, center, r_interface, steepness);
+  
   Diffusion diffusion(type_of_diffusion);
   diffusion.set_center(center);
   std::vector<double> solution_loc(n_q);
@@ -220,7 +221,7 @@ void Brain::assemble_system()
     {
       const double d_ext_loc = d_ext_func.value(fe_values.quadrature_point(q), material_id);
       const double d_axn_loc = d_axn_func->value(fe_values.quadrature_point(q), material_id);
-      const double reaction_coefficient_loc = reaction_coefficient.value(fe_values.quadrature_point(q), material_id);
+      const double reaction_coefficient_loc = reaction_coefficient->value(fe_values.quadrature_point(q), material_id);
 
       // Multiply each element of the identity matrix by d_ext_loc
       for (unsigned int i = 0; i < dim; ++i)
