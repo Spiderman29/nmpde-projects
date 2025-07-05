@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
     // Configuration 1
     {
         Params p{
-            "../src/brain_gm_wm_cb.msh", // mesh name
+            "../../mesh/brain_gm_wm.msh", // mesh name
             1,                           // degree
-            5.0,                        // T
+            20.0,                        // T
             0.1,                         // deltat
             1.0,                         // theta
             {0.3, 0.6},                  // alpha
@@ -46,15 +46,15 @@ int main(int argc, char *argv[])
 
 
 
-        std::ofstream setup_time_file("setup_time.csv");
+        std::ofstream setup_time_file("../csv/setup_time.csv");
         setup_time_file << "n,time" << std::endl;
         setup_time_file << mpi_size << "," << setup_time << std::endl;
 
-        std::ofstream solve_time_file("solve_time.csv");
+        std::ofstream solve_time_file("../csv/solve_time.csv");
         solve_time_file << "n,time" << std::endl;
         solve_time_file << mpi_size << "," << solve_time << std::endl;
 
-        std::ofstream total_time_file("total_time.csv");
+        std::ofstream total_time_file("../csv/total_time.csv");
         total_time_file << "n,time" << std::endl;
         total_time_file << mpi_size << "," << total_time << std::endl;
 

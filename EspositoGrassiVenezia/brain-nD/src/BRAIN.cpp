@@ -1,5 +1,43 @@
 #include "BRAIN.hpp"
 
+void Brain::compute_material_mapping()
+{
+  for (const auto &cell : dof_handler.active_cell_iterators())
+  {
+    if (!cell->is_locally_owned())
+      continue;
+
+    std::vector<types::global_dof_index> dof_indices(fe->dofs_per_cell);
+    cell->get_dof_indices(dof_indices);
+
+    unsigned int material_id = material_id_map[cell->id()];
+    if(material_id!=1 && material_id!=2) pcout<<cell->id()<<" "<<material_id<<std::endl;
+
+    for (const auto &dof_index : dof_indices)
+    {
+      if (locally_owned_dofs.is_element(dof_index))
+      {
+        material_vector[dof_index] = material_id;
+      }
+    }
+  }
+
+  material_vector.compress(VectorOperation::insert);
+
+  DataOut<dim> data_out;
+  data_out.add_data_vector(dof_handler, material_vector, "material");
+
+  std::vector<unsigned int> partition_int(mesh.n_active_cells());
+  GridTools::get_subdomain_association(mesh, partition_int);
+  const Vector<double> partitioning(partition_int.begin(), partition_int.end());
+  data_out.add_data_vector(partitioning, "partitioning");
+
+  data_out.build_patches();
+
+  data_out.write_vtu_with_pvtu_record("./","material", 1, MPI_COMM_WORLD, 3);
+
+};
+
 void Brain::setup()
 {
   // Create the mesh.
@@ -28,6 +66,7 @@ void Brain::setup()
       if (cell->is_locally_owned())
       {
         material_id_map[cell->id()] = cell->material_id();
+
         switch (cell->material_id())
         {
         case 1:
@@ -113,6 +152,9 @@ void Brain::setup()
 
     solution.reinit(locally_owned_dofs, locally_relevant_dofs, MPI_COMM_WORLD);
     solution_old = solution;
+
+    material_vector.reinit(locally_owned_dofs, MPI_COMM_WORLD);
+    compute_material_mapping();
   }
 }
 

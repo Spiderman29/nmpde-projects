@@ -303,6 +303,10 @@ public:
   solve();
 
 protected:
+
+  void
+  compute_material_mapping();
+
   // Assemble the tangent problem.
   void
   assemble_system();
@@ -407,6 +411,9 @@ protected:
 
   // System solution at previous time step.
   TrilinosWrappers::MPI::Vector solution_old;
+
+  //Material vector
+  TrilinosWrappers::MPI::Vector material_vector;
 
   // material id map
   std::map<CellId, unsigned int> material_id_map;
