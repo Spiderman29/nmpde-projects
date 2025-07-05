@@ -11,27 +11,59 @@
 int main(int argc, char *argv[])
 {
     Utilities::MPI::MPI_InitFinalize mpi_init(argc, argv);
-    const unsigned int               mpi_rank =
-    Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+    const unsigned int mpi_rank =
+        Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+    const unsigned int mpi_size =
+        Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD);
 
- 
+    double start_time = MPI_Wtime();
+
     // Configuration 1
     {
         Params p{
-            "../src/brain_gm_wm_cb.msh", //mesh name
-            1, // degree
-            20.0, // T
-            0.1, // deltat
-            1.0, // theta
-            {0.3, 0.6}, // alpha
-            {1.5, 1.5}, // d_ext
-            {0, 3}, // d_axn
-            "circumferential" // diffusion type
+            "../src/brain_gm_wm_cb.msh", // mesh name
+            1,                           // degree
+            5.0,                        // T
+            0.1,                         // deltat
+            1.0,                         // theta
+            {0.3, 0.6},                  // alpha
+            {1.5, 1.5},                  // d_ext
+            {0, 3},                      // d_axn
+            "circumferential"            // diffusion type
         };
 
         Brain problem(p);
+        double start_setup_time = MPI_Wtime();
         problem.setup();
+        double end_setup_time = MPI_Wtime();
+        double setup_time = end_setup_time - start_setup_time;
+        double start_solve_time = MPI_Wtime();
         problem.solve();
+        double end_solve_time = MPI_Wtime();
+        double solve_time = end_solve_time - start_solve_time;
+        double total_time = end_solve_time - start_time;
+
+
+
+
+        std::ofstream setup_time_file("setup_time.csv");
+        setup_time_file << "n,time" << std::endl;
+        setup_time_file << mpi_size << "," << setup_time << std::endl;
+
+        std::ofstream solve_time_file("solve_time.csv");
+        solve_time_file << "n,time" << std::endl;
+        solve_time_file << mpi_size << "," << solve_time << std::endl;
+
+        std::ofstream total_time_file("total_time.csv");
+        total_time_file << "n,time" << std::endl;
+        total_time_file << mpi_size << "," << total_time << std::endl;
+
+        if (mpi_rank == 0)
+        {
+            std::cout << "Total time: " << total_time << " seconds." << std::endl;
+            std::cout << "Setup time: " << setup_time << " seconds." << std::endl;
+            std::cout << "Solve time: " << solve_time << " seconds." << std::endl;
+        }
     }
 
     // // Configuration 2
