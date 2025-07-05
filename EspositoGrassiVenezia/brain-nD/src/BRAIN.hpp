@@ -55,59 +55,59 @@ public:
   public:
     ExtracellularDiffusion(const std::vector<double> &d_ext_) : d_ext(d_ext_) {};
 
-    // void set_material_id_map(const std::map<CellId, unsigned int> &material_id_map_)
-    // {
-    //   material_id_map = material_id_map_;
-    // }
-
-    // void set_dof_handler(const DoFHandler<dim> &dof_handler_)
-    // {
-    //   dof_handler = &dof_handler_;
-    // };
-
     // Evaluation.
     virtual double
     value(const Point<dim> & /*p*/,
           const unsigned int component = 0) const override
     {
       if (component == 1)
-        return d_ext[0]; // TODO, GREY MATTER
+        return d_ext[0];
       else if (component == 2)
-        return d_ext[1]; // TODO, WHITE MATTER
+        return d_ext[1];
       else
         return 0;
     }
 
   protected:
-    // const DoFHandler<dim> *dof_handler=nullptr;
     const std::vector<double> d_ext;
-    const std::vector<double> d_axn;
-    // std::map<CellId, unsigned int> material_id_map;
   };
 
   class AxonalTransport : public Function<dim>
   {
   public:
-    AxonalTransport(const std::vector<double> &d_axn_) : d_axn(d_axn_) {};
+    AxonalTransport(const std::vector<double> &d_axn_,
+                        const Point<dim> &center_,
+                        const double r_interface_,
+                        const double steepness_ = 10.0)
+      : Function<dim>(),
+        d_axn(d_axn_),
+        center(center_),
+        r_interface(r_interface_),
+        k(steepness_) {}
 
     // Evaluation.
-    virtual double
-    value(const Point<dim> & /*p*/,
-          const unsigned int component = 0) const override
+    virtual double value(const Point<dim> &p,
+                       const unsigned int material_id) const override
     {
-      if (component == 1)
+      if (material_id == 1)
         return d_axn[0];
-      else if (component == 2)
-        return d_axn[1];
+      else if (material_id == 2)
+      {
+        const double r = (p - center).norm(); // distance from the center
+        const double d = r - r_interface; // distance from the interface
+        const double s = 1.0 / (1.0 + std::exp(-k * d));
+
+        return d_axn[0] * (1.0 - s) + d_axn[1] * s;
+      }
       else
-        return 0;
+        return 0.0;
     }
 
   protected:
-    // const DoFHandler<dim> *dof_handler=nullptr;
-    const std::vector<double> d_ext;
     const std::vector<double> d_axn;
-    // std::map<CellId, unsigned int> material_id_map;
+    const Point<dim> center;
+    const double r_interface;
+    const double k;
   };
 
   class ReactionCoefficient : public Function<dim>
@@ -284,7 +284,7 @@ public:
         d_axn(p.d_axn),
         alpha(p.alpha),
         d_ext_func(p.d_ext),
-        d_axn_func(p.d_axn),
+        //d_axn_func(p.d_axn),
         type_of_diffusion(p.diffusion),
         diffusion(p.diffusion),
         reaction_coefficient(p.alpha),
@@ -352,7 +352,7 @@ protected:
   std::vector<double> const alpha;
 
   ExtracellularDiffusion d_ext_func;
-  AxonalTransport d_axn_func;
+  std::shared_ptr<Function<dim>> d_axn_func;
   std::string type_of_diffusion;
   Diffusion diffusion;
 
