@@ -84,7 +84,7 @@ public:
       else if (component == 2)
         return d_ext[1];
       else
-        return 0;
+        return d_ext[1];
     }
 
   protected:
@@ -112,7 +112,7 @@ public:
         return d_axn[1];
       }
       else
-        return 0.0;
+        return d_axn[1];
     }
 
   protected:
@@ -141,7 +141,7 @@ public:
         return alpha[1];
       }
       else
-        return 0.0;
+        return alpha[1];
     }
 
   protected:
@@ -238,7 +238,7 @@ public:
       }
       else if (str_diffusion == "axonal")
       {
-        return diffusion(p, material_id);
+        return axonal_diffusion(p, material_id);
       }
       else
       {
@@ -288,7 +288,7 @@ public:
 
     }
 
-    Tensor<1, dim> diffusion(const Point<dim> &p, const unsigned int material_id) const
+    Tensor<1, dim> axonal_diffusion(const Point<dim> &p, const unsigned int material_id) const
     {
       if (material_id == 1)
       {

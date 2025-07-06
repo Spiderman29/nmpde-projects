@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   // Configuration 1
   {
     Params p{
-      "../../mesh/brain_gm_wm.msh", // mesh name
+      "../../mesh/half-brain-h3.0.msh", // mesh name
         1,                            // degree
         40.0,                         // T
         1.0/3.0,                      // deltat

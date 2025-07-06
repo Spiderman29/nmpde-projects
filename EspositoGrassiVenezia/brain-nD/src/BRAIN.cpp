@@ -1,42 +1,42 @@
 #include "BRAIN.hpp"
 
-//void Brain::compute_material_mapping()
+// void Brain::compute_material_mapping()
 //{
-//  for (const auto &cell : dof_handler.active_cell_iterators())
-//  {
-//    if (!cell->is_locally_owned())
-//      continue;
+//   for (const auto &cell : dof_handler.active_cell_iterators())
+//   {
+//     if (!cell->is_locally_owned())
+//       continue;
 //
-//    std::vector<types::global_dof_index> dof_indices(fe->dofs_per_cell);
-//    cell->get_dof_indices(dof_indices);
+//     std::vector<types::global_dof_index> dof_indices(fe->dofs_per_cell);
+//     cell->get_dof_indices(dof_indices);
 //
-//    unsigned int material_id = material_id_map[cell->id()];
-//    if(material_id!=1 && material_id!=2) pcout<<cell->id()<<" "<<material_id<<std::endl;
+//     unsigned int material_id = material_id_map[cell->id()];
+//     if(material_id!=1 && material_id!=2) pcout<<cell->id()<<" "<<material_id<<std::endl;
 //
-//    for (const auto &dof_index : dof_indices)
-//    {
-//      if (locally_owned_dofs.is_element(dof_index))
-//      {
-//        material_vector[dof_index] = material_id;
-//      }
-//    }
-//  }
+//     for (const auto &dof_index : dof_indices)
+//     {
+//       if (locally_owned_dofs.is_element(dof_index))
+//       {
+//         material_vector[dof_index] = material_id;
+//       }
+//     }
+//   }
 //
-//  material_vector.compress(VectorOperation::insert);
+//   material_vector.compress(VectorOperation::insert);
 //
-//  DataOut<dim> data_out;
-//  data_out.add_data_vector(dof_handler, material_vector, "material");
+//   DataOut<dim> data_out;
+//   data_out.add_data_vector(dof_handler, material_vector, "material");
 //
-//  std::vector<unsigned int> partition_int(mesh.n_active_cells());
-//  GridTools::get_subdomain_association(mesh, partition_int);
-//  const Vector<double> partitioning(partition_int.begin(), partition_int.end());
-//  data_out.add_data_vector(partitioning, "partitioning");
+//   std::vector<unsigned int> partition_int(mesh.n_active_cells());
+//   GridTools::get_subdomain_association(mesh, partition_int);
+//   const Vector<double> partitioning(partition_int.begin(), partition_int.end());
+//   data_out.add_data_vector(partitioning, "partitioning");
 //
-//  data_out.build_patches();
+//   data_out.build_patches();
 //
-//  data_out.write_vtu_with_pvtu_record("./","material", 1, MPI_COMM_WORLD, 3);
+//   data_out.write_vtu_with_pvtu_record("./","material", 1, MPI_COMM_WORLD, 3);
 //
-//};
+// };
 
 void Brain::setup()
 {
@@ -153,8 +153,16 @@ void Brain::setup()
     solution.reinit(locally_owned_dofs, locally_relevant_dofs, MPI_COMM_WORLD);
     solution_old = solution;
 
+    Point<dim> center;
+    // Get mesh bounding box to set center
+    auto bbox = GridTools::compute_bounding_box(mesh);
+    auto boundary_points = bbox.get_boundary_points();
+    for (unsigned int i = 0; i < dim; ++i)
+      center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
+    u_0.set_center(center);
+
     material_vector.reinit(locally_owned_dofs, MPI_COMM_WORLD);
-   // compute_material_mapping();
+    // compute_material_mapping();
   }
 }
 
@@ -185,8 +193,7 @@ void Brain::assemble_system()
   auto boundary_points = bbox.get_boundary_points();
   for (unsigned int i = 0; i < dim; ++i)
     center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
-  u_0.set_center(center);
-  
+
   Diffusion diffusion(type_of_diffusion);
   diffusion.set_center(center);
   std::vector<double> solution_loc(n_q);
@@ -211,7 +218,7 @@ void Brain::assemble_system()
     fe_values.get_function_values(solution, solution_loc);
     fe_values.get_function_gradients(solution, solution_gradient_loc);
     fe_values.get_function_values(solution_old, solution_old_loc);
-    
+
     for (unsigned int q = 0; q < n_q; ++q)
     {
       const double d_ext_loc = d_ext_func.value(fe_values.quadrature_point(q), material_id);
@@ -222,11 +229,13 @@ void Brain::assemble_system()
       for (unsigned int i = 0; i < dim; ++i)
         d_ext_matrix[i][i] = d_ext_loc;
 
-      normal=diffusion.compute_direction(fe_values.quadrature_point(q), material_id);
+      normal = diffusion.compute_direction(fe_values.quadrature_point(q), material_id);
 
       // Create normal_matrix as the tensor product of normal with itself
-      for (unsigned int i = 0; i < dim; ++i) {
-        for (unsigned int j = 0; j < dim; ++j) {
+      for (unsigned int i = 0; i < dim; ++i)
+      {
+        for (unsigned int j = 0; j < dim; ++j)
+        {
           normal_matrix[i][j] = normal[i] * normal[j];
         }
       }
@@ -263,7 +272,6 @@ void Brain::assemble_system()
       }
     }
 
-  
     cell->get_dof_indices(dof_indices);
 
     jacobian_matrix.add(dof_indices, cell_matrix);
@@ -280,7 +288,7 @@ void Brain::solve_linear_system()
   SolverGMRES<TrilinosWrappers::MPI::Vector> solver(solver_control);
   TrilinosWrappers::PreconditionILU preconditioner;
   preconditioner.initialize(
-      jacobian_matrix/*, TrilinosWrappers::PreconditionSSOR::AdditionalData(1.0)*/);
+      jacobian_matrix /*, TrilinosWrappers::PreconditionSSOR::AdditionalData(1.0)*/);
   solver.solve(jacobian_matrix, delta_owned, residual_vector, preconditioner);
   pcout << "  " << solver_control.last_step() << " GMRES iterations" << std::endl;
 }
@@ -335,7 +343,7 @@ void Brain::output(const unsigned int &time_step) const
   data_out.build_patches();
 
   data_out.write_vtu_with_pvtu_record(
-      "./", "output_" + std::to_string(dim) + "D_dt" + std::to_string(deltat) + "_alpha" + std::to_string(alpha[0]) + "_dext" + std::to_string(d_ext[0]) + "_diffusion-"+type_of_diffusion, time_step, MPI_COMM_WORLD, 3);
+      "./", "output_" + std::to_string(dim) + "D_dt" + std::to_string(deltat) + "_alpha" + std::to_string(alpha[0]) + "_dext" + std::to_string(d_ext[0]) + "_diffusion-" + type_of_diffusion, time_step, MPI_COMM_WORLD, 3);
 }
 
 void Brain::solve()
