@@ -94,6 +94,75 @@ prion-like diseases, we adopt the equation we have just seen, which is known in 
 Later on in this report we explain how to derive the weak formulation to solve this kind of equations with iterative algorithms.
 
 \section{Weak formulation}
+The following is the problem we were asked to solve:
+\begin{equation}
+\begin{cases}
+\displaystyle
+\frac{\partial c}{\partial t} - \nabla \cdot (D \cdot \nabla c) - \alpha c(1-c) = 0 & \textrm{in} \ \Omega ,\\[20pt] 
+
+\displaystyle
+D \cdot \nabla c \cdot \vec{n} &  \textrm{on} \ \partial \Omega,  \\[20pt] 
+
+\displaystyle 
+c(t=0)=c_{0} &  \textrm{in} \ \Omega.\\[20pt]
+
+\end{cases}
+\end{equation}
+
+We developed the weak formulation ourselves, which is based on the following steps:
+\begin{enumerate}
+  \item First we multiply everything times v, which is the value we have to find:  $$\int_{\Omega} {\frac{\partial c}{\partial t} \cdot v} - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v} - \int_{\Omega} {\alpha c(1-c) \cdot v} dx = 0$$ for all $v \in V$, where $V$ is the space of test functions $H^1$.
+  \item Then we integrate by parts the second term, which leads to the following expression:  $$\int_{\Omega} {\frac{\partial c}{\partial t} \cdot v} + \int_{\Omega}{D \cdot \nabla c \cdot \nabla v} - \int_{\Omega} {\alpha c(1-c) \cdot v} dx = 0$$
+  \item Then we use the backward Euler method to discretize the time derivative, which leads to the following expression: $$\int_{\Omega} {\frac{c_{n+1} - c_n}{\Delta t} \cdot v} + \int_{\Omega}{D \cdot \nabla c_{n+1} \cdot \nabla v} - \int_{\Omega} {\alpha c_{n+1}(1-c_{n+1}) \cdot v} dx = 0$$
+  \item Then, given the Frechet derivative: $$ lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
+  \item Now we can define the nonlinear residual:
+  \begin{equation*}
+  \begin{aligned}
+  R(c_{n+1} + d, v) =\; & \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
+  + \int_{\Omega} D \nabla (c_{n+1} + d) \cdot \nabla v \, dx \\
+  & - \int_{\Omega} \alpha (c_{n+1} + d)(1 - c_{n+1} + d) \, v \, dx = 0
+  \end{aligned}
+  \end{equation*}
+  \item Which simplifies to:
+  \begin{equation*}
+  \begin{aligned}
+  R(c_{n+1} + d, v) - R(c_{n+1}, v) =\; & 
+  \left( \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
+  - \int_{\Omega} \frac{c_{n+1} - c_n}{\Delta t} \, v \, dx \right) \\
+  & + \left( \int_{\Omega} D \nabla (c_{n+1} + d) \cdot \nabla v \, dx 
+  - \int_{\Omega} D \nabla c_{n+1} \cdot \nabla v \, dx \right) \\
+  & - \left( \int_{\Omega} \alpha (c_{n+1} + d)(1 - c_{n+1} - d) v \, dx 
+  - \int_{\Omega} \alpha c_{n+1}(1 - c_{n+1}) v \, dx \right)
+  \end{aligned}
+  \end{equation*}
+  \item Finally, we make the following substraction:
+  \begin{equation*}
+  \begin{aligned}
+  R(c_{n+1}, v) - R(c_n, v) =\; & \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
+  + \int_{\Omega} D \nabla c_{n+1} \cdot \nabla v \, dx 
+  + \int_{\Omega} D \nabla d \cdot \nabla v \, dx \\
+  & - \int_{\Omega} \alpha \left(c_{n+1} + d - c_{n+1}^2 - 2 d c_{n+1} - d^2 \right) v \, dx \\
+  & - \int_{\Omega} \frac{c_{n+1} - c_{n+1}}{\Delta t} \, v \, dx 
+  - \int_{\Omega} D \nabla c_{n+1} \cdot \nabla v \, dx \\
+  & + \int_{\Omega} \alpha c_{n+1}(1 - c_{n+1}) \, v \, dx
+  \end{aligned}
+  \end{equation*}
+  \item We can approximate \( (d^k)^2 \) as a higher-order small term, leading to the following expression:
+  \begin{equation*}
+  \begin{aligned}
+  R(c_{n+1} + d^k, v) - R(c_{n+1}, v) =\; & 
+  \int_{\Omega} \frac{d^k}{\Delta t} \, v \, dx 
+  + \int_{\Omega} D \nabla d^k \cdot \nabla v \, dx \\
+  & - \int_{\Omega} \alpha d^k (1 - 2c_{n+1}^k) \, v \, dx 
+  + \mathcal{O}((d^k)^2)
+  \end{aligned}
+  \end{equation*}
+
+  \item The right-hand side corresponds to the action of the Fréchet derivative:
+  \[
+  \frac{dR}{dc} \cdot c_{n+1}(d, v) = a(c_{n+1})(d, v)
+  \]
+\end{enumerate}
 \section{Space discretization}
 \section{Time discretization}
 

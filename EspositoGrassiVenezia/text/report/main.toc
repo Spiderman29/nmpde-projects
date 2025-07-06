@@ -1,35 +1,20 @@
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
 \contentsline {chapter}{\numberline {2}Problem model definition}{3}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Weak formulation}{3}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Space discretisation}{3}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Time discretisation}{3}{section.2.3}%
-\contentsline {subsubsection}{Traffic light duration adjustment}{3}{subsubsection*.2}%
-\contentsline {subsubsection}{Daily Analysis and optimization}{4}{subsubsection*.3}%
-\contentsline {subsubsection}{Traffic Zone Optimization}{4}{subsubsection*.4}%
-\contentsline {subsubsection}{Event-specific configurations}{5}{subsubsection*.5}%
-\contentsline {subsubsection}{Citizen views public traffic reports}{5}{subsubsection*.6}%
-\contentsline {subsubsection}{UAM views optimization to approve or reject}{5}{subsubsection*.7}%
-\contentsline {subsection}{\numberline {2.3.1}Use case diagrams}{6}{subsection.2.3.1}%
-\contentsline {subsubsection}{Traffic light duration adjustment}{6}{subsubsection*.8}%
-\contentsline {subsubsection}{Traffic zone optimization}{8}{subsubsection*.9}%
-\contentsline {subsubsection}{Event-specific configurations}{10}{subsubsection*.10}%
-\contentsline {subsubsection}{Daily Analysis and Optimization}{11}{subsubsection*.11}%
-\contentsline {subsubsection}{Citizen views public traffic reports}{12}{subsubsection*.12}%
-\contentsline {subsubsection}{UAM views optimization to approve or reject}{13}{subsubsection*.13}%
-\contentsline {section}{\numberline {2.4}Domain assumption}{14}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Requirements}{15}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Functional Requirements}{15}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Non-Functional Requirements}{15}{subsection.2.5.2}%
-\contentsline {subsection}{\numberline {2.5.3}Constraints}{16}{subsection.2.5.3}%
-\contentsline {chapter}{\numberline {3}Design}{17}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Architecture}{17}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Components diagram}{17}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Subsystems and components}{18}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Sequence Diagrams}{21}{section.3.2}%
-\contentsline {subsubsection}{Traffic Lights Adjustment}{21}{subsubsection*.14}%
-\contentsline {subsubsection}{Traffic Zone Optimization}{23}{subsubsection*.15}%
-\contentsline {subsubsection}{Event-specific Configuration}{24}{subsubsection*.16}%
-\contentsline {subsubsection}{Citizen views public reports}{26}{subsubsection*.17}%
-\contentsline {subsubsection}{UAM configuration}{27}{subsubsection*.18}%
-\contentsline {section}{\numberline {3.3}Critical points and design decisions}{29}{section.3.3}%
+\contentsline {section}{\numberline {2.1}Kinetics of prion-like spreading}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Fisher–Kolmogorov}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Weak formulation}{4}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Space discretization}{6}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Time discretization}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Finate element setting and final assembly}{6}{section.2.6}%
+\contentsline {chapter}{\numberline {3}Set up and computation}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Parameters}{7}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}The mesh}{7}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}1D and 3D: Key aspects}{7}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Similarity}{7}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Differences}{7}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Parallelization}{7}{subsection.3.2.3}%
+\contentsline {chapter}{\numberline {4}Performance}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Different parameters}{9}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Convergence}{9}{section.4.2}%
+\contentsline {chapter}{\numberline {5}Final results}{11}{chapter.5}%
