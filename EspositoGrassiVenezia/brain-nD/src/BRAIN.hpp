@@ -59,7 +59,7 @@ using namespace dealii;
 
 // Class representing the non-linear diffusion problem.
 class Brain
-
+{
 public:
   // Physical dimension (1D, 2D, 3D)
   static constexpr unsigned int dim = 3;
@@ -453,6 +453,6 @@ protected:
 
   // material id map
   std::map<CellId, unsigned int> material_id_map;
-;
+};
 
 #endif
