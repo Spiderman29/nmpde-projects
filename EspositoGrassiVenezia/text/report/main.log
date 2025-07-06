@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.23)  6 JUL 2025 03:17
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.23)  6 JUL 2025 03:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -841,8 +841,7 @@ Package: colortbl 2024/02/20 v1.0g Color table columns (DPC)
 \everycr=\toks55
 \minrowclearance=\skip78
 \rownum=\count380
-))
-No file main.aux.
+)) (./main.aux)
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
@@ -863,6 +862,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -1084,10 +1084,10 @@ Package rerunfilecheck Info: Checksums for `main.out':
 (rerunfilecheck)             After:  DCDC2CD7C4F3950FE75FC97A3CB27E5E;2751.
  ) 
 Here is how much of TeX's memory you used:
- 49642 strings out of 474116
- 1166327 string characters out of 5743681
+ 49645 strings out of 474116
+ 1166366 string characters out of 5743681
  1944187 words of memory out of 5000000
- 71350 multiletter control sequences out of 15000+600000
+ 71351 multiletter control sequences out of 15000+600000
  575795 words of font info for 83 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,12n,102p,668b,1078s stack positions out of 10000i,1000n,20000p,200000b,200000s
