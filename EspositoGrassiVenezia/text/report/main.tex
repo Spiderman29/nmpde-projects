@@ -27,95 +27,126 @@
 
 \chapter{Introduction}
 
-Neurodegenerative diseases like Alzheimer's, Parkinson's, and ALS involve progressive neuronal death caused by misfolded proteins that spread through brain tissue. These diseases follow a prion-like mechanism where pathogenic proteins convert normal proteins into toxic aggregates through conformational templating, creating cascading propagation across neural networks.
+Neurodegenerative diseases such as Alzheimer's, Parkinson's, and ALS involve progressive neuronal death caused by misfolded proteins that spread through brain tissue. These diseases follow a prion-like mechanism in which pathogenic proteins convert normal proteins into toxic aggregates, creating cascading propagation across neural networks.
 
-Mathematical modeling uses reaction-diffusion equations to capture this spreading process. The models treat protein aggregation as a nonlinear reaction coupled with anisotropic diffusion through brain tissue, reducing the complex biology to tractable equations governing protein concentration dynamics in space and time.
+Mathematical modeling uses reaction-diffusion equations to capture this spreading process. The models treat protein aggregation as a non-linear reaction coupled with anisotropic diffusion through brain tissue, reducing the biology mechanism to equations governing protein concentration dynamics in space and time.
 
-This project implements a physics-based reaction-diffusion model combining the Fisher-Kolmogorov equation with directional diffusion terms. The model simulates the growth kinetics and transport of specific misfolded protein.
-The unified modeling framework enables large-scale simulations of protein propagation across brain networks, revealing how local nucleation events evolve into widespread pathology. These models can predict disease progression patterns, identify vulnerable brain regions, and inform therapeutic strategies targeting early-stage protein aggregation before irreversible neuronal damage occurs.
+This project implements a physics-based reaction-diffusion model combining the Fisher-Kolmogorov equation with directional diffusion terms inspired by the framework presented in the article \cite{WEICKENMEIER2019264}. The model simulates growth and diffusion in terms of concentration of misfolded protein.
+
+If these models are accurate, they can predict disease progression patterns, identify vulnerable brain regions, and inform therapeutic strategies targeting early-stage protein aggregation before irreversible neuronal damage occurs.
+
+
 
 \chapter{Problem model definition}
 The problem in his mathematical form
-\begin{equation}
+\begin{equation} \label{fisher-kolmogorov}
 \begin{cases}
 \displaystyle
-\frac{\partial c}{\partial t} - \nabla \cdot (D \cdot \nabla c) - \alpha c(1-c) = 0 & \textrm{in} \ \Omega ,\\[20pt] 
+\frac{\partial c}{\partial t} - \nabla \cdot (D \cdot \nabla c) - \alpha c(1-c) = 0 & \textrm{in} \ \Omega ,\\
 
 \displaystyle
-D \cdot \nabla c \cdot \vec{n} &  \textrm{in} \ \partial \Omega,  \\[20pt] 
+D \cdot \nabla c \cdot \vec{n} &  \textrm{in} \ \partial \Omega,  \\
 
 \displaystyle 
-c(t=0)=c_{0} &  \textrm{in} \ \Omega.\\[20pt]
+c(t=0)=c_{0} &  \textrm{in} \ \Omega.\\
 
 \end{cases}
 \end{equation}
 
 \section{Kinetics of prion-like spreading}
-To describe the fundamental mechanism behind prion-like spreading, the paper gives us a simplified kinetic model, which distinguishes between two states of a protein: the natural healthy form $p$, and the misfolded, pathogenic form $\tilde{p}$.
-The misfolded proteins propagate through the brain by converting healthy proteins into their misfolded form, like a autocatalytic behaviour. \\
+To describe the fundamental mechanism behind prion-like spreading, the article \cite{WEICKENMEIER2019264} gives us a simplified kinetic model, which distinguishes between two states of a protein: the natural healthy form $p$ and the misfolded, pathogenic form $\tilde{p}$.
+The misfolded proteins propagate through the brain by converting healthy proteins into their misfolded form, like autocatalytic behavior. \\
 In the model are considered some kinetic processes:
 \begin{itemize}
-    \item \textbf{Recruitment and conversion: }Healthy proteins bind to misfolded proteins and adopt the misfolded state at a rate $k_{12}$ 
+    \item \textbf{Recruitment and conversion: }Healthy proteins bind to misfolded proteins and adopt the misfolded state at a rate $k_{12}$: 
     $p + \tilde{p} \overset{k_{12}}{\rightarrow}\tilde{p}+\tilde{p}$.
 
-    \item \textbf{Fragmentation: }Misfolded proteins can fragment to generate new infectious seeds (even though we don't consider this in the final formulation).
+    \item \textbf{Fragmentation: }Misfolded proteins can fragment to generate new infectious seeds (although we do not consider this in the final formulation).
 
     \item \textbf{Production and clearance: }Healthy proteins are continuously produced at a constant rate $k_0$ and cleared at rate $k_1$, while misfolded proteins are cleared at a separate rate $\tilde{k_1}$.
 
-    \item \textbf{Diffusion: }Both types of proteins diffuse in the surrounding medium, characterized by diffusion coefficients $D_p$ and $D_\tilde{p}$ respectively.
+    \item \textbf{Diffusion: }Both types of proteins diffuse in the surrounding medium, characterized by diffusion coefficients $D_p$ and $D_{\tilde{p}}$ respectively.
     
 \end{itemize}
 
 The model leads to a system of coupled PDEs governing the evolution of the concentrations of the two different types of proteins: \\
 
-$$\frac{dp}{dt}=Div(D_p\nabla p) + k_0 - k_1p - k_{12}p\tilde{p}$$
-$$\frac{d\tilde{p}}{dt}=Div(D_{\tilde{p}} \nabla \tilde{p}) - \tilde{k_1}\tilde{p} + k_{12}p\tilde{p}$$
+\begin{equation}
+    \frac{dp}{dt}=Div(D_p\nabla p) + k_0 - k_1p - k_{12}p\tilde{p}
+\end{equation}
 
-To simplify the system, the paper assumes that the concentration of healthy protein is significantly larger than that of the misfolded form (i.e., $p \gg \tilde{p}$), allowing a quasi-steady-state approximation for $p$. Under this assumption the healthy protein concentration is defined as:
-$$p \approx \frac{k_0}{k_1 + k_{12}\tilde{p}}$$
-\\
-And expanding this expression in a Taylor series around $\tilde{p}=0$, it is substituted into the equation for \tilde{p}, yielding a nonlinear reaction-diffusion equation.
-\\
+\begin{equation}
+        \frac{d\tilde{p}}{dt}=Div(D_{\tilde{p}} \nabla \tilde{p}) - \tilde{k_1}\tilde{p} + k_{12}p\tilde{p}
+\end{equation}
+
+
+To simplify the system, the article assumes that the concentration of healthy protein is significantly higher than that of the misfolded form (i.e., $p \gg \tilde{p}$), allowing a quasi-steady-state approximation for $p$. Under this assumption the healthy protein concentration is defined as:
+\begin{equation}
+p \approx \frac{k_0}{k_1 + k_{12}\tilde{p}}
+\end{equation}
+
+And expanding this expression in a Taylor series around $\tilde{p}=0$, it is substituted into the equation for $\tilde{p}$, yielding a nonlinear reaction-diffusion equation.
 
 To further simplify the model, it is introduced a normalized concentration for misfolded proteins, which is:
-$c = \frac{\tilde{p}}{\tilde{p_{max}}}$, where $0\le c\le 1$.
+\begin{equation}
+    c = \frac{\tilde{p}}{\tilde{p}_{max}},\ 0\le c\le 1.
+\end{equation}
 
 This leads to a logistic-type equation:
-$$\frac{\partial c}{\partial t} = \text{Div}(D \nabla c) + \alpha c (1 - c)$$
-where $D=D_\tilde{p}$ is the diffusion tensor and  $\alpha$ is an effective growth rate defined as:
-$$\alpha = \frac{k_{12} k_0}{k_1} - \tilde{k}_1$$ 
+\begin{equation}
+    \frac{\partial c}{\partial t} = \text{Div}(D \nabla c) + \alpha c (1 - c)
+\end{equation}
+where $D=D_{\tilde{p}}$ is the diffusion tensor and  $\alpha$ is the effective growth rate defined as:
+\begin{equation} \label{alpha_def}
+    \alpha = \frac{k_{12} k_0}{k_1} - \tilde{k}_1
+\end{equation}
 
-This final equation captures the key dinamics of prion-like propagation: the diffusion of misfolded proteins and their growth due to conversion of healthy proteins.
+The \autoref*{alpha_def} captures the key dinamics of prion-like propagation: the diffusion of misfolded proteins and their growth due to conversion of healthy proteins.
 The growth rate $\alpha$ increases with the conversion rate $k_{12}$ and the equilibrium healthy protein concentration $p_0 = k_0 / k_1$, and decreases with the clearance rate of misfolded proteins $\tilde{k}_1$.
 
 \section{Fisher–Kolmogorov}
 To model the physics of
-prion-like diseases, we adopt the equation we have just seen, which is known in mathematical biology as the Fisher–Kolmogorov equation.
-Later on in this report we explain how to derive the weak formulation to solve this kind of equations with iterative algorithms.
+prion-like diseases, we adopt the \autoref*{fisher-kolmogorov}, which is known in mathematical biology as the Fisher–Kolmogorov equation. To have a numerical description of the problem, we need to solve the \autoref*{fisher-kolmogorov} with respect to the concentration $c$.
 
 \section{Weak formulation}
-The following is the problem we were asked to solve:
-\begin{equation}
-\begin{cases}
-\displaystyle
-\frac{\partial c}{\partial t} - \nabla \cdot (D \cdot \nabla c) - \alpha c(1-c) = 0 & \textrm{in} \ \Omega ,\\[20pt] 
-
-\displaystyle
-D \cdot \nabla c \cdot \vec{n} &  \textrm{on} \ \partial \Omega,  \\[20pt] 
-
-\displaystyle 
-c(t=0)=c_{0} &  \textrm{in} \ \Omega.\\[20pt]
-
-\end{cases}
-\end{equation}
-
-We developed the weak formulation ourselves, which is based on the following steps:
+As for the most PDEs, the first step to take is to build the weak formulation.
 \begin{enumerate}
-  \item First we multiply everything times v, which is the value we have to find:  $$\int_{\Omega} {\frac{\partial c}{\partial t} \cdot v} - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v} - \int_{\Omega} {\alpha c(1-c) \cdot v} dx = 0$$ for all $v \in V$, where $V$ is the space of test functions $H^1$.
-  \item Then we integrate by parts the second term, which leads to the following expression:  $$\int_{\Omega} {\frac{\partial c}{\partial t} \cdot v} + \int_{\Omega}{D \cdot \nabla c \cdot \nabla v} - \int_{\Omega} {\alpha c(1-c) \cdot v} dx = 0$$
-  \item Then we use the backward Euler method to discretize the time derivative, which leads to the following expression: $$\int_{\Omega} {\frac{c_{n+1} - c_n}{\Delta t} \cdot v} + \int_{\Omega}{D \cdot \nabla c_{n+1} \cdot \nabla v} - \int_{\Omega} {\alpha c_{n+1}(1-c_{n+1}) \cdot v} dx = 0$$
-  \item Then, given the Frechet derivative: $$ lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
-  \item Now we can define the nonlinear residual:
+  \item To derive the weak formulation, it's introduced the following Hilbert space \[
+    H^1(\Omega) = \left\{ v \in L^2(\Omega) \, : \, \nabla v \in \left[L^2(\Omega)\right]^d \right\},
+    \]
+    It's required that $c \in H^1$ in order to be solution of \autoref*{fisher-kolmogorov}.
+
+  \item For function $c \in H^1 $ to be solution of \autoref{fisher-kolmogorov} it's required that $\forall v \in H^1$:
+  \begin{equation}
+       \label{test_func}
+        \int_{\Omega} {\frac{\partial c}{\partial t} \cdot v \ dx} - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v \ dx} - \int_{\Omega} {\alpha c(1-c) \cdot v} \ dx = 0 
+  \end{equation}
+  
+  \item By integrating by parts the second term,$- \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v \ dx}$, the following expression is obtained:
+
+  \begin{equation}
+  \label{integrate_by_parts}
+      - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v}=\int_{\Omega}{D \cdot \nabla c \nabla v}-\int_{\partial \Omega}{D \cdot c \cdot v \cdot \vec{n}}
+  \end{equation}
+  Here the term $\int_{\partial \Omega}{D \cdot c \cdot v \cdot \vec{n}}=0$ due to the second equation of \autoref{fisher-kolmogorov}. By substituting in the \autoref*{test_func}, we obtain the weak formulation of \autoref*{fisher-kolmogorov}
+  
+  \begin{equation}
+    \label{weak_formulation}
+    \int_{\Omega} {\frac{\partial c}{\partial t} \cdot v \ dx} + \int_{\Omega}{D \cdot \nabla c \cdot \nabla v \ dx} - \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx = 0    
+  \end{equation}
+\end{enumerate}
+  \section{Time discretization}
+  As in \autoref*{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative. We've decided to use the Backward Euler Method instead of Forward Euler Method or Mid-Point Method because it's unconditionally stable, while FWE is not, and because it's less computationally expensive than MP. To use this method we considered the interval $[0, T]$, where $T$ is the final simulation time, and
+  which leads to the following expression: 
+  \begin{equation}
+    \label{time_discretization}
+    \int_{\Omega} {\frac{c_{n+1} - c_n}{\Delta t} \cdot v \ dx} + \int_{\Omega}{D \cdot \nabla c_{n+1} \cdot \nabla v \ dx} - \int_{\Omega} {\alpha c_{n+1}(1-c_{n+1}) \cdot v}\  dx = 0
+  \end{equation}
+  We decided to use BWE instead of Forward Euler Method because it's unconditionally stable and because it's less computationally expensive than Mid-Point. Furthermore, also the article\cite{WEICKENMEIER2019264} that we've followed used this method.
+
+  \section{Linearization}
+  It's still not possible to utilize \autoref*{time_discretization} for the numerical solution because it presents a non-linear ter in $- \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx$. Then, given the Frechet derivative: $$ lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
+  Now we can define the nonlinear residual:
   \begin{equation*}
   \begin{aligned}
   R(c_{n+1} + d, v) =\; & \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
@@ -135,7 +166,7 @@ We developed the weak formulation ourselves, which is based on the following ste
   - \int_{\Omega} \alpha c_{n+1}(1 - c_{n+1}) v \, dx \right)
   \end{aligned}
   \end{equation*}
-  \item Finally, we make the following substraction:
+  Finally, we make the following substraction:
   \begin{equation*}
   \begin{aligned}
   R(c_{n+1}, v) - R(c_n, v) =\; & \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
@@ -147,7 +178,7 @@ We developed the weak formulation ourselves, which is based on the following ste
   & + \int_{\Omega} \alpha c_{n+1}(1 - c_{n+1}) \, v \, dx
   \end{aligned}
   \end{equation*}
-  \item We can approximate \( (d^k)^2 \) as a higher-order small term, leading to the following expression:
+  We can approximate \( (d^k)^2 \) as a higher-order small term, leading to the following expression:
   \begin{equation*}
   \begin{aligned}
   R(c_{n+1} + d^k, v) - R(c_{n+1}, v) =\; & 
@@ -163,8 +194,6 @@ We developed the weak formulation ourselves, which is based on the following ste
   \frac{dR}{dc} \cdot c_{n+1}(d, v) = a(c_{n+1})(d, v)
   \]
 \end{enumerate}
-\section{Space discretization}
-\section{Time discretization}
 
 Guided by the original authors, the time discretization approach centers on the backward Euler iterative method, which provides the stability necessary for handling the nonlinear reaction-diffusion dynamics inherent in prion spreading models regardless of the $\Delta{t}$ used.
 \\
@@ -176,9 +205,37 @@ At each iteration, we compute an approximation of the concentration $c(t)$
  \section{Parameters}
  \subsection{The mesh}
  \section{1D and 3D: Key aspects}
+ The problem was initially solved in 1D as a proof of concept and to check feasibility, then scaled to 3D
  \subsection{Similarity}
+ The methods used to solve equation had to be keeped unchanged, indeed the core structure of the algorithm stays unaltered
+ \begin{itemize}
+     \item Newton's method to solve nonlinear systems.
+     \item Time-stepping stucture with backward Euler discretization.
+     \item GMRES with preconditioner as linear solver.
+ \end{itemize}
  \subsection{Differences}
+ \begin{itemize}
+     \item 1D: less complex and uniform mesh built with.
+     \begin{verbatim}
+        subdivided_hyper_cube
+     \end{verbatim}
+     \item 1D: Scalar diffusion coefficient.
+     \begin{verbatim}
+        const double diffusion_coefficient_loc = diffusion_coefficient.value()
+     \end{verbatim}
+     3D: Ansiotropic diffusion with tensor formulation.
+     \begin{verbatim}
+        const Tensor<2, dim> D = d_ext_matrix + d_axn_loc * normal_matrix;
+     \end{verbatim}
+     
+     \item 1D: Assumes uniform material proprieties through the domain.
+     
+     3D: Handles multiple brain tissue types (grey matter, white matter) trough a gradient of $\alpha$.
+ \end{itemize}
  \subsection{Parallelization}
+The 3D solver, due to the large number of nodes in 3D meshes and the nonlinear nature of the problem, results in exponentially higher complexity. This makes parallelization essential for keeping the computation feasible.
+Our parallelization approach leverages Trilinos with MPI to distribute the computational workload. We partition the mesh across multiple processes, with each process handling its assigned degrees of freedom while maintaining communication at partition boundaries. This domain decomposition strategy, combined with efficient load balancing, helps abstract much of the parallel complexity and enables scalable performance.
+ 
  \chapter{Performance}
  \section{Different parameters}
  \section{Convergence}
@@ -189,6 +246,7 @@ At each iteration, we compute an approximation of the concentration $c(t)$
 
 
 
-
+\bibliographystyle{IEEEtran}
+\bibliography{reference}
 
 \end{document}
