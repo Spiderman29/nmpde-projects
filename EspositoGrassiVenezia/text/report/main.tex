@@ -114,9 +114,9 @@ As for the most PDEs, the first step to take is to build the weak formulation.
   \item To derive the weak formulation, it's introduced the following Hilbert space \[
     H^1(\Omega) = \left\{ v \in L^2(\Omega) \, : \, \nabla v \in \left[L^2(\Omega)\right]^d \right\},
     \]
-    It's required that $c \in H^1$ in order to be solution of \autoref*{fisher-kolmogorov}.
+    It's required that $c \in H^1(\Omega)$ in order to be solution of \autoref*{fisher-kolmogorov}.
 
-  \item For function $c \in H^1 $ to be solution of \autoref{fisher-kolmogorov} it's required that $\forall v \in H^1$:
+  \item For function $c \in H^1(\Omega) $ to be solution of \autoref{fisher-kolmogorov} it's required that $\forall v \in H^1(\Omega)$:
   \begin{equation}
        \label{test_func}
         \int_{\Omega} {\frac{\partial c}{\partial t} \cdot v \ dx} - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v \ dx} - \int_{\Omega} {\alpha c(1-c) \cdot v} \ dx = 0 
@@ -136,76 +136,115 @@ As for the most PDEs, the first step to take is to build the weak formulation.
   \end{equation}
 \end{enumerate}
   \section{Time discretization}
-  As in \autoref*{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative. We've decided to use the Backward Euler Method instead of Forward Euler Method or Mid-Point Method because it's unconditionally stable, while FWE is not, and because it's less computationally expensive than MP. To use this method we considered the interval $[0, T]$, where $T$ is the final simulation time, and
-  which leads to the following expression: 
+  As in \autoref*{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative. We've decided to use the Backward Euler Method instead of Forward Euler Method or Mid-Point Method because it's unconditionally stable, while FWE is not, and because it's less computationally expensive than MP. To use this method we considered the interval $[0, T]$, where $T$ is the final simulation time, and we divided it into $N$ equal subintervals of length $\Delta t=\frac{T}{N}$. For each interval $t^{n+1}$ we can approximate the time derivative as:
+  $$\left. \frac{\partial c}{\partial t} \right|_{t^{n+1}} \approx \frac{c^{n+1} - c^n}{\Delta t}$$
+  which leads to the time-space discretized expression: 
   \begin{equation}
     \label{time_discretization}
-    \int_{\Omega} {\frac{c_{n+1} - c_n}{\Delta t} \cdot v \ dx} + \int_{\Omega}{D \cdot \nabla c_{n+1} \cdot \nabla v \ dx} - \int_{\Omega} {\alpha c_{n+1}(1-c_{n+1}) \cdot v}\  dx = 0
+    \int_{\Omega} {\frac{c^{n+1} - c^n}{\Delta t} \cdot v \ dx} + \int_{\Omega}{D \cdot \nabla c^{n+1} \cdot \nabla v \ dx} - \int_{\Omega} {\alpha c^{n+1}(1-c^{n+1}) \cdot v}\  dx = 0
   \end{equation}
-  We decided to use BWE instead of Forward Euler Method because it's unconditionally stable and because it's less computationally expensive than Mid-Point. Furthermore, also the article\cite{WEICKENMEIER2019264} that we've followed used this method.
+
 
   \section{Linearization}
-  It's still not possible to utilize \autoref*{time_discretization} for the numerical solution because it presents a non-linear ter in $- \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx$. Then, given the Frechet derivative: $$ lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
+  It's still not possible to utilize \autoref*{time_discretization} for the numerical solution because it presents a non-linear term in $- \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx$.
+  To solve the problem, we need to used a linerized form of the \autoref*{time_discretization}. It's possible to do so using the Fréchet derivative. For a given functional $G : V \rightarrow R$, the Fréchet derivative at a point $u \in H^1(\Omega)$ is a linear operator $A(u) =\frac{dG}{du}: V \rightarrow R$ such that:
+  $$lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
   Now we can define the nonlinear residual:
   \begin{equation*}
+  \label{residual}
   \begin{aligned}
-  R(c_{n+1} + d, v) =\; & \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
-  + \int_{\Omega} D \nabla (c_{n+1} + d) \cdot \nabla v \, dx \\
-  & - \int_{\Omega} \alpha (c_{n+1} + d)(1 - c_{n+1} + d) \, v \, dx = 0
-  \end{aligned}
-  \end{equation*}
-  \item Which simplifies to:
-  \begin{equation*}
-  \begin{aligned}
-  R(c_{n+1} + d, v) - R(c_{n+1}, v) =\; & 
-  \left( \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
-  - \int_{\Omega} \frac{c_{n+1} - c_n}{\Delta t} \, v \, dx \right) \\
-  & + \left( \int_{\Omega} D \nabla (c_{n+1} + d) \cdot \nabla v \, dx 
-  - \int_{\Omega} D \nabla c_{n+1} \cdot \nabla v \, dx \right) \\
-  & - \left( \int_{\Omega} \alpha (c_{n+1} + d)(1 - c_{n+1} - d) v \, dx 
-  - \int_{\Omega} \alpha c_{n+1}(1 - c_{n+1}) v \, dx \right)
-  \end{aligned}
-  \end{equation*}
-  Finally, we make the following substraction:
-  \begin{equation*}
-  \begin{aligned}
-  R(c_{n+1}, v) - R(c_n, v) =\; & \int_{\Omega} \frac{c_{n+1} + d - c_n}{\Delta t} \, v \, dx 
-  + \int_{\Omega} D \nabla c_{n+1} \cdot \nabla v \, dx 
-  + \int_{\Omega} D \nabla d \cdot \nabla v \, dx \\
-  & - \int_{\Omega} \alpha \left(c_{n+1} + d - c_{n+1}^2 - 2 d c_{n+1} - d^2 \right) v \, dx \\
-  & - \int_{\Omega} \frac{c_{n+1} - c_{n+1}}{\Delta t} \, v \, dx 
-  - \int_{\Omega} D \nabla c_{n+1} \cdot \nabla v \, dx \\
-  & + \int_{\Omega} \alpha c_{n+1}(1 - c_{n+1}) \, v \, dx
-  \end{aligned}
-  \end{equation*}
-  We can approximate \( (d^k)^2 \) as a higher-order small term, leading to the following expression:
-  \begin{equation*}
-  \begin{aligned}
-  R(c_{n+1} + d^k, v) - R(c_{n+1}, v) =\; & 
-  \int_{\Omega} \frac{d^k}{\Delta t} \, v \, dx 
-  + \int_{\Omega} D \nabla d^k \cdot \nabla v \, dx \\
-  & - \int_{\Omega} \alpha d^k (1 - 2c_{n+1}^k) \, v \, dx 
-  + \mathcal{O}((d^k)^2)
+  R(c^{n+1} + \delta, v) =\; & \int_{\Omega} \frac{c^{n+1} + \delta - c^n}{\Delta t} \, v \, dx 
+  + \int_{\Omega} D \nabla (c^{n+1} + \delta) \cdot \nabla v \, dx \\
+  & - \int_{\Omega} \alpha (c^{n+1} + \delta)(1 - c^{n+1} - \delta) \, v \, dx
   \end{aligned}
   \end{equation*}
 
-  \item The right-hand side corresponds to the action of the Fréchet derivative:
+  
+  Now, if we take $R(c^{n+1} + \delta, v)-R(c + \delta, v)$ we obtain:
+  \begin{equation*}
+    \label{difference_residual}
+    \begin{aligned}
+        R(c^{n+1} + \delta, v) - R(c^{n+1}, v) =\; & 
+        \left( \int_{\Omega} \frac{c^{n+1} + \delta - c^n}{\Delta t} \, v \, dx 
+        - \int_{\Omega} \frac{c^{n+1} - c^n}{\Delta t} \, v \, dx \right) \\
+        & + \left( \int_{\Omega} \delta \nabla (c^{n+1} + \delta) \cdot \nabla v \, dx 
+        - \int_{\Omega} \delta \nabla c^{n+1} \cdot \nabla v \, dx \right) \\
+        & - \left( \int_{\Omega} \alpha (c^{n+1} + \delta)(1 - c^{n+1} - \delta) v \, dx 
+        - \int_{\Omega} \alpha c^{n+1}(1 - c^{n+1}) v \, dx \right)= \\
+        & \int_{\Omega} \frac{\delta}{\Delta t} \, v \, dx 
+        + \int_{\Omega} D \nabla \delta \cdot \nabla v \, dx  
+        - \int_{\Omega} \alpha \left( \delta(1 - 2c^{n+1}) - \delta^2 \right) v \, dx
+    \end{aligned}
+\end{equation*}
+  
+  We can approximate \( (\delta)^2 \) as a higher-order small term, leading to the following expression:
+  \begin{equation*}
+  \label{delta_residual}
+  \begin{aligned}
+  R(c^{n+1} + \delta, v) - R(c^{n+1}, v) =\; & 
+  \int_{\Omega} \frac{\delta}{\Delta t} \, v \, dx 
+  + \int_{\Omega} D \nabla \delta \cdot \nabla v \, dx \\
+  & - \int_{\Omega} \alpha \delta (1 - 2c^{n+1}) \, v \, dx 
+  + \mathcal{O}((\delta)^2)
+  \end{aligned}
+  \end{equation*}
+
+The right-hand side of \autoref*{delta_residual} with exception of $\mathcal{O}((\delta)^2)$ corresponds to the action of the Fréchet derivative:
   \[
-  \frac{dR}{dc} \cdot c_{n+1}(d, v) = a(c_{n+1})(d, v)
+  \frac{dR}{dc} (c^{n+1})(\delta, v) = a(c^{n+1})(\delta, v)
   \]
-\end{enumerate}
 
-Guided by the original authors, the time discretization approach centers on the backward Euler iterative method, which provides the stability necessary for handling the nonlinear reaction-diffusion dynamics inherent in prion spreading models regardless of the $\Delta{t}$ used.
-\\
-At each iteration, we compute an approximation of the concentration $c(t)$
- and its derivative with respect to time using the formula $\frac{\delta{c}}{\delta{t}}= \frac{c_n+1-c_n}{\Delta{t}}$. This choice is particularly significant because it transforms our original time-dependent parabolic problem into a sequence of quasistatic, elliptic-type problems. In each time step, we solve for the unknown $c_{n+1}$ using the known solution from the previous step $c_n$. The implicit nature of this scheme means we are always solving "forward in time" but using information from the future time level, which drastically improves stability.
- \section{Finate element setting and final assembly}
+Now, solving the \autoref{time_discretization} it's equivalent to find $c^{n+1} \in H^1(\Omega)$ such that $R(c^{n+1}, v)=0, \ \forall v \in H^1(\Omega)$. To solve this we use the Newton's method: given an initial guess $c^{(0)}$,
+\begin{algorithmic}
+\While{$k=1,2,...,N \ and \ not \ convergent$}
+    \State $\textbf{find} \ \delta^{(k)} \ s.t \ a(c^{(k)})(\delta^{(k)}, v) = -(c^{(k)}, v) \ \forall v \in H^1(\Omega)$
+    \State $u^{(k+1)}=u^{(k)}+\delta^{(k)}$
+\EndWhile
+\end{algorithmic}
+
+The problem $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$ is a linear differential problem and can be solved used finite elements.
+
+ \section{Finite element setting and final assembly}
+  After a linear differential form of the original problem in \autoref{fisher-kolmogorov} is find in the form of $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$, we can discretize this problem in space using the Galerkin finite element method. To do so, we consider a vector space  $V_h \subset H^1(\Omega)$ which dimension are bounded and equals to $N_h$, our aim is to find $c_h^{(k)}$ solution of the problem $a(c_h^{(k)})(\delta^{(k)}, v_h) = -R(c_h^{(k)}, v_h) \ \forall v_h \in H^1(\Omega)$. We introduce the bases of $V_h$: \( \{\phi_j\}_{j=1}^N \), now it's possible to write:
+    $$c_h^{(k)}(x) = \sum_{j=1}^N c_j^{(k)} \phi_j(x), \qquad \delta^{(k)}(x) = \sum_{j=1}^N \delta_j^{(k)} \phi_j(x).$$
+ and substitute these expressions in the problem considering the test functions $v=\phi_i$ and obtaining
+\begin{equation}
+    a \left ( \sum_{j=1}^N c_j^{(k)} \phi_j(x) \right ) \left (\sum_{j=1}^N \delta_j^{(k)}, \phi_i \right ) = -R \left (\sum_{j=1}^N c_j^{(k)} \phi_j(x), \phi_i \right )
+\end{equation}
+After some computation, the following result is obtained:
+    \begin{equation}
+        \label{linear_system}
+        \left ( \frac{M}{\Delta t}+K-J \left (c_k^{n+1} \right )\right ) \cdot \delta^{(k)}=-M\cdot \frac{c_k^{n+1}-c^{n}}{\Delta t} - K \cdot c_k^{n+1} + N \left (c_k^{n+1} \right )
+    \end{equation}
+where:
+\begin{itemize}
+    \item $\delta^{(k)}$ is the vector of unknown for this problem;
+    \item $c_k^{n+1}$ is the value of the concentration calculated at the previous newton interaction $k$;
+    \item $c^{n}$ is the value computed at the previous timestamp $n$;
+    \item $M=(m_{ij})=\int_{\Omega} \phi_i\phi_j\ dx$;
+    \item $K=(k_{ij})=\int_{\Omega} D \cdot \nabla\phi_i \cdot \nabla\phi_j\ dx$;
+    \item $ J \left (c_k^{n+1} \right ) = (j_{ij}) =\int_{\Omega}\alpha (1-2c_k^{n+1})\phi_i \phi_j \ dx$
+    \item $N \left (c_k^{n+1} \right )= (n_{ij})=\int_\Omega \alpha \cdot c_k^{n+1} \cdot (1-c_k^{n+1}) \phi_i \ dx$
+\end{itemize}
+
+At each timestamp $n$, Newton method is used to find $\delta^{(k)}$ by solving the linear system in \autoref*{linear_system}, which is then used to compute the solution for the timestep $c_n$. At each iteration of the Newton Method new lhs matrix and new rhs vector are computed using the new solution when needed.
+
 
  \chapter{Set up and computation}
+ The problem has been solved using \verb|C++| combining \verb|deal.ii| library and \verb|MPI| for parallelization purpose.
  \section{Parameters}
+  \section{1D and 3D: Key aspects}
+ The problem was initially solved in 1D as a proof of concept and to check feasibility, then scaled to 3D.
  \subsection{The mesh}
- \section{1D and 3D: Key aspects}
- The problem was initially solved in 1D as a proof of concept and to check feasibility, then scaled to 3D
+ The mesh used for 3D computation is read from an external $.msh$ file provided by the original author of the article \cite{WEICKENMEIER2019264}.
+ The implementation distinguishes between different brain tissue types through material IDs, with the code specifically tracking Grey Matter (material ID 1), White Matter(material ID 2). A material mapping system associates each cell with its corresponding tissue type, enabling tissue-specific parameter assignment.
+
+In 1D, the me
+\subsection{Diffusion Term}
+ For the implementation in 3D, the terms in \autoref{fisher-kolmogorov} indicated as $D$ is a tensor, called Diffusion matrix defined as
+ $$\mathbf{D} = d^{\text{ext}} \mathbf{I} + d^{\text{axn}} \mathbf{n} \otimes \mathbf{n}$$ where the isotropic extracellular $d^{ext}$ component is combined with an anisotropic axonal $d^{axn}$ transport component. The fiber direction vector $\mathbf{n}$ is obtained through a \verb|Diffusion| class that supports three different fiber orientation models via the \verb|type_of_diffusion| parameter. 
+
+ In 1D implementation, instead, this term is simply a scalar $D=d \in \mathbb{R}$.
  \subsection{Similarity}
  The methods used to solve equation had to be keeped unchanged, indeed the core structure of the algorithm stays unaltered
  \begin{itemize}
@@ -217,7 +256,7 @@ At each iteration, we compute an approximation of the concentration $c(t)$
  \begin{itemize}
      \item 1D: less complex and uniform mesh built with.
      \begin{verbatim}
-        subdivided_hyper_cube
+        subdivided_hyper_cube()
      \end{verbatim}
      \item 1D: Scalar diffusion coefficient.
      \begin{verbatim}
@@ -232,11 +271,11 @@ At each iteration, we compute an approximation of the concentration $c(t)$
      
      3D: Handles multiple brain tissue types (grey matter, white matter) trough a gradient of $\alpha$.
  \end{itemize}
- \subsection{Parallelization}
+ \section{Parallelization}
 The 3D solver, due to the large number of nodes in 3D meshes and the nonlinear nature of the problem, results in exponentially higher complexity. This makes parallelization essential for keeping the computation feasible.
 Our parallelization approach leverages Trilinos with MPI to distribute the computational workload. We partition the mesh across multiple processes, with each process handling its assigned degrees of freedom while maintaining communication at partition boundaries. This domain decomposition strategy, combined with efficient load balancing, helps abstract much of the parallel complexity and enables scalable performance.
  
- \chapter{Performance}
+ \chapter{Performance evaluation}
  \section{Different parameters}
  \section{Convergence}
  \chapter{Final results}
