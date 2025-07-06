@@ -5,6 +5,7 @@
 #include <vector>
 #include "BRAIN.hpp"
 #include <fstream>
+#include <filesystem>
 #include "params.hpp"
 
 // Main function.
@@ -15,6 +16,9 @@ int main(int argc, char *argv[])
         Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
     const unsigned int mpi_size =
         Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD);
+
+    if (mpi_rank == 0)
+        std::filesystem::create_directories("../csv");    
 
     double start_time = MPI_Wtime();
 
