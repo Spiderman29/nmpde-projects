@@ -1,6 +1,20 @@
 #ifndef BRAIN_HPP
 #define BRAIN_HPP
 
+/**
+ * This header file defines the Brain class, which represents a non-linear diffusion problem
+ * in a 3D brain model. The class includes methods for setting up the problem, assembling the system,
+ * solving the linear system and outputting results. It uses the deal.II library for finite element analysis.
+ * 
+ * The Brain class includes:
+ * - Physical dimension (3D)
+ * - Classes for extracellular diffusion, axonal transport, reaction coefficients, forcing terms, and initial
+ *   conditions.
+ * - This class is modeled on a real brain model, with parameters for diffusion coefficients,
+ *   reaction coefficients, and a choice of diffusion type (radial, circumferential,
+ *   or axonal).
+ */
+
 #include <deal.II/base/conditional_ostream.h>
 #include <deal.II/base/quadrature_lib.h>
 
@@ -45,10 +59,15 @@ using namespace dealii;
 
 // Class representing the non-linear diffusion problem.
 class Brain
-{
+
 public:
   // Physical dimension (1D, 2D, 3D)
   static constexpr unsigned int dim = 3;
+
+  /**
+   * This class defines the ExtracellularDiffusion and implements a method to evaluate the diffusion coefficient
+   * at a given point in space for a specific material.
+   */
 
   class ExtracellularDiffusion : public Function<dim>
   {
@@ -72,32 +91,25 @@ public:
     const std::vector<double> d_ext;
   };
 
+  /**
+   * This class does the same of ExtracellularDiffusion, but for axonal transport.
+   */
+
   class AxonalTransport : public Function<dim>
   {
   public:
-    AxonalTransport(const std::vector<double> &d_axn_,
-                        const Point<dim> &center_,
-                        const double r_interface_,
-                        const double steepness_ = 10.0)
-      : Function<dim>(),
-        d_axn(d_axn_),
-        center(center_),
-        r_interface(r_interface_),
-        k(steepness_) {}
+    AxonalTransport(const std::vector<double> &d_axn_) : d_axn(d_axn_) {};
 
     // Evaluation.
-    virtual double value(const Point<dim> &p,
-                       const unsigned int material_id) const override
+    virtual double
+    value(const Point<dim> & /*p*/,
+          const unsigned int component = 0) const override
     {
-      if (material_id == 1)
+      if (component == 1)
         return d_axn[0];
-      else if (material_id == 2)
+      else if (component == 2)
       {
-        const double r = (p - center).norm(); // distance from the center
-        const double d = r - r_interface; // distance from the interface
-        const double s = 1.0 / (1.0 + std::exp(-k * d));
-
-        return d_axn[0] * (1.0 - s) + d_axn[1] * s;
+        return d_axn[1];
       }
       else
         return 0.0;
@@ -105,37 +117,28 @@ public:
 
   protected:
     const std::vector<double> d_axn;
-    const Point<dim> center;
-    const double r_interface;
-    const double k;
   };
+
+  /**
+   * This class defines the ReactionCoefficient and implements a method to evaluate the reaction coefficient
+   * at a given point in space for a specific material.
+   */
 
   class ReactionCoefficient : public Function<dim>
   {
   public:
-    ReactionCoefficient(const std::vector<double> &alpha_,
-                        const Point<dim> &center_,
-                        const double r_interface_,
-                        const double steepness_ = 10.0)
-      : Function<dim>(),
-        alpha(alpha_),
-        center(center_),
-        r_interface(r_interface_),
-        k(steepness_) {}
+    ReactionCoefficient(const std::vector<double> &alpha_) : alpha(alpha_) {}
 
     // Evaluation
-    virtual double value(const Point<dim> &p,
-                        const unsigned int material_id = 0) const override
+    virtual double
+    value(const Point<dim> & /*p*/,
+          const unsigned int component = 0) const override
     {
-      if (material_id == 1)
+      if (component == 1)
         return alpha[0];
-      else if (material_id == 2)
+      else if (component == 2)
       {
-        const double r = (p - center).norm();      // distance from the center
-        const double d = r - r_interface;          // distance from the interface
-        const double s = 1.0 / (1.0 + std::exp(-k * d));
-
-        return alpha[0] * (1.0 - s) + alpha[1] * s;
+        return alpha[1];
       }
       else
         return 0.0;
@@ -143,12 +146,13 @@ public:
 
   protected:
     const std::vector<double> alpha;
-    const Point<dim> center;
-    const double r_interface;
-    const double k;
   };
 
   // Function for the forcing term.
+  /**
+   * We define the forcing term as homogeneous.
+   */
+
   class ForcingTerm : public Function<dim>
   {
   public:
@@ -161,6 +165,16 @@ public:
   };
 
   // Initial condition
+  /**
+   * In this class we define the initial condition for the problem.
+   * The initial condition is a function that returns 0.1 inside a sphere of radius
+   * "center_radius" centered at the origin, and 0 outside.
+   * This is where the misfolded protein is initially concentrated.
+   * 
+   * The center of the sphere can be set using the set_center method.
+   * We have the setter because we calculate the center of the mesh in the cpp file.
+   */
+
   class FunctionU0 : public Function<dim>
   {
   public:
@@ -196,6 +210,12 @@ public:
     Point<dim> center;
   };
 
+  /**
+   * This class defines the diffusion direction based on the type of diffusion specified.
+   * It can compute radial, circumferential, or axonal directions based on the point in space
+   * and the material ID.
+   */
+  
   class Diffusion
   {
   public:
@@ -300,10 +320,10 @@ public:
         d_axn(p.d_axn),
         alpha(p.alpha),
         d_ext_func(p.d_ext),
-        //d_axn_func(p.d_axn),
+        d_axn_func(p.d_axn),
         type_of_diffusion(p.diffusion),
         diffusion(p.diffusion),
-        //reaction_coefficient(p.alpha),
+        reaction_coefficient(p.alpha),
         mesh_file_name(p.mesh_file_name),
         time(0.0),
         dof_handler(mesh)
@@ -372,11 +392,11 @@ protected:
   std::vector<double> const alpha;
 
   ExtracellularDiffusion d_ext_func;
-  std::shared_ptr<Function<dim>> d_axn_func;
+  AxonalTransport d_axn_func;
   std::string type_of_diffusion;
   Diffusion diffusion;
 
-  std::shared_ptr<Function<dim>> reaction_coefficient;
+  ReactionCoefficient reaction_coefficient;
 
   // Mesh file name.
   const std::string mesh_file_name;
@@ -433,6 +453,6 @@ protected:
 
   // material id map
   std::map<CellId, unsigned int> material_id_map;
-};
+;
 
 #endif

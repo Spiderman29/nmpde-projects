@@ -21,15 +21,15 @@ int main(int argc, char *argv[])
     // Configuration 1
     {
         Params p{
-            "../../mesh/brain_gm_wm.msh", // mesh name
+            "../src/brain_gm_wm.msh", // mesh name
             1,                            // degree
-            20.0,                         // T
-            0.1,                          // deltat
+            40.0,                         // T
+            1.0/3.0,                      // deltat
             1.0,                          // theta
-            {0.3, 0.6},                   // alpha {0.3, 0.6}
-            {1.5, 1.5},                   // d_ext
-            {0, 3},                       // d_axn {0, 3}
-            "circumferential"             // diffusion type
+            {0.6, 1.2},                   // alpha {0.3, 0.6}
+            {6.0, 6.0},                   // d_ext
+            {0, 24},                       // d_axn {0, 3}
+            "radial"             // diffusion type
         };
 
         Brain problem(p);
