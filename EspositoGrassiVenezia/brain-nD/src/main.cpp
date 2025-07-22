@@ -25,15 +25,15 @@ int main(int argc, char *argv[])
   // Configuration 1
   {
     Params p{
-      "../../mesh/half-brain-h3.0.msh", // mesh name
+      "../../mesh/brain_gm_wm.msh", // mesh name
         1,                            // degree
         40.0,                         // T
         1.0/3.0,                      // deltat
         1.0,                          // theta
-        {0.6, 0.6},                   // alpha {0.3, 0.6}
-           {6.0, 6.0},                   // d_ext
-           {24, 24},                       // d_axn {0, 3}
-           "radial"             // diffusion type
+        {0.3, 0.6},                   // alpha {0.3, 0.6}
+        {6.0, 6.0},                   // d_ext
+        {0, 3},                       // d_axn {0, 3}
+        "radial"             // diffusion type
     };
 
     Brain problem(p);

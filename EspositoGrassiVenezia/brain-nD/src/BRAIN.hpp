@@ -453,6 +453,9 @@ protected:
 
   // material id map
   std::map<CellId, unsigned int> material_id_map;
+
+  // Center
+  Point<dim> global_center;
 };
 
 #endif

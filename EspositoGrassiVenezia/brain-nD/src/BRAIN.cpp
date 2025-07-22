@@ -153,13 +153,27 @@ void Brain::setup()
     solution.reinit(locally_owned_dofs, locally_relevant_dofs, MPI_COMM_WORLD);
     solution_old = solution;
 
-    Point<dim> center;
     // Get mesh bounding box to set center
-    auto bbox = GridTools::compute_bounding_box(mesh);
-    auto boundary_points = bbox.get_boundary_points();
+    auto local_bbox = GridTools::compute_bounding_box(mesh);
+
+    // Here we find the local bounding box of the mesh
+    Point<dim> local_min = local_bbox.get_boundary_points().first;
+    Point<dim> local_max = local_bbox.get_boundary_points().second;
+
+    // Reduce the local bounding box to find the global bounding box
+    Point<dim> global_min, global_max;
     for (unsigned int i = 0; i < dim; ++i)
-      center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
-    u_0.set_center(center);
+    {
+      global_min[i] = Utilities::MPI::min(local_min[i], MPI_COMM_WORLD);
+      global_max[i] = Utilities::MPI::max(local_max[i], MPI_COMM_WORLD);
+    }
+
+    // Here now we have the global bounding box
+    BoundingBox<dim> global_bbox(std::make_pair(global_min, global_max));
+    auto boundary_points = global_bbox.get_boundary_points();
+    for (unsigned int i = 0; i < dim; ++i)
+      global_center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
+    u_0.set_center(global_center);
 
     material_vector.reinit(locally_owned_dofs, MPI_COMM_WORLD);
     // compute_material_mapping();
@@ -187,15 +201,9 @@ void Brain::assemble_system()
   Tensor<2, dim> d_ext_matrix;
   Tensor<2, dim> normal_matrix;
   Tensor<1, dim> normal;
-  Point<dim> center;
   // Get mesh bounding box to set center
-  auto bbox = GridTools::compute_bounding_box(mesh);
-  auto boundary_points = bbox.get_boundary_points();
-  for (unsigned int i = 0; i < dim; ++i)
-    center[i] = (boundary_points.first[i] + boundary_points.second[i]) / 2.0;
-
   Diffusion diffusion(type_of_diffusion);
-  diffusion.set_center(center);
+  diffusion.set_center(global_center);
   std::vector<double> solution_loc(n_q);
   std::vector<Tensor<1, dim>> solution_gradient_loc(n_q);
   std::vector<double> solution_old_loc(n_q);
