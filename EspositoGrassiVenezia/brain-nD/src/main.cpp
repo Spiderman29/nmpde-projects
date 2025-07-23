@@ -27,13 +27,13 @@ int main(int argc, char *argv[])
     Params p{
       "../../mesh/brain_gm_wm.msh", // mesh name
         1,                            // degree
-        40.0,                         // T
+        20.0,                         // T
         1.0/3.0,                      // deltat
         1.0,                          // theta
-        {0.3, 0.6},                   // alpha {0.3, 0.6}
-        {6.0, 6.0},                   // d_ext
-        {0, 3},                       // d_axn {0, 3}
-        "radial"             // diffusion type
+        {0.1, 0.9},                   // alpha {0.3, 0.6}
+           {6.0, 6.0},                   // d_ext
+           {0.0 , 3.0},                       // d_axn {0, 3}
+           "radial"             // diffusion type
     };
 
     Brain problem(p);
@@ -51,24 +51,23 @@ int main(int argc, char *argv[])
       std::ofstream setup_time_file("../csv/setup_time.csv", std::ios::app);
       if (setup_time_file.tellp() == 0)
       {
-        setup_time_file << "n,time" << std::endl;
+        setup_time_file << "n,time,alpha values" << std::endl;
       }
-      setup_time_file << mpi_size << "," << setup_time << std::endl;
+      setup_time_file << mpi_size << "," << setup_time <<","<< p.alpha[0] <<","<<p.alpha[1] << std::endl;
 
       std::ofstream solve_time_file("../csv/solve_time.csv", std::ios::app);
       if (solve_time_file.tellp() == 0)
       {
-        solve_time_file << "n,time" << std::endl;
+        solve_time_file << "n,time,alpha values" << std::endl;
       }
-      solve_time_file << mpi_size << "," << solve_time << std::endl;
+      solve_time_file << mpi_size << "," << solve_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
 
       std::ofstream total_time_file("../csv/total_time.csv", std::ios::app);
       if (total_time_file.tellp() == 0)
       {
-        total_time_file << "n,time" << std::endl;
+        total_time_file << "n,time,alpha values" << std::endl;
       }
-      total_time_file << mpi_size << "," << total_time << std::endl;
-
+      total_time_file << mpi_size << "," << total_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
 
       std::cout << "Total time: " << total_time << " seconds." << std::endl;
       std::cout << "Setup time: " << setup_time << " seconds." << std::endl;
