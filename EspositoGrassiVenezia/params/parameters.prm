@@ -1,0 +1,28 @@
+# Parameter for Brain-nD
+
+# Mesh file settings
+set mesh_file_name = ../../mesh/brain_gm_wm.msh
+
+# Degree
+set degree = 1
+
+# Total T
+set T = 10.0
+
+# Time step
+set deltat = 0.5
+
+# Param theta
+set theta = 1.0
+
+# Alpha param
+set alpha = 0.7,0.25
+
+# Ext diffusion coefficients
+set d_ext = 6.0,6.0
+
+# Axn diffusion coefficients
+set d_axn = 0.0,3.0
+
+# Type of diffusion
+set diffusion_type = radial

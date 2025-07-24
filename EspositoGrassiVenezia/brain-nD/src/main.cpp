@@ -7,6 +7,8 @@
 #include <fstream>
 #include <filesystem>
 #include "params.hpp"
+#include <deal.II/base/parameter_handler.h>
+#include <deal.II/base/utilities.h>
 
 // Main function.
 int main(int argc, char *argv[])
@@ -22,20 +24,53 @@ int main(int argc, char *argv[])
 
   double start_time = MPI_Wtime();
 
-  // Configuration 1
+  // default values
   {
-    Params p{
-      "../../mesh/brain_gm_wm.msh", // mesh name
-        1,                            // degree
-        20.0,                         // T
-        1.0/3.0,                      // deltat
-        1.0,                          // theta
-        {0.1, 0.9},                   // alpha {0.3, 0.6}
-           {6.0, 6.0},                   // d_ext
-           {0.0 , 3.0},                       // d_axn {0, 3}
-           "radial"             // diffusion type
-    };
+  ParameterHandler prm;
+  prm.declare_entry("mesh_file_name", "../../mesh/brain_gm_wm.msh");
+  prm.declare_entry("degree", "1", Patterns::Integer());
+  prm.declare_entry("T", "20.0",Patterns::Double());
+  prm.declare_entry("deltat", "0.333333",Patterns::Double());
+  prm.declare_entry("theta", "1.0",Patterns::Double());
+  prm.declare_entry("alpha", "0.7,0.25");
+  prm.declare_entry("d_ext", "6.0,6.0");
+  prm.declare_entry("d_axn", "0.0,3.0");
+  prm.declare_entry("diffusion_type", "radial");
 
+
+  // Open the parameter file
+
+  std::ifstream parameter_file("../../params/parameters.prm");
+  if (!parameter_file.is_open()) {
+        std::cerr << "Error: Could not open parameter file!" << std::endl;
+        return 1;
+    }
+
+    // Parse the parameter file
+    try {
+        prm.parse_input(parameter_file);
+    } catch (const std::exception &e) {
+        std::cerr << "Error while parsing parameter file: " << e.what() << std::endl;
+        return 1; 
+    }
+
+
+
+  //keep old structure with Params
+  Params p{
+    prm.get("mesh_file_name"),
+    prm.get_integer("degree"),
+    prm.get_double("T"),
+    prm.get_double("deltat"),
+    prm.get_double("theta"),
+    Utilities::string_to_double(Utilities::split_string_list(prm.get("alpha"), ',')),
+    Utilities::string_to_double(Utilities::split_string_list(prm.get("d_ext"), ',')),
+    Utilities::string_to_double(Utilities::split_string_list(prm.get("d_axn"), ',')),
+    prm.get("diffusion_type")
+  };
+
+
+  // Create the Brain object with the parameters.
     Brain problem(p);
     double start_setup_time = MPI_Wtime();
     problem.setup();
