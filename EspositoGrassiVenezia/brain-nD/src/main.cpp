@@ -1,5 +1,3 @@
-#include <deal.II/base/convergence_table.h>
-
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -59,7 +57,7 @@ int main(int argc, char *argv[])
   //keep old structure with Params
   Params p{
     prm.get("mesh_file_name"),
-    prm.get_integer("degree"),
+    static_cast<unsigned int>(prm.get_integer("degree")),
     prm.get_double("T"),
     prm.get_double("deltat"),
     prm.get_double("theta"),
@@ -83,21 +81,23 @@ int main(int argc, char *argv[])
     double total_time = end_solve_time - start_time;
     if (mpi_rank == 0)
     {
-      std::ofstream setup_time_file("../csv/setup_time.csv", std::ios::app);
+      std::ios::openmode mode = (mpi_size == 1 ? std::ios::trunc : std::ios::app);
+
+      std::ofstream setup_time_file("../csv/setup_time.csv", mode);
       if (setup_time_file.tellp() == 0)
       {
         setup_time_file << "n,time,alpha values" << std::endl;
       }
       setup_time_file << mpi_size << "," << setup_time <<","<< p.alpha[0] <<","<<p.alpha[1] << std::endl;
 
-      std::ofstream solve_time_file("../csv/solve_time.csv", std::ios::app);
+      std::ofstream solve_time_file("../csv/solve_time.csv", mode);
       if (solve_time_file.tellp() == 0)
       {
         solve_time_file << "n,time,alpha values" << std::endl;
       }
       solve_time_file << mpi_size << "," << solve_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
 
-      std::ofstream total_time_file("../csv/total_time.csv", std::ios::app);
+      std::ofstream total_time_file("../csv/total_time.csv", mode);
       if (total_time_file.tellp() == 0)
       {
         total_time_file << "n,time,alpha values" << std::endl;
@@ -109,36 +109,5 @@ int main(int argc, char *argv[])
       std::cout << "Solve time: " << solve_time << " seconds." << std::endl;
     }
   }
-
-  // // Configuration 2
-  // {
-  //     const std::vector<std::string> anisotropic_axonal_transport_types={"circumferential", "radial", "axonal"};
-  //     std::vector<double> deltats = {0.025, 0.05, 0.1, 0.2, 0.3, 0.4};
-  //     double alpha = 2.0;
-  //     double d = 0.0002;
-
-  //     for (const auto &deltat : deltats)
-  //     {
-  //         Brain problem(mesh_file_name, degree, T, deltat, theta, d, alpha);
-  //         problem.setup();
-  //         problem.solve();
-  //     }
-  // }
-
-  // Configuration 3
-  // {
-  //     double deltat = 0.1;
-  //     std::vector<double> alphas = {1.0, 2.0, 4.0};
-  //     std::vector<double> ds = {0.0001, 0.0002, 0.0004};
-
-  //     for (const auto &alpha : alphas)
-  //         for (const auto &d : ds)
-  //         {
-  //             Brain problem(mesh_file_name, degree, T, deltat, theta, d, alpha);
-  //             problem.setup();
-  //             problem.solve();
-  //         }
-  // }
-
   return 0;
 }

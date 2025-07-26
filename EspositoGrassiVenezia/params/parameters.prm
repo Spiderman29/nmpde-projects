@@ -22,7 +22,7 @@ set alpha = 0.7,0.25
 set d_ext = 6.0,6.0
 
 # Axn diffusion coefficients
-set d_axn = 0.0,3.0
+set d_axn = 3.0,0.0
 
 # Type of diffusion
 set diffusion_type = radial
