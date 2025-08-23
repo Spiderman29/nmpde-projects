@@ -29,12 +29,12 @@ int main(int argc, char *argv[])
   ParameterHandler prm;
   prm.declare_entry("mesh_file_name", "../../mesh/brain_gm_wm.msh");
   prm.declare_entry("degree", "1", Patterns::Integer());
-  prm.declare_entry("T", "20.0",Patterns::Double());
-  prm.declare_entry("deltat", "0.333333",Patterns::Double());
+  prm.declare_entry("T", "40.0",Patterns::Double());
+  prm.declare_entry("deltat", "0.333333333",Patterns::Double());
   prm.declare_entry("theta", "1.0",Patterns::Double());
-  prm.declare_entry("alpha", "0.7,0.25");
+  prm.declare_entry("alpha", "0.3,0.6");
   prm.declare_entry("d_ext", "6.0,6.0");
-  prm.declare_entry("d_axn", "0.0,3.0");
+  prm.declare_entry("d_axn", "3.0,3.0");
   prm.declare_entry("diffusion_type", "radial");
 
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
       if (solve_time_file.tellp() == 0)
       {
         solve_time_file << "n,time,alpha values" << std::endl;
-      }
+      } 
       solve_time_file << mpi_size << "," << solve_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
 
       std::ofstream total_time_file("../csv/total_time.csv", std::ios::app);
