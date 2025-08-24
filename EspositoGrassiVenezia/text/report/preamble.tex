@@ -12,17 +12,17 @@
 \usepackage[nottoc]{tocbibind}
 \usepackage{geometry}
 \geometry{
-  a4paper,
-    left=3cm,
-    right=3cm,
-    top=3cm,
-    bottom=3cm,
-    heightrounded
+	a4paper,
+	left=3cm,
+	right=3cm,
+	top=3cm,
+	bottom=3cm,
+	heightrounded
 }
 % \usepackage{setspace}               % -> Interlinea
-% \onehalfspacingf
+% \onehalfspacing
 \setcounter{secnumdepth}{2}         % -> Numerazione indice
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{3} 
 \usepackage{titlesec}
 \usepackage{graphicx}               % -> Immagini
 \usepackage{longtable}
@@ -33,7 +33,7 @@
 \usepackage{caption}
 \usepackage{svg}
 % \usepackage{pgfplots}               % -> Plot in latex
-% \pgfplotsset{compat=1.18}
+% \pgfplotsset{compat=1.18} 
 %\usepgfplotslibrary{external}
 %\tikzexternalize
 \usepackage{listings}
@@ -62,43 +62,44 @@
 \usepackage[RPvoltages]{circuitikz} % -> Schematic design
 \usepackage{xcolor}                 % -> Colori
 \usepackage{fancyvrb}               % -> codice colorato in verbatim
-\usepackage{pdfpages}               % -> Inserisce pdf
+\usepackage{pdfpages}               % -> Inserisce pdf 
 \usepackage{subfiles}
 \usepackage[toc,page]{appendix}     % -> Appendix
 \addto\captionsitalian{%
-  \renewcommand{\appendixtocname}{Appendici}%
-    \renewcommand{\appendixpagename}{Appendici}%
+   \renewcommand{\appendixtocname}{Appendici}%
+   \renewcommand{\appendixpagename}{Appendici}%
 }
 
 \usepackage{amsfonts}               % -> Math
 \usepackage{amsmath}
 \usepackage{xfrac}                  % -> sfrac
+\usepackage{algpseudocode}
 \usepackage{rsfso}                  % -> Font for the Laplace L
 \usepackage{booktabs}               % -> Tabelle
 \usepackage{makecell}
 \usepackage{multirow}
-\usepackage{siunitx}                % -> Rappresentzione dei numeri migliore (SI)
-  %    (https://texdoc.org/serve/siunitx/0)
+\usepackage{siunitx}                % -> Rappresentzione dei numeri migliore (SI) 
+                                    %    (https://texdoc.org/serve/siunitx/0)
+                                    
+\usepackage[hidelinks]{hyperref}    % -> Hyperlink
+% \hypersetup{
+%     colorlinks=true,
+%     linkcolor=black,
+%     filecolor=magenta, 
+%     urlcolor=blue,
+%     pdfborder={1 0 0},
+%     linkbordercolor=red,
+% }
 
-  \usepackage[hidelinks]{hyperref}    % -> Hyperlink
-  % \hypersetup{
-    %     colorlinks=true,
-      %     linkcolor=black,
-      %     filecolor=magenta,
-      %     urlcolor=blue,
-      %     pdfborder={1 0 0},
-      %     linkbordercolor=red,
-      % }
-
-      \hypersetup{
-        colorlinks,
-          linkcolor={black!100!black},
-          citecolor={black!100!black},
-          urlcolor={black!100!black}
-      }
+\hypersetup{
+    colorlinks,
+    linkcolor={black!100!black},
+    citecolor={black!100!black},
+    urlcolor={black!100!black}
+}
 
 % Line above footer and below header
-\usepackage{fancyhdr}
+\usepackage{fancyhdr} 
 
 \usepackage{pdfpages} % Per includere più pagine di PDF
 
@@ -121,7 +122,7 @@
 
 % completely blank page
 \newcommand\blankpage{%
-  \null
+    \null
     \thispagestyle{empty}%
     \addtocounter{page}{-1}%
     \newpage

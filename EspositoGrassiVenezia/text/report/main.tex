@@ -45,7 +45,7 @@ The problem in his mathematical form
 \frac{\partial c}{\partial t} - \nabla \cdot (D \cdot \nabla c) - \alpha c(1-c) = 0 & \textrm{in} \ \Omega ,\\
 
 \displaystyle
-D \cdot \nabla c \cdot \vec{n} &  \textrm{in} \ \partial \Omega,  \\
+D \cdot \nabla c \cdot \vec{n} = 0 &  \textrm{in} \ \partial \Omega,  \\
 
 \displaystyle 
 c(t=0)=c_{0} &  \textrm{in} \ \Omega.\\
@@ -226,23 +226,25 @@ where:
     \item $ J \left (c_k^{n+1} \right ) = (j_{ij}) =\int_{\Omega}\alpha (1-2c_k^{n+1})\phi_i \phi_j \ dx$
     \item $N \left (c_k^{n+1} \right )= (n_{ij})=\int_\Omega \alpha \cdot c_k^{n+1} \cdot (1-c_k^{n+1}) \phi_i \ dx$
 \end{itemize}
+To be more clear we introduce the matrix $LHS$ and the vector $RHS$ defined as:
+$$LHS=\frac{M}{\Delta t}+K-J \left (c_k^{n+1} \right ), \qquad RHS=-M\cdot \frac{c_k^{n+1}-c^{n}}{\Delta t} - K \cdot c_k^{n+1} + N \left (c_k^{n+1} \right ).$$
 
-At each timestamp $n$, Newton method is used to find $\delta^{(k)}$ by solving the linear system in \autoref*{linear_system}, which is then used to compute the solution for the timestep $c_n$. At each iteration of the Newton Method new lhs matrix and new rhs vector are computed using the new solution when needed.
+At each timestamp $n+1$, Newton method is used to find $\delta^{(k)}$ by solving the linear system in \autoref*{linear_system}, which is then used to compute the solution for the timestep $c_{n+1}$. At each iteration of the Newton Method both $LHS$ matrix and $RHS$ vector are updated using the new solution $c_{n+1}$.
 
 
  \chapter{Set up and computation}
  The problem has been solved using \verb|C++| combining \verb|deal.ii| library and \verb|MPI| for parallelization purpose.
- \section{Parameters}
-  \section{1D and 3D: Key aspects}
+ 
+ \section{1D and 3D: Key aspects}
  The problem was initially solved in 1D as a proof of concept and to check feasibility, then scaled to 3D.
  \subsection{The mesh}
  The mesh used for 3D computation is read from an external $.msh$ file provided by the original author of the article \cite{WEICKENMEIER2019264}.
  The implementation distinguishes between different brain tissue types through material IDs, with the code specifically tracking Grey Matter (material ID 1), White Matter(material ID 2). A material mapping system associates each cell with its corresponding tissue type, enabling tissue-specific parameter assignment.
 
-In 1D, the me
+In 1D, the mesh is simply an interval $[0, l] \in \mathbb{R}$ divided into $N$ equal subintervals. For our computation, we have chosen $l=2$ and $N=200$.
 \subsection{Diffusion Term}
  For the implementation in 3D, the terms in \autoref{fisher-kolmogorov} indicated as $D$ is a tensor, called Diffusion matrix defined as
- $$\mathbf{D} = d^{\text{ext}} \mathbf{I} + d^{\text{axn}} \mathbf{n} \otimes \mathbf{n}$$ where the isotropic extracellular $d^{ext}$ component is combined with an anisotropic axonal $d^{axn}$ transport component. The fiber direction vector $\mathbf{n}$ is obtained through a \verb|Diffusion| class that supports three different fiber orientation models via the \verb|type_of_diffusion| parameter. 
+ $$\mathbf{D} = d^{\text{ext}} \mathbf{I} + d^{\text{axn}} \mathbf{n} \otimes \mathbf{n}$$ where the isotropic extracellular $d^{ext}$ component is combined with an anisotropic axonal $d^{axn}$ transport component. The fiber direction vector $\mathbf{n}$ is obtained through a \verb|Diffusion| class that supports three different fiber orientation models via the \verb|type_of_diffusion| parameter: axonal, circumferential, radial. 
 
  In 1D implementation, instead, this term is simply a scalar $D=d \in \mathbb{R}$.
  \subsection{Similarity}
@@ -254,27 +256,71 @@ In 1D, the me
  \end{itemize}
  \subsection{Differences}
  \begin{itemize}
-     \item 1D: less complex and uniform mesh built with.
-     \begin{verbatim}
-        subdivided_hyper_cube()
-     \end{verbatim}
-     \item 1D: Scalar diffusion coefficient.
-     \begin{verbatim}
-        const double diffusion_coefficient_loc = diffusion_coefficient.value()
-     \end{verbatim}
-     3D: Ansiotropic diffusion with tensor formulation.
-     \begin{verbatim}
-        const Tensor<2, dim> D = d_ext_matrix + d_axn_loc * normal_matrix;
-     \end{verbatim}
-     
-     \item 1D: Assumes uniform material proprieties through the domain.
-     
-     3D: Handles multiple brain tissue types (grey matter, white matter) trough a gradient of $\alpha$.
- \end{itemize}
- \section{Parallelization}
+  \item 1D implementation uses a less complex and uniform mesh built with 
+        \[
+        \verb|subdivided_hyper_cube()|.
+        \]
+        while 3D implementation reads the mesh directly from the proper file.
+        
+  \item In 1D the diffusion coefficient is just a scalar:
+        \[
+          \texttt{const double diffusion\_coefficient\_loc = diffusion\_coefficient.value();}
+        \]
+        while in 3D we model an anisotropic diffusion with tensor formulation:
+        \[
+          \texttt{const Tensor<2, dim> D = d\_ext\_matrix + d\_axn\_loc * normal\_matrix;}
+        \]
+        
+  \item In 1D we assume uniform material properties throughout the domain, while the 3D program handles multiple brain tissue types (grey matter, white matter) through a gradient of $\alpha$.
+\end{itemize}
+
+
+\subsection{Parameters}\label{parameters}
+The choice of the parameter is crucial for convergence, especially for the 3D simulation. In this case, the inputs and the parameters of the problem are:
+\begin{enumerate}
+    \item \textbf{T}: final time of the simulation.
+    \item \textbf{\( \Delta t \)}: time step for time discretization.
+    \item \textbf{Mesh}: A 3D discretized representation of the domain in \(\mathbb{R}^3\).
+    \item \textbf{Degree}; the polynomial degree of the finite elements used to construct the Finite Element Method.
+    \item \textbf{d\_ext}: Isotropic extracellular diffusion coefficient.
+    \item \textbf{d\_axn}: Anisotropic axonal transport along axonal fiber directions.
+    \item \textbf{Diffusion type}: Defines the direction of diffusion of the misfolded proteins and could be:
+        \begin{itemize}
+            \item Axonal
+            \item Circumferential
+            \item Radial
+        \end{itemize}
+    These types of diffusion are also taken in account by the article \cite{WEICKENMEIER2019264}.
+    \item \textbf{\(\alpha\)}; growth rate of misfolded protein concentration.
+    \item \textbf{Initial seed}: initial value of the non-zero concentration.
+    \item \textbf{Seed Region}; subdomain in which the initial concentration has the non-zero value Initial Seed. In our 3D simulations, we actually pass a point $x_0$ and the program computes a spherical region that has the point $x_0$ as center.
+\end{enumerate}
+\section{Implementation}
+\subsection{Implementation in 1D}
+To verify the correctness of our approach, we decided to implement a 1D solver as done by the author of the article \cite{WEICKENMEIER2019264} and then to compare the results. In this case, the domain considered is the interval \([-1,1] \subset \mathbb{R}\), the diffusion term \( D \) reduces to a scalar parameter \( d \) and the initial seed region consists of a single point at the center of the domain (\( x = 0 \)).
+
+The mesh is created in the interval with \( N = 200 \) mesh elements and \( \text{degree} = 1 \). After initializing all necessary objects as done in the laboratory sessions, the method \texttt{solve()} executes the system resolution for each time step and writes the output for that instant into a \verb|.vtu| file.
+
+The method \texttt{solve()} itself calls the function \texttt{solve\_newton()}, which performs Newton iterations to solve the non-linear system. For each iteration, the system is linearized around the current solution via \texttt{assemble\_system()}, and the resulting linear system is solved using \texttt{solve\_linear\_system()}. This process repeats until the norm of the residual vector falls below a fixed threshold (\( 10^{-6} \cdot \left\lVert \textbf{r}\right\rVert \) in our code, where $r$ is the residual vector).
+
+\textbf{Assemble\_system()} follows the same structure used in the laboratory exercises to compute the $LHS$ matrix and the $RHS$ vector. These terms represent the linearized versions of the original system, which we obtain using the values of the current and previous solutions to compute the relevant quantities and the parameters.
+
+Since homogeneous Neumann boundary conditions are forced to be null and the Dirichlet condition are not present, there is no need to handle boundary conditions explicitly.
+
+\textbf{Solve\_linear\_system()} assumes that the LHS matrix and RHS vector are correctly assembled. We use the Generalized Minimal Residual Method (GMRES) method to numerically solve the resulting linear system and the SSOR preconditioner is applied to accelerate convergence.
+
+\subsection{Implementation in 3D}
+The primary differences in the 3D solver involve the use of parallelization, the use of different parameters as explained in \autoref{parameters} and the presence of two different materials.
+\subsubsection{Parallelization}
 The 3D solver, due to the large number of nodes in 3D meshes and the nonlinear nature of the problem, results in exponentially higher complexity. This makes parallelization essential for keeping the computation feasible.
 Our parallelization approach leverages Trilinos with MPI to distribute the computational workload. We partition the mesh across multiple processes, with each process handling its assigned degrees of freedom while maintaining communication at partition boundaries. This domain decomposition strategy, combined with efficient load balancing, helps abstract much of the parallel complexity and enables scalable performance.
- 
+\subsubsection{Parameters representation}
+\begin{itemize}
+    \item \textbf{Mesh}: as already mentioned in \autoref{parameters}, the mesh is represented in into an external \verb|.msh| file which for each finite element shows also the corresponding material ID which can be either 1 for Grey Matter or 2 for White Matter.
+    \item  \textbf{Piece-wise function}: as mentioned in paper \cite{WEICKENMEIER2019264} the terms $d^{axn}$, $d^{ext}$ and $\alpha$ are assumed as piecewise constant function depending on the material ID. This behaviour is implemented using a \verb|std::vector<double>| where each component represents the value that the parameters have in each material ID, where the first component refers to material ID 1 and the second to material ID 2. In order to make use of it in the solver, we request a parameter \verb|const unsigned int component| in the \verb|virtual double value()| function alongside the point to valuate. The value of the \verb|component| parameter has to be either 1 or 2 to distinguish a point in Grey Matter or in White Matter.
+    \item \textbf{Initial Seed}: computes the initial seed region as the intersection of a spherical area centered at the given seed point and the domain mesh.
+    \end{itemize}
+    In the 3D implementation we switched from a SSOR preconditioner to an ILU preconditioner.
  \chapter{Performance evaluation}
  \section{Different parameters}
  \section{Convergence}
