@@ -322,7 +322,73 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
     \end{itemize}
     In the 3D implementation we switched from a SSOR preconditioner to an ILU preconditioner.
  \chapter{Performance evaluation}
+ The only case worth to be evaluated is the 3D one, as the 1D implementation is just a proof of concept. In this section we will analyze the performance of the 3D implementation in terms of scalability.
+ The following graphs are been built by using the paper's first case of parameters, so with:
+ \begin{itemize}
+     \item \( T = 40 \) years
+     \item \( \Delta t = 1/3 \) years
+     \item \( d^{ext} = [6.0, 6.0] cm^2/year\)
+     \item \( d^{axn} = [3.0, 3.0] cm^2/year\)
+     \item \( \alpha = [0.3, 0.6] /year\)
+     \item Diffusion type: Radial
+  \end{itemize}.
+
+  And these are some informations about the mesh:
+  \begin{table}[h!]
+  \centering
+  \begin{tabular}{l r}
+  \hline
+  \textbf{Mesh Information} & \\
+  Number of elements & 501,458 \\
+  \hline
+  \textbf{Finite Element Space} & \\
+  Degree & 1 \\
+  DoFs per cell & 4 \\
+  Quadrature points per cell & 6 \\
+  \hline
+  \textbf{DoF Handler} & \\
+  Number of DoFs & 107,394 \\
+  \hline
+  \end{tabular}
+  \caption{Mesh and finite element space statistics.}
+  \label{tab:mesh_info}
+  \end{table}
+
+  \section{Setup time}
+  The following graph shows the setup time of the program with respect to the number of processes used:
+  \begin{center}
+    \includegraphics[width=0.7\textwidth]{img/setup_time_graph.png}
+  \end{center}
+
+  We can see that the setup time decreases until we reach 4 processes, then it starts to increase again. This is due to the fact that the setup phase involves a lot of communication between processes, and as we increase the number of processes, the communication overhead increases as well.
+
+  \section{Solve time}
+  Then we have the graph of the time taken to solve the problem with respect to the number of processes used:
+  \begin{center}
+    \includegraphics[width=0.7\textwidth]{img/solve_time_graph.png}
+  \end{center}
+
+  Here we can state that the solve time decreases as we increase the number of processes, but the decrease is not linear. This is due to the fact that the problem is not perfectly parallelizable, and there are some parts of the code that are still sequential.
+  In fact around 4 processes the solve time saturates, meaning that adding more processes does not decrease the solve time anymore.
+
+  \section{Total time}
+  Finally, we have the graph of the total time taken to run the program with respect to the number of processes used:
+  \begin{center}
+    \includegraphics[width=0.7\textwidth]{img/total_time_graph.png}
+  \end{center}
+
+  As expected, the total time decreases as the number of processes increases, but again the decrease is not linear, in fact after 4 processes the improvement is minimal.
+
  \section{Different parameters}
+ We also tested the program with different parameters, in particular we used the second case of parameters from the paper, so with:
+ \begin{itemize}
+     \item \( T = 20 \) years
+     \item \( \Delta t = 1/6 \) years
+     \item \( d^{ext} = [1.5, 1.5] cm^2/year\)
+     \item \( d^{axn} = [0.0, 3.0] cm^2/year\)
+     \item \( \alpha = [0.3, 0.6] /year\)
+ \end{itemize}
+
  \section{Convergence}
  \chapter{Final results}
  
