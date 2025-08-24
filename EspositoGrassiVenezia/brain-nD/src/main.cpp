@@ -86,21 +86,21 @@ int main(int argc, char *argv[])
       std::ofstream setup_time_file("../csv/setup_time.csv", mode);
       if (setup_time_file.tellp() == 0)
       {
-        setup_time_file << "n,time,alpha values" << std::endl;
+        setup_time_file << "n,time,alpha grey, alpha white" << std::endl;
       }
       setup_time_file << mpi_size << "," << setup_time <<","<< p.alpha[0] <<","<<p.alpha[1] << std::endl;
 
       std::ofstream solve_time_file("../csv/solve_time.csv", mode);
       if (solve_time_file.tellp() == 0)
       {
-        solve_time_file << "n,time,alpha values" << std::endl;
+        solve_time_file << "n,time,alpha grey, alpha white" << std::endl;
       } 
       solve_time_file << mpi_size << "," << solve_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
 
       std::ofstream total_time_file("../csv/total_time.csv", mode);
       if (total_time_file.tellp() == 0)
       {
-        total_time_file << "n,time,alpha values" << std::endl;
+        total_time_file << "n,time,alpha grey, alpha white" << std::endl;
       }
       total_time_file << mpi_size << "," << total_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
 
