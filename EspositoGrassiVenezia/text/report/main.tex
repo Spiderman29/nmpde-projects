@@ -136,7 +136,7 @@ As for the most PDEs, the first step to take is to build the weak formulation.
   \end{equation}
 \end{enumerate}
   \section{Time discretization}
-  As in \autoref*{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative. We've decided to use the Backward Euler Method instead of Forward Euler Method or Mid-Point Method because it's unconditionally stable, while FWE is not, and because it's less computationally expensive than MP. To use this method we considered the interval $[0, T]$, where $T$ is the final simulation time, and we divided it into $N$ equal subintervals of length $\Delta t=\frac{T}{N}$. For each interval $t^{n+1}$ we can approximate the time derivative as:
+  As in \autoref*{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative. We've decided to use the Backward Euler Method becauseit's unconditionally stable since it can be considered a specific case of the $\theta$-method $(\theta=1)$, and we have unconditionally stability for $\theta\geq 1/2$, while, for example, FWE is not, and because BWE is less computationally expensive than other unconditionally stable method, such as Mid-Point Method. To use this method we considered the interval $(0, T]$, where $T$ is the final simulation time, and we divided it into $N$ equal subintervals of length $\Delta t=\frac{T}{N}$. For each interval $t^{n+1}$ we can approximate the time derivative as:
   $$\left. \frac{\partial c}{\partial t} \right|_{t^{n+1}} \approx \frac{c^{n+1} - c^n}{\Delta t}$$
   which leads to the time-space discretized expression: 
   \begin{equation}
@@ -147,7 +147,7 @@ As for the most PDEs, the first step to take is to build the weak formulation.
 
   \section{Linearization}
   It's still not possible to utilize \autoref*{time_discretization} for the numerical solution because it presents a non-linear term in $- \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx$.
-  To solve the problem, we need to used a linerized form of the \autoref*{time_discretization}. It's possible to do so using the Fréchet derivative. For a given functional $G : V \rightarrow R$, the Fréchet derivative at a point $u \in H^1(\Omega)$ is a linear operator $A(u) =\frac{dG}{du}: V \rightarrow R$ such that:
+  To solve the problem, we need to use a linerized form of the \autoref*{time_discretization}. It's possible to do so using the Fréchet derivative. For a given functional $G : V \rightarrow R$, the Fréchet derivative at a point $u \in H^1(\Omega)$ is a linear operator $A(u) =\frac{dG}{du}: V \rightarrow R$ such that:
   $$lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
   Now we can define the nonlinear residual:
   \begin{equation*}
@@ -161,7 +161,7 @@ As for the most PDEs, the first step to take is to build the weak formulation.
 
   
   Now, if we take $R(c^{n+1} + \delta, v)-R(c + \delta, v)$ we obtain:
-  \begin{equation*}
+  \begin{equation}
     \label{difference_residual}
     \begin{aligned}
         R(c^{n+1} + \delta, v) - R(c^{n+1}, v) =\; & 
@@ -175,10 +175,10 @@ As for the most PDEs, the first step to take is to build the weak formulation.
         + \int_{\Omega} D \nabla \delta \cdot \nabla v \, dx  
         - \int_{\Omega} \alpha \left( \delta(1 - 2c^{n+1}) - \delta^2 \right) v \, dx
     \end{aligned}
-\end{equation*}
+\end{equation}
   
   We can approximate \( (\delta)^2 \) as a higher-order small term, leading to the following expression:
-  \begin{equation*}
+  \begin{equation}
   \label{delta_residual}
   \begin{aligned}
   R(c^{n+1} + \delta, v) - R(c^{n+1}, v) =\; & 
@@ -187,7 +187,7 @@ As for the most PDEs, the first step to take is to build the weak formulation.
   & - \int_{\Omega} \alpha \delta (1 - 2c^{n+1}) \, v \, dx 
   + \mathcal{O}((\delta)^2)
   \end{aligned}
-  \end{equation*}
+  \end{equation}
 
 The right-hand side of \autoref*{delta_residual} with exception of $\mathcal{O}((\delta)^2)$ corresponds to the action of the Fréchet derivative:
   \[
@@ -207,7 +207,7 @@ The problem $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$ is a linear different
  \section{Finite element setting and final assembly}
   After a linear differential form of the original problem in \autoref{fisher-kolmogorov} is find in the form of $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$, we can discretize this problem in space using the Galerkin finite element method. To do so, we consider a vector space  $V_h \subset H^1(\Omega)$ which dimension are bounded and equals to $N_h$, our aim is to find $c_h^{(k)}$ solution of the problem $a(c_h^{(k)})(\delta^{(k)}, v_h) = -R(c_h^{(k)}, v_h) \ \forall v_h \in H^1(\Omega)$. We introduce the bases of $V_h$: \( \{\phi_j\}_{j=1}^N \), now it's possible to write:
     $$c_h^{(k)}(x) = \sum_{j=1}^N c_j^{(k)} \phi_j(x), \qquad \delta^{(k)}(x) = \sum_{j=1}^N \delta_j^{(k)} \phi_j(x).$$
- and substitute these expressions in the problem considering the test functions $v=\phi_i$ and obtaining
+ and substitute these expressions in the problem considering the test functions $v=\phi_i$.
 \begin{equation}
     a \left ( \sum_{j=1}^N c_j^{(k)} \phi_j(x) \right ) \left (\sum_{j=1}^N \delta_j^{(k)}, \phi_i \right ) = -R \left (\sum_{j=1}^N c_j^{(k)} \phi_j(x), \phi_i \right )
 \end{equation}
@@ -219,7 +219,7 @@ After some computation, the following result is obtained:
 where:
 \begin{itemize}
     \item $\delta^{(k)}$ is the vector of unknown for this problem;
-    \item $c_k^{n+1}$ is the value of the concentration calculated at the previous newton interaction $k$;
+    \item $c_k^{n+1}$ is the value of the concentration calculated at the previous newton interaction $k$ refered to the actual timetamp $n+1$;
     \item $c^{n}$ is the value computed at the previous timestamp $n$;
     \item $M=(m_{ij})=\int_{\Omega} \phi_i\phi_j\ dx$;
     \item $K=(k_{ij})=\int_{\Omega} D \cdot \nabla\phi_i \cdot \nabla\phi_j\ dx$;
@@ -239,7 +239,7 @@ At each timestamp $n+1$, Newton method is used to find $\delta^{(k)}$ by solving
  The problem was initially solved in 1D as a proof of concept and to check feasibility, then scaled to 3D.
  \subsection{The mesh}
  The mesh used for 3D computation is read from an external $.msh$ file provided by the original author of the article \cite{WEICKENMEIER2019264}.
- The implementation distinguishes between different brain tissue types through material IDs, with the code specifically tracking Grey Matter (material ID 1), White Matter(material ID 2). A material mapping system associates each cell with its corresponding tissue type, enabling tissue-specific parameter assignment.
+ The implementation distinguishes between different brain tissue types through material IDs, with the code specifically tracking Grey Matter (material ID 1) and White Matter(material ID 2). A material mapping system associates each cell with its corresponding tissue type, enabling tissue-specific parameter assignment.
 
 In 1D, the mesh is simply an interval $[0, l] \in \mathbb{R}$ divided into $N$ equal subintervals. For our computation, we have chosen $l=2$ and $N=200$.
 \subsection{Diffusion Term}
@@ -297,7 +297,7 @@ The choice of the parameter is crucial for convergence, especially for the 3D si
 \end{enumerate}
 \section{Implementation}
 \subsection{Implementation in 1D}
-To verify the correctness of our approach, we decided to implement a 1D solver as done by the author of the article \cite{WEICKENMEIER2019264} and then to compare the results. In this case, the domain considered is the interval \([-1,1] \subset \mathbb{R}\), the diffusion term \( D \) reduces to a scalar parameter \( d \) and the initial seed region consists of a single point at the center of the domain (\( x = 0 \)).
+To verify the correctness of our approach, we decided to implement a 1D solver as done by the author of the article \cite{WEICKENMEIER2019264} and then to compare the results. In this case, the domain considered is the interval \([0,2] \subset \mathbb{R}\), the diffusion term \( D \) reduces to a scalar parameter \( d \) and the initial seed region consists of a single point at the center of the domain (\( x = 0 \)).
 
 The mesh is created in the interval with \( N = 200 \) mesh elements and \( \text{degree} = 1 \). After initializing all necessary objects as done in the laboratory sessions, the method \texttt{solve()} executes the system resolution for each time step and writes the output for that instant into a \verb|.vtu| file.
 
@@ -317,11 +317,11 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
 \subsubsection{Parameters representation}
 \begin{itemize}
     \item \textbf{Mesh}: as already mentioned in \autoref{parameters}, the mesh is represented in into an external \verb|.msh| file which for each finite element shows also the corresponding material ID which can be either 1 for Grey Matter or 2 for White Matter.
-    \item  \textbf{Piece-wise function}: as mentioned in paper \cite{WEICKENMEIER2019264} the terms $d^{axn}$, $d^{ext}$ and $\alpha$ are assumed as piecewise constant function depending on the material ID. This behaviour is implemented using a \verb|std::vector<double>| where each component represents the value that the parameters have in each material ID, where the first component refers to material ID 1 and the second to material ID 2. In order to make use of it in the solver, we request a parameter \verb|const unsigned int component| in the \verb|virtual double value()| function alongside the point to valuate. The value of the \verb|component| parameter has to be either 1 or 2 to distinguish a point in Grey Matter or in White Matter.
+    \item  \textbf{Piece-wise function}: as mentioned in paper \cite{WEICKENMEIER2019264} the terms $d^{axn}$, $d^{ext}$ and $\alpha$ are assumed as piecewise constant function depending on the material ID. This behavior is implemented using a \verb|std::vector<double>| where each component represents the value that the parameters have in each material ID, where the first component refers to material ID 1 and the second to material ID 2. In order to make use of it in the solver, we request a parameter \verb|const unsigned int component| in the \verb|virtual double value()| function alongside the point to valuate. The value of the \verb|component| parameter has to be either 1 or 2 to distinguish a point in Grey Matter or in White Matter.
     \item \textbf{Initial Seed}: computes the initial seed region as the intersection of a spherical area centered at the given seed point and the domain mesh.
     \end{itemize}
-    In the 3D implementation we switched from a SSOR preconditioner to an ILU preconditioner.
- \chapter{Performance evaluation}
+    In the 3D implementation, we switched from an SSOR preconditioner to an ILU preconditioner.
+\chapter{Performance evaluation}
  The only case worth to be evaluated is the 3D one, as the 1D implementation is just a proof of concept. In this section we will analyze the performance of the 3D implementation in terms of scalability.
  The following graphs are been built by using the paper's first case of parameters, so with:
  \begin{itemize}
@@ -388,7 +388,6 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
      \item \( d^{axn} = [0.0, 3.0] cm^2/year\)
      \item \( \alpha = [0.3, 0.6] /year\)
  \end{itemize}
-
  \section{Stability and Convergence}
 
 A complete stability and convergence analysis of the fully discrete nonlinear problem is beyond the scope of this project. However, to ensure that each step of our numerical method is well-posed, we can analyze the linearized problem solved within each Newton iteration. We demonstrate that this linear problem has a unique solution by verifying the conditions of the Lax-Milgram theorem. This reduces the problem at each iteration to a standard elliptic problem, a topic extensively covered in numerical analysis.
@@ -414,10 +413,10 @@ The analysis relies on the following reasonable assumptions:
 To apply the Lax-Milgram theorem, we must show that $a(\cdot, \cdot)$ is coercive and continuous on $H^1(\Omega)$.
 
 \subsubsection{Coercivity of the Bilinear Form $a(\delta, v)$}
-We must show there exists a constant $\beta > 0$ such that $a(v,v) \ge \alpha \|v\|_{H^1}^2$ for all $v \in H^1(\Omega)$.
+We must show there exists a constant $\alpha     > 0$ such that $a(v,v) \ge \alpha \|v\|_{H^1}^2$ for all $v \in H^1(\Omega)$.
 \begin{align*}
     a(v,v) &= \int_{\Omega} \frac{1}{\Delta t} v^2 \, d\mathbf{x} + \int_{\Omega} D \nabla v, \nabla v   \, d\mathbf{x} - \int_{\Omega} \alpha(1 - 2c^{(k)}) v^2 \, d\mathbf{x} \\
-    &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1 - 2c^{(k)}) \right) v^2 \, d\mathbf{x} + \int_{\Omega} \nabla v (D_{\text{iso}}+ D_{\text{aniso}} \mathbf{n} \otimes \mathbf{n} \nabla v \, d\mathbf{x} \\
+    &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1 - 2c^{(k)}) \right) v^2 \, d\mathbf{x} + \int_{\Omega} \nabla v (D_{\text{iso}}+ D_{\text{aniso}}) \mathbf{n} \otimes \mathbf{n} \nabla v \, d\mathbf{x} \\
     &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1 - 2c^{(k)}) \right) v^2 \, d\mathbf{x} + \int_{\Omega} D_{\text{iso}} \|\nabla v\|^2 \, d\mathbf{x} + \int_{\Omega} D_{\text{aniso}} (\mathbf{n} \nabla v)^2 \, d\mathbf{x}.
 \end{align*}
 Since $D_{\text{aniso}} \ge 0$, the last term is non-negative. We can establish a lower bound:
@@ -446,8 +445,12 @@ The Lax-Milgram theorem guarantees a unique solution for the linear system at ea
 
 \paragraph{Assumptions on Problem Data (assumed to hold):}
 \begin{itemize}
-    \item The diffusion coefficients and reaction parameter are bounded: $\|D_{\text{iso}}\|_{L^\infty}, \|D_{\text{aniso}}\|_{L^\infty}, \|\alpha\|_{L^\infty} < \infty$.
-    \item The isotropic part of the diffusion is non-degenerate: $\underset{\Omega}{\operatorname{ess\,inf}} \, D_{\text{iso}} > 0$.
+    \item The diffusion coefficients and reaction parameter are bounded: 
+    
+    $\|D_{\text{iso}}\|_{L^\infty}, \|D_{\text{aniso}}\|_{L^\infty}, \|\alpha\|_{L^\infty} < \infty$.
+    \item The isotropic part of the diffusion is non-degenerate: 
+    
+    $\underset{\Omega}{\operatorname{ess\,inf}} \, D_{\text{iso}} > 0$.
 \end{itemize}
 
 \paragraph{Assumptions on the Numerical Solution (related to stability):}
@@ -463,20 +466,19 @@ Given the assumptions above, the crucial condition that must be satisfied for th
 \]
 Since our stability assumption implies $c^{(k)} \in [0,1]$, we have $|1-2c^{(k)}| \le 1$. Therefore, a sufficient condition is $\frac{1}{\Delta t} > \|\alpha\|_{L^\infty}$. This highlights the critical trade-off: a large reaction rate $\alpha$ requires a small time step $\Delta t$ to ensure the coercivity of the system matrix. If this inequality is violated, the bilinear form may cease to be coercive, leading to the divergence of the Newton iteration and failure of the simulation.
 
-
-
+\section {Evaluation}
 
 
 
  \chapter{Conclusion}
 As a first thing, we would like to properly thank with our best regards Professor Johannes Weickenmeier, co-author of the paper used for this work, that kindly provided the original mesh used for the paper.
 
-In this project, we have successfully implemented a numerical model to simulate the prion-like propagation of misfolded proteins, a key mechanism in neurodegenerative diseases. By adopting the Fisher-Kolmogorov equation, we captured the essential dynamics of protein aggregation and diffusion through a nonlinear reaction-diffusion framework. The methodology—involving a weak formulation, the unconditionally stable Backward Euler method for time discretization, and a robust Newton-Raphson linearization—proved to be a highly effective approach.
+In this project, we have successfully implemented a numerical model to simulate the prion-like propagation of misfolded proteins, a key mechanism in neurodegenerative diseases. By adopting the Fisher-Kolmogorov equation, we modelled the essential dynamics of protein aggregation and diffusion through a nonlinear reaction-diffusion framework. The methodology—involving a weak formulation, the unconditionally stable Backward Euler method for time discretization, and a robust Newton-Raphson linearization—proved to be a highly effective approach.
 
 Our results align perfectly with the expected behavior, demonstrating logistic growth coupled with spatial diffusion. This work serves not merely as a proof of concept but as a successful validation of the theoretical model, confirming its power to simulate complex biological phenomena.
 
 While applied here to neurobiology, the finite element framework used in this project is a cornerstone of modern computational science with vast applicability. Reaction-diffusion systems and similar partial differential equations model phenomena across numerous fields.
-This project, therefore, also serves as a testament to the versatility of computational methods in translating abstract mathematical models into concrete, predictive tools across diverse scientific and industrial domains.
+This project, therefore, also serves as a manifest to the versatility of computational methods in translating mathematical models into predictive tools across diverse scientific and industrial domains.
 
 Some ideas for expanding the capabilities of this model:
 
@@ -485,6 +487,11 @@ Some ideas for expanding the capabilities of this model:
     \item Solve the Inverse Problem: Use existing clinical data to work backward and estimate key biological parameters like the local reaction rate or diffusion coefficients. This could help uncover patient-specific disease characteristics.
     \item Improve Computational Efficiency: Implement adaptive mesh refinement, where the mesh resolution increases only in areas with high activity (i.e., where the concentration gradient is steep), optimizing computational resources and enabling larger, more detailed simulations.
 \end{enumerate}
+
+\nocite{*}
+ 
+ 
+
 
 
 

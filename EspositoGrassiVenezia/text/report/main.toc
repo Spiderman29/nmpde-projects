@@ -24,6 +24,15 @@
 \contentsline {section}{\numberline {4.2}Solve time}{14}{section.4.2}%
 \contentsline {section}{\numberline {4.3}Total time}{14}{section.4.3}%
 \contentsline {section}{\numberline {4.4}Different parameters}{15}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Convergence}{15}{section.4.5}%
-\contentsline {chapter}{\numberline {5}Final results}{17}{chapter.5}%
-\contentsline {chapter}{Bibliography}{19}{chapter*.5}%
+\contentsline {section}{\numberline {4.5}Stability and Convergence}{15}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Lax-Milgram Analysis for the Linearized Step}{15}{subsection.4.5.1}%
+\contentsline {subsubsection}{Assumptions}{16}{subsubsection*.5}%
+\contentsline {subsubsection}{Coercivity of the Bilinear Form $a(\delta , v)$}{16}{subsubsection*.6}%
+\contentsline {subsubsection}{Continuity of the Bilinear Form and Linear Functional}{17}{subsubsection*.7}%
+\contentsline {subsubsection}{Summary of Conditions}{17}{subsubsection*.8}%
+\contentsline {paragraph}{Assumptions on Problem Data (assumed to hold):}{17}{paragraph*.9}%
+\contentsline {paragraph}{Assumptions on the Numerical Solution (related to stability):}{17}{paragraph*.10}%
+\contentsline {paragraph}{Critical Condition for Coercivity and Convergence:}{17}{paragraph*.11}%
+\contentsline {section}{\numberline {4.6}Evaluation}{17}{section.4.6}%
+\contentsline {chapter}{\numberline {5}Conclusion}{19}{chapter.5}%
+\contentsline {chapter}{Bibliography}{21}{chapter*.12}%
