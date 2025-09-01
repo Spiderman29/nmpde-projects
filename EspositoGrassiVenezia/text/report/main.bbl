@@ -7,8 +7,7 @@
 \providecommand{\BIBentrySTDinterwordspacing}{\spaceskip=0pt\relax}
 \providecommand{\BIBentryALTinterwordstretchfactor}{4}
 \providecommand{\BIBentryALTinterwordspacing}{\spaceskip=\fontdimen2\font plus
-\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
-  \fontdimen4\font\relax}
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus \fontdimen4\font\relax}
 \providecommand{\BIBforeignlanguage}[2]{{%
 \expandafter\ifx\csname l@#1\endcsname\relax
 \typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
@@ -23,12 +22,7 @@
 
 \bibitem{WEICKENMEIER2019264}
 \BIBentryALTinterwordspacing
-J.~Weickenmeier, M.~Jucker, A.~Goriely, and E.~Kuhl, ``A physics-based model
-  explains the prion-like features of neurodegeneration in alzheimer’s
-  disease, parkinson’s disease, and amyotrophic lateral sclerosis,''
-  \emph{Journal of the Mechanics and Physics of Solids}, vol. 124, pp.
-  264--281, 2019. [Online]. Available:
-  \url{https://www.sciencedirect.com/science/article/pii/S0022509618307063}
+J.~Weickenmeier, M.~Jucker, A.~Goriely, and E.~Kuhl, ``A physics-based model explains the prion-like features of neurodegeneration in alzheimer’s disease, parkinson’s disease, and amyotrophic lateral sclerosis,'' \emph{Journal of the Mechanics and Physics of Solids}, vol. 124, pp. 264--281, 2019. [Online]. Available: \url{https://www.sciencedirect.com/science/article/pii/S0022509618307063}
 \BIBentrySTDinterwordspacing
 
 \end{thebibliography}

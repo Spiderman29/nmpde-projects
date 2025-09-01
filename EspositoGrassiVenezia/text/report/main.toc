@@ -33,6 +33,5 @@
 \contentsline {paragraph}{Assumptions on Problem Data (assumed to hold):}{17}{paragraph*.9}%
 \contentsline {paragraph}{Assumptions on the Numerical Solution (related to stability):}{17}{paragraph*.10}%
 \contentsline {paragraph}{Critical Condition for Coercivity and Convergence:}{17}{paragraph*.11}%
-\contentsline {section}{\numberline {4.6}Evaluation}{17}{section.4.6}%
 \contentsline {chapter}{\numberline {5}Conclusion}{19}{chapter.5}%
 \contentsline {chapter}{Bibliography}{21}{chapter*.12}%
