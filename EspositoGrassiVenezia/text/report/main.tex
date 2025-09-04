@@ -487,7 +487,7 @@ The bilinear form arises from the left-hand side of the linearized weak formulat
 
         The linear functional $F(v)$ represents the residual from the right-hand side of the linearized system:
         \[
-          F(v) = - \int_{\Omega} \frac{c^{(k)} - c^n{\Delta t} v \, dx - \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx + \int_{\Omega} \alpha c^{(k)}(1-c^{(k)}) v \, dx
+          F(v) = - \int_{\Omega} \frac{c^{(k)} - c^n}{\Delta t} v \, dx - \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx + \int_{\Omega} \alpha c^{(k)}(1-c^{(k)}) v \, dx
             \]
               We need to show there exists a constant $\bar{K} > 0$ such that $|F(v)| \leq \bar{K} \|v\|_{V}$. Using the triangle inequality, we have:
               \begin{align*}
