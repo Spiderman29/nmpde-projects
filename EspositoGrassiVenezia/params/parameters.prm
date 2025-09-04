@@ -7,22 +7,22 @@ set mesh_file_name = ../../mesh/brain_gm_wm.msh
 set degree = 1
 
 # Total T
-set T = 40.0
+set T = 20.0
 
 # Time step
-set deltat = 0.3333333333333333
+set deltat = 0.1
 
 # Param theta
 set theta = 1.0
 
 # Alpha param
-set alpha = 0.6,0.3
+set alpha = 0.3,0.6
 
 # Ext diffusion coefficients
 set d_ext = 1.5,1.5
 
 # Axn diffusion coefficients
-set d_axn = 3.0,0.0
+set d_axn = 0.0,3.0
 
 # Type of diffusion
 set diffusion_type = radial

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   // default values
   {
   ParameterHandler prm;
-  prm.declare_entry("mesh_file_name", "../../mesh/brain_gm_wm.msh");
+  prm.declare_entry("mesh_file_name", "../../mesh/mesh.msh");
   prm.declare_entry("degree", "1", Patterns::Integer());
   prm.declare_entry("T", "40.0",Patterns::Double());
   prm.declare_entry("deltat", "0.333333333",Patterns::Double());
