@@ -1,43 +1,5 @@
 #include "BRAIN.hpp"
 
-// void Brain::compute_material_mapping()
-//{
-//   for (const auto &cell : dof_handler.active_cell_iterators())
-//   {
-//     if (!cell->is_locally_owned())
-//       continue;
-//
-//     std::vector<types::global_dof_index> dof_indices(fe->dofs_per_cell);
-//     cell->get_dof_indices(dof_indices);
-//
-//     unsigned int material_id = material_id_map[cell->id()];
-//     if(material_id!=1 && material_id!=2) pcout<<cell->id()<<" "<<material_id<<std::endl;
-//
-//     for (const auto &dof_index : dof_indices)
-//     {
-//       if (locally_owned_dofs.is_element(dof_index))
-//       {
-//         material_vector[dof_index] = material_id;
-//       }
-//     }
-//   }
-//
-//   material_vector.compress(VectorOperation::insert);
-//
-//   DataOut<dim> data_out;
-//   data_out.add_data_vector(dof_handler, material_vector, "material");
-//
-//   std::vector<unsigned int> partition_int(mesh.n_active_cells());
-//   GridTools::get_subdomain_association(mesh, partition_int);
-//   const Vector<double> partitioning(partition_int.begin(), partition_int.end());
-//   data_out.add_data_vector(partitioning, "partitioning");
-//
-//   data_out.build_patches();
-//
-//   data_out.write_vtu_with_pvtu_record("./","material", 1, MPI_COMM_WORLD, 3);
-//
-// };
-
 void Brain::setup()
 {
   // Create the mesh.
@@ -87,9 +49,6 @@ void Brain::setup()
     pcout << "Grey Matter: " << count_1 << std::endl;
     pcout << "White Matter: " << count_2 << std::endl;
     pcout << "Cerebellum: " << count_3 << std::endl;
-
-    // diffusion_coefficient.set_material_id_map(material_id_map);
-    // reaction_coefficient.set_material_id_map(material_id_map);
 
     pcout << "  Number of elements = " << mesh.n_global_active_cells()
           << std::endl;

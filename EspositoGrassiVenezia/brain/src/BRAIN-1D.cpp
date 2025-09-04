@@ -163,28 +163,8 @@ Brain1D::assemble_system()
                             * (1 - solution_loc[q]) 
                             * fe_values.shape_value(i, q)
                             * fe_values.JxW(q);
-
-        // cell_residual(i) += f_loc * fe_values.shape_value(i, q) * fe_values.JxW(q);
       }
     }
-
-    // if (cell->at_boundary())
-    // {
-    //   function_h.set_time(time);
-    //   for (unsigned int face_number = 0; face_number < cell->n_faces(); ++face_number)
-    //   {
-    //     if (cell->face(face_number)->at_boundary())
-    //     {
-    //       fe_face_values.reinit(cell, face_number);
-
-    //       for (unsigned int q = 0; q < quadrature_face->size(); ++q)
-    //         for (unsigned int i = 0; i < dofs_per_cell; ++i)
-    //           cell_residual(i) += function_h.value(fe_face_values.quadrature_point(q)) *
-    //                               fe_face_values.shape_value(i, q) *
-    //                               fe_face_values.JxW(q);
-    //     }
-    //   }
-    // }
 
     cell->get_dof_indices(dof_indices);
     jacobian_matrix.add(dof_indices, cell_matrix);
@@ -249,8 +229,8 @@ Brain1D::solve_newton()
       ++n_iter;
     }
 
-    // Anche se il residuo è sotto la tolleranza, aggiorniamo la soluzione
-  // per non lasciare la soluzione invariata senza essere effettivamente risolta.
+  // Even if the residual is below the tolerance, we update the solution
+  // so as not to leave the solution unchanged without being actually solved.
   if (residual_norm <= residual_tolerance)
   {
     solution = solution_owned;
