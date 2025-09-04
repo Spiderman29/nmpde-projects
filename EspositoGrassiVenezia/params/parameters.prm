@@ -16,13 +16,13 @@ set deltat = 0.3333333333333333
 set theta = 1.0
 
 # Alpha param
-set alpha = 0.3,0.6
+set alpha = 0.6,0.3
 
 # Ext diffusion coefficients
-set d_ext = 6.0,6.0
+set d_ext = 1.5,1.5
 
 # Axn diffusion coefficients
-set d_axn = 3.0,3.0
+set d_axn = 3.0,0.0
 
 # Type of diffusion
 set diffusion_type = radial

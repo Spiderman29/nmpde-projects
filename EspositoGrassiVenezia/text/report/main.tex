@@ -398,7 +398,7 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
  In both the two configurations, the program was able to run without any issues, and the results were consistent with the expected behavior of the model, compared to the results presented in the paper \cite{WEICKENMEIER2019264}.
  \section{Stability and Convergence}
 
-A complete stability and convergence analysis of the fully discrete nonlinear problem is beyond the scope of this project. However, to ensure that each step of our numerical method is well-posed, we can analyze the linearized problem solved within each Newton iteration. We demonstrate that this linear problem has a unique solution by verifying the conditions of the Lax-Milgram theorem. This reduces the problem at each iteration to a standard elliptic problem, a topic extensively covered in numerical analysis.
+We will not analyze the stability and convergence of the whole project. However, to ensure that each step of our numerical method is well-posed, we can analyze the linearized problem solved within each Newton iteration. We will demonstrate that this linear problem has a unique solution by verifying the conditions of the Lax-Milgram theorem. This reduces the problem at each iteration to a standard elliptic problem, a topic covered in the course. Finally we also must verify the continuity of both the bilinear form $a(u,v)$ and the linear functional $F(v)$.
 
 \subsection{Lax-Milgram Analysis for the Linearized Step}
 At each time step $n+1$ and for each Newton iteration $k$, we solve for an update $\delta^{(k)} \in H^1(\Omega)$ that satisfies the linear weak formulation:
@@ -445,9 +445,82 @@ This leads to two conditions for well-posedness at each Newton step:
     \item $\dfrac{1}{\Delta t} > \underset{\Omega}{\operatorname{ess\,sup}} \, \alpha(1 - 2c^{(k)}) = \|\alpha(1 - 2c^{(k)})\|_{L^\infty}$.
 \end{enumerate}
 
-\subsubsection{Continuity of the Bilinear Form and Linear Functional}
-The continuity of $a(\cdot, \cdot)$ and $F(\cdot)$ is also required. We need to show there exist constants $C_a, C_F > 0$ such that $|a(u,v)| \le C_a \|u\|_{H^1} \|v\|_{H^1}$ and $|F(v)| \le C_F \|v\|_{H^1}$. These proofs follow from standard applications of the triangle and Cauchy-Schwarz inequalities. Continuity holds if the material parameters ($D_{\text{iso}}, D_{\text{aniso}}, \alpha$) are bounded in $L^\infty(\Omega)$ and if the solutions from the previous steps ($c^n, c^{(k)}$) are sufficiently regular (e.g., $c^{(k)} \in H^1(\Omega)$). These are reasonable assumptions for a well-posed physical problem.
+\subsection{Continuity of the Bilinear Form $a(u, v)$}
 
+The bilinear form arises from the left-hand side of the linearized weak formulation and is defined as:
+\[
+  a(u, v) = \int_{\Omega} \frac{u v}{\Delta t} \, dx + \int_{\Omega} D \nabla u \cdot \nabla v \, dx - \int_{\Omega} \alpha(1-2c^{(k)}) u v \, dx
+  \]
+  where the diffusion tensor is $D = D_{\text{const}} + d \mathbf{n} \otimes \mathbf{n}$. We need to find a constant $M > 0$ such that $|a(u, v)| \leq M \|u\|_{V} \|v\|_{V}$ for all $u, v \in V$. We analyze the form term by term using the triangle inequality.
+
+  \begin{align*}
+  |a(u, v)| \leq \left| \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right) u v \, dx \right| + \left| \int_{\Omega} D_{\text{const}} \nabla u \cdot \nabla v \, dx \right| + \left| \int_{\Omega} d' (\mathbf{n} \cdot \nabla u)(\mathbf{n} \cdot \nabla v) \, dx \right|
+  \end{align*}
+
+  \paragraph{1. Time Derivative and Reaction Term}
+  We bound the first term using the Cauchy-Schwarz and Poincaré inequalities.
+  \begin{align*}
+  \left| \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right) u v \, dx \right|
+  &\leq \left\| \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right\|_{L^\infty} \int_{\Omega} |uv| \, dx \\
+    &\overset{\text{C.S.}}{\leq} \left\| \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right\|_{L^\infty} \|u\|_{L^2} \|v\|_{L^2} \\
+    &\overset{\text{Poincaré}}{\leq} C_P \left( \frac{1}{\Delta t} + \|\alpha(1-2c^{(k)})\|_{L^\infty} \right) \|u\|_{V} \|v\|_{V}
+    \end{align*}
+
+    \paragraph{2. Isotropic Diffusion Term}
+    This term is bounded using the Cauchy-Schwarz inequality.
+    \[
+      \left| \int_{\Omega} D_{\text{const}} \nabla u \cdot \nabla v \, dx \right| \leq \|D_{\text{const}}\|_{L^\infty} \int_{\Omega} |\nabla u \cdot \nabla v| \, dx \overset{\text{C.S.}}{\leq} \|D_{\text{const}}\|_{L^\infty} \|\nabla u\|_{L^2} \|\nabla v\|_{L^2}
+      \]
+
+      \paragraph{3. Anisotropic Diffusion Term}
+      For the anisotropic part, we again apply Cauchy-Schwarz, recalling that $\mathbf{m}$ is a unit vector field ($\|\mathbf{m}\|_{L^\infty} = 1$).
+      \begin{align*}
+      \left| \int_{\Omega} d' (\mathbf{n} \cdot \nabla u)(\mathbf{n} \cdot \nabla v) \, dx \right|
+      &\leq \|d'\|_{L^\infty} \int_{\Omega} |\mathbf{n} \cdot \nabla u| |\mathbf{n} \cdot \nabla v| \, dx \\
+        &\overset{\text{C.S.}}{\leq} \|d'\|_{L^\infty} \|\mathbf{n} \cdot \nabla u\|_{L^2} \|\mathbf{n} \cdot \nabla v\|_{L^2} \\
+        &\leq \|d'\|_{L^\infty} \|\nabla u\|_{L^2} \|\nabla v\|_{L^2}
+        \end{align*}
+
+        By combining these bounds, we conclude that the bilinear form $a(u,v)$ is continuous, provided that the concentration $c^{(k)}$ is bounded in the $L^\infty$-norm at each iteration, which is a reasonable physical assumption since $c$ represents a normalized concentration.
+
+        \subsection{Continuity of the Linear Functional $F(v)$}
+
+        The linear functional $F(v)$ represents the residual from the right-hand side of the linearized system:
+        \[
+          F(v) = - \int_{\Omega} \frac{c^{(k)} - c^n{\Delta t} v \, dx - \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx + \int_{\Omega} \alpha c^{(k)}(1-c^{(k)}) v \, dx
+            \]
+              We need to show there exists a constant $\bar{K} > 0$ such that $|F(v)| \leq \bar{K} \|v\|_{V}$. Using the triangle inequality, we have:
+              \begin{align*}
+            |F(v)| \leq \left| \int_{\Omega} \left( \alpha c^{(k)}(1-c^{(k)}) - \frac{c^{(k)} - c^n}{\Delta t} \right) v \, dx \right| + \left| \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx \right|
+              \end{align*}
+
+            \paragraph{1. Terms without Gradient of $v$}
+            This part combines the reaction and time-stepping terms. We apply the Cauchy-Schwarz and Poincaré inequalities.
+              \begin{align*}
+            \left| \int_{\Omega} \left( \alpha c^{(k)}(1-c^{(k)}) - \frac{c^{(k)} - c^n}{\Delta t} \right) v \, dx \right|
+              &\leq \left( \left\| \alpha c^{(k)}(1-c^{(k)}) \right\|_{L^\infty} + \left\| \frac{c^{(k)} - c^n}{\Delta t} \right\|_{L^\infty} \right) \int_{\Omega} |v| \, dx \\
+              &\leq C \left( \dots \right) V(\Omega) \|v\|_{L^2} \leq C' \|v\|_{V}
+            \end{align*}
+            where $C'$ depends on the volume of the domain $V(\Omega)$ and the $L^\infty$-norms of the concentration terms.
+
+              \paragraph{2. Terms with Gradient of $v$}
+            This part arises from the diffusion operator. We split it into its isotropic and anisotropic components and apply Cauchy-Schwarz.
+              \begin{align*}
+            \left| \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx \right| &\leq \left| \int_{\Omega} D_{\text{const}} \nabla c^{(k)} \cdot \nabla v \, dx \right| + \left| \int_{\Omega} d' (\mathbf{m} \cdot \nabla c^{(k)})(\mathbf{m} \cdot \nabla v) \, dx \right| \\
+              &\overset{\text{C.S.}}{\leq} \left( \|D_{\text{const}}\|_{L^\infty} + \|d'\|_{L^\infty} \right) \|\nabla c^{(k)}\|_{L^2} \|\nabla v\|_{L^2}
+            \end{align*}
+
+            Combining the bounds yields:
+              \[
+              |F(v)| \leq \left[ C' + \left( \|D_{\text{const}}\|_{L^\infty} + \|d'\|_{L^\infty} \right) \|\nabla c^{(k)}\|_{L^2} \right] \|v\|_{V}
+            \]
+              Thus, the linear functional $F(v)$ is continuous, provided that the following quantities remain bounded during the iterative process:
+              \begin{itemize}
+            \item $\|c^{(k)} - c^n\|_{L^\infty}$
+              \item $\|\alpha c^{(k)}(1 - c^{(k)})\|_{L^\infty}$
+              \item $\|\nabla c^{(k)}\|_{L^2}$
+              \end{itemize}
+            These conditions are physically and mathematically reasonable for a well-behaved solution over a finite domain.
 \subsubsection{Summary of Conditions}
 The Lax-Milgram theorem guarantees a unique solution for the linear system at each Newton step if the problem data and numerical solution satisfy certain criteria.
 
