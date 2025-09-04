@@ -80,7 +80,7 @@ The model leads to a system of coupled PDEs governing the evolution of the conce
 \end{equation}
 
 
-To simplify the system, the article assumes that the concentration of healthy protein is significantly higher than that of the misfolded form (i.e., $p \gg \tilde{p}$), allowing a quasi-steady-state approximation for $p$. Under this assumption the healthy protein concentration is defined as:
+To simplify the system, the article \cite{WEICKENMEIER2019264} assumes that the concentration of healthy protein is significantly higher than that of the misfolded form (i.e., $p \gg \tilde{p}$), allowing a quasi-steady-state approximation for $p$. Under this assumption the healthy protein concentration is defined as:
 \begin{equation}
 p \approx \frac{k_0}{k_1 + k_{12}\tilde{p}}
 \end{equation}
@@ -101,12 +101,12 @@ where $D=D_{\tilde{p}}$ is the diffusion tensor and  $\alpha$ is the effective g
     \alpha = \frac{k_{12} k_0}{k_1} - \tilde{k}_1
 \end{equation}
 
-The \autoref*{alpha_def} captures the key dinamics of prion-like propagation: the diffusion of misfolded proteins and their growth due to conversion of healthy proteins.
+The \autoref{alpha_def} captures the key dinamics of prion-like propagation: the diffusion of misfolded proteins and their growth due to conversion of healthy proteins.
 The growth rate $\alpha$ increases with the conversion rate $k_{12}$ and the equilibrium healthy protein concentration $p_0 = k_0 / k_1$, and decreases with the clearance rate of misfolded proteins $\tilde{k}_1$.
 
 \section{Fisher–Kolmogorov}
 To model the physics of
-prion-like diseases, we adopt the \autoref*{fisher-kolmogorov}, which is known in mathematical biology as the Fisher–Kolmogorov equation. To have a numerical description of the problem, we need to solve the \autoref*{fisher-kolmogorov} with respect to the concentration $c$.
+prion-like diseases, we adopt the \autoref{fisher-kolmogorov}, which is known in mathematical biology as the Fisher–Kolmogorov equation. To have a numerical description of the problem, we need to solve the \autoref{fisher-kolmogorov} with respect to the concentration $c$.
 
 \section{Weak formulation}
 As for the most PDEs, the first step to take is to build the weak formulation.
@@ -114,7 +114,7 @@ As for the most PDEs, the first step to take is to build the weak formulation.
   \item To derive the weak formulation, it's introduced the following Hilbert space \[
     H^1(\Omega) = \left\{ v \in L^2(\Omega) \, : \, \nabla v \in \left[L^2(\Omega)\right]^d \right\},
     \]
-    It's required that $c \in H^1(\Omega)$ in order to be solution of \autoref*{fisher-kolmogorov}.
+    It's required that $c \in H^1(\Omega)$ in order to be solution of \autoref{fisher-kolmogorov}.
 
   \item For function $c \in H^1(\Omega) $ to be solution of \autoref{fisher-kolmogorov} it's required that $\forall v \in H^1(\Omega)$:
   \begin{equation}
@@ -126,17 +126,21 @@ As for the most PDEs, the first step to take is to build the weak formulation.
 
   \begin{equation}
   \label{integrate_by_parts}
-      - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v}=\int_{\Omega}{D \cdot \nabla c \nabla v}-\int_{\partial \Omega}{D \cdot c \cdot v \cdot \vec{n}}
+      - \int_{\Omega}{\nabla \cdot (D \cdot \nabla c) \cdot v}=\int_{\Omega}{D \cdot \nabla c \cdot \nabla v}-\int_{\partial \Omega}{D \cdot \nabla c \cdot v \cdot \vec{n}}
   \end{equation}
-  Here the term $\int_{\partial \Omega}{D \cdot c \cdot v \cdot \vec{n}}=0$ due to the second equation of \autoref{fisher-kolmogorov}. By substituting in the \autoref*{test_func}, we obtain the weak formulation of \autoref*{fisher-kolmogorov}
-  
+  Here the term $\int_{\partial \Omega}{D \cdot \nabla c \cdot v \cdot \vec{n}}=0$ due to the second equation of \autoref{fisher-kolmogorov}. By substituting in the \autoref{test_func}, we obtain the weak formulation of \autoref{fisher-kolmogorov}
+
   \begin{equation}
     \label{weak_formulation}
     \int_{\Omega} {\frac{\partial c}{\partial t} \cdot v \ dx} + \int_{\Omega}{D \cdot \nabla c \cdot \nabla v \ dx} - \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx = 0    
   \end{equation}
 \end{enumerate}
   \section{Time discretization}
-  As in \autoref*{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative. We've decided to use the Backward Euler Method becauseit's unconditionally stable since it can be considered a specific case of the $\theta$-method $(\theta=1)$, and we have unconditionally stability for $\theta\geq 1/2$, while, for example, FWE is not, and because BWE is less computationally expensive than other unconditionally stable method, such as Mid-Point Method. To use this method we considered the interval $(0, T]$, where $T$ is the final simulation time, and we divided it into $N$ equal subintervals of length $\Delta t=\frac{T}{N}$. For each interval $t^{n+1}$ we can approximate the time derivative as:
+  As in \autoref{weak_formulation} there's the term $\int_{\Omega} \partial_t c \cdot v \ dx$, it's necessary to discretize the time derivative.
+  We've decided to use the Backward Euler Method for two reasons: first because it's unconditionally stable since it can be considered a 
+  specific case of the $\theta$-method $(\theta=1)$, and we have unconditionally stability for $\theta\geq 1/2$, while, for example, FWE is not.
+  The second reason is that BWE is less computationally expensive than other unconditionally stable method, such as Mid-Point Method. To use this method we considered the interval 
+  $(0, T]$, where $T$ is the final simulation time, and we divided it into $N$ equal subintervals of length $\Delta t=\frac{T}{N}$. For each interval $t^{n+1}$ we can approximate the time derivative as:
   $$\left. \frac{\partial c}{\partial t} \right|_{t^{n+1}} \approx \frac{c^{n+1} - c^n}{\Delta t}$$
   which leads to the time-space discretized expression: 
   \begin{equation}
@@ -146,8 +150,8 @@ As for the most PDEs, the first step to take is to build the weak formulation.
 
 
   \section{Linearization}
-  It's still not possible to utilize \autoref*{time_discretization} for the numerical solution because it presents a non-linear term in $- \int_{\Omega} {\alpha c(1-c) \cdot v}\  dx$.
-  To solve the problem, we need to use a linerized form of the \autoref*{time_discretization}. It's possible to do so using the Fréchet derivative. For a given functional $G : V \rightarrow R$, the Fréchet derivative at a point $u \in H^1(\Omega)$ is a linear operator $A(u) =\frac{dG}{du}: V \rightarrow R$ such that:
+  It's still not possible to utilize \autoref{time_discretization} for the numerical solution because it presents a non-linear term in $- \int_{\Omega} {\alpha c^{n+1}(1-c^{n+1}) \cdot v}\  dx$.
+  To solve the problem, we need to use a linerized form of the \autoref{time_discretization}. It's possible to do so using the Fréchet derivative. For a given functional $G : V \rightarrow R$, the Fréchet derivative at a point $u \in H^1(\Omega)$ is a linear operator $A(u) =\frac{dG}{du}: V \rightarrow R$ such that:
   $$lim_{\|d\| \to 0} \frac{\left| R(u + d) - R(u) - A(u)d \right|}{\|d\|} = 0$$
   Now we can define the nonlinear residual:
   \begin{equation*}
@@ -189,7 +193,7 @@ As for the most PDEs, the first step to take is to build the weak formulation.
   \end{aligned}
   \end{equation}
 
-The right-hand side of \autoref*{delta_residual} with exception of $\mathcal{O}((\delta)^2)$ corresponds to the action of the Fréchet derivative:
+The right-hand side of \autoref{delta_residual} with exception of $\mathcal{O}((\delta)^2)$ corresponds to the action of the Fréchet derivative:
   \[
   \frac{dR}{dc} (c^{n+1})(\delta, v) = a(c^{n+1})(\delta, v)
   \]
@@ -198,7 +202,7 @@ Now, solving the \autoref{time_discretization} it's equivalent to find $c^{n+1} 
 \begin{algorithmic}
 \While{$k=1,2,...,N \ and \ not \ convergent$}
     \State $\textbf{find} \ \delta^{(k)} \ s.t \ a(c^{(k)})(\delta^{(k)}, v) = -(c^{(k)}, v) \ \forall v \in H^1(\Omega)$
-    \State $u^{(k+1)}=u^{(k)}+\delta^{(k)}$
+    \State $c^{(k+1)}=c^{(k)}+\delta^{(k)}$
 \EndWhile
 \end{algorithmic}
 
@@ -229,7 +233,7 @@ where:
 To be more clear we introduce the matrix $LHS$ and the vector $RHS$ defined as:
 $$LHS=\frac{M}{\Delta t}+K-J \left (c_k^{n+1} \right ), \qquad RHS=-M\cdot \frac{c_k^{n+1}-c^{n}}{\Delta t} - K \cdot c_k^{n+1} + N \left (c_k^{n+1} \right ).$$
 
-At each timestamp $n+1$, Newton method is used to find $\delta^{(k)}$ by solving the linear system in \autoref*{linear_system}, which is then used to compute the solution for the timestep $c_{n+1}$. At each iteration of the Newton Method both $LHS$ matrix and $RHS$ vector are updated using the new solution $c_{n+1}$.
+At each timestamp $n+1$, Newton method is used to find $\delta^{(k)}$ by solving the linear system in \autoref{linear_system}, which is then used to compute the solution for the timestep $c_{n+1}$. At each iteration of the Newton Method both $LHS$ matrix and $RHS$ vector are updated using the new solution $c_{n+1}$.
 
 
  \chapter{Set up and computation}
@@ -238,7 +242,7 @@ At each timestamp $n+1$, Newton method is used to find $\delta^{(k)}$ by solving
  \section{1D and 3D: Key aspects}
  The problem was initially solved in 1D as a proof of concept and to check feasibility, then scaled to 3D.
  \subsection{The mesh}
- The mesh used for 3D computation is read from an external $.msh$ file provided by the original author of the article \cite{WEICKENMEIER2019264}.
+ The mesh used for 3D computation is read from an external \verb|.msh| file provided by the original author of the article \cite{WEICKENMEIER2019264}.
  The implementation distinguishes between different brain tissue types through material IDs, with the code specifically tracking Grey Matter (material ID 1) and White Matter(material ID 2). A material mapping system associates each cell with its corresponding tissue type, enabling tissue-specific parameter assignment.
 
 In 1D, the mesh is simply an interval $[0, l] \in \mathbb{R}$ divided into $N$ equal subintervals. For our computation, we have chosen $l=2$ and $N=200$.
@@ -248,7 +252,7 @@ In 1D, the mesh is simply an interval $[0, l] \in \mathbb{R}$ divided into $N$ e
 
  In 1D implementation, instead, this term is simply a scalar $D=d \in \mathbb{R}$.
  \subsection{Similarity}
- The methods used to solve equation had to be keeped unchanged, indeed the core structure of the algorithm stays unaltered
+ The methods used to solve equation had to be keeped unchanged, indeed the core structure of the algorithm stays unaltered:
  \begin{itemize}
      \item Newton's method to solve nonlinear systems.
      \item Time-stepping stucture with backward Euler discretization.
@@ -279,9 +283,9 @@ In 1D, the mesh is simply an interval $[0, l] \in \mathbb{R}$ divided into $N$ e
 The choice of the parameter is crucial for convergence, especially for the 3D simulation. In this case, the inputs and the parameters of the problem are:
 \begin{enumerate}
     \item \textbf{T}: final time of the simulation.
-    \item \textbf{\( \Delta t \)}: time step for time discretization.
+    \item \textbf{\(\boldsymbol{\Delta t}\)}: time step for time discretization.
     \item \textbf{Mesh}: A 3D discretized representation of the domain in \(\mathbb{R}^3\).
-    \item \textbf{Degree}; the polynomial degree of the finite elements used to construct the Finite Element Method.
+    \item \textbf{Degree}: the polynomial degree of the finite elements used to construct the Finite Element Method.
     \item \textbf{d\_ext}: Isotropic extracellular diffusion coefficient.
     \item \textbf{d\_axn}: Anisotropic axonal transport along axonal fiber directions.
     \item \textbf{Diffusion type}: Defines the direction of diffusion of the misfolded proteins and could be:
@@ -291,9 +295,9 @@ The choice of the parameter is crucial for convergence, especially for the 3D si
             \item Radial
         \end{itemize}
     These types of diffusion are also taken in account by the article \cite{WEICKENMEIER2019264}.
-    \item \textbf{\(\alpha\)}; growth rate of misfolded protein concentration.
+    \item \textbf{\(\boldsymbol{\alpha}\)}: growth rate of misfolded protein concentration.
     \item \textbf{Initial seed}: initial value of the non-zero concentration.
-    \item \textbf{Seed Region}; subdomain in which the initial concentration has the non-zero value Initial Seed. In our 3D simulations, we actually pass a point $x_0$ and the program computes a spherical region that has the point $x_0$ as center.
+    \item \textbf{Seed Region}: subdomain in which the initial concentration has the non-zero value Initial Seed. In our 3D simulations, we actually pass a point $x_0$ and the program computes a spherical region that has the point $x_0$ as center.
 \end{enumerate}
 \section{Implementation}
 \subsection{Implementation in 1D}
@@ -301,7 +305,7 @@ To verify the correctness of our approach, we decided to implement a 1D solver a
 
 The mesh is created in the interval with \( N = 200 \) mesh elements and \( \text{degree} = 1 \). After initializing all necessary objects as done in the laboratory sessions, the method \texttt{solve()} executes the system resolution for each time step and writes the output for that instant into a \verb|.vtu| file.
 
-The method \texttt{solve()} itself calls the function \texttt{solve\_newton()}, which performs Newton iterations to solve the non-linear system. For each iteration, the system is linearized around the current solution via \texttt{assemble\_system()}, and the resulting linear system is solved using \texttt{solve\_linear\_system()}. This process repeats until the norm of the residual vector falls below a fixed threshold (\( 10^{-6} \cdot \left\lVert \textbf{r}\right\rVert \) in our code, where $r$ is the residual vector).
+The method \texttt{solve()} itself calls the function \texttt{solve\_newton()}, which performs Newton iterations to solve the non-linear system. For each iteration, the system is linearized around the current solution via \texttt{assemble\_system()}, and the resulting linear system is solved using \texttt{solve\_linear\_system()}. This process repeats until the norm of the residual vector falls below a fixed threshold (\( 10^{-6} \) in our code).
 
 \textbf{Assemble\_system()} follows the same structure used in the laboratory exercises to compute the $LHS$ matrix and the $RHS$ vector. These terms represent the linearized versions of the original system, which we obtain using the values of the current and previous solutions to compute the relevant quantities and the parameters.
 
@@ -310,7 +314,7 @@ Since homogeneous Neumann boundary conditions are forced to be null and the Diri
 \textbf{Solve\_linear\_system()} assumes that the LHS matrix and RHS vector are correctly assembled. We use the Generalized Minimal Residual Method (GMRES) method to numerically solve the resulting linear system and the SSOR preconditioner is applied to accelerate convergence.
 
 \subsection{Implementation in 3D}
-The primary differences in the 3D solver involve the use of parallelization, the use of different parameters as explained in \autoref{parameters} and the presence of two different materials.
+The primary differences in the 3D solver involve the use of parallelization, the use of different parameters (as explained in \autoref{parameters}), and the presence of two different materials.
 \subsubsection{Parallelization}
 The 3D solver, due to the large number of nodes in 3D meshes and the nonlinear nature of the problem, results in exponentially higher complexity. This makes parallelization essential for keeping the computation feasible.
 Our parallelization approach leverages Trilinos with MPI to distribute the computational workload. We partition the mesh across multiple processes, with each process handling its assigned degrees of freedom while maintaining communication at partition boundaries. This domain decomposition strategy, combined with efficient load balancing, helps abstract much of the parallel complexity and enables scalable performance.
@@ -325,13 +329,14 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
  The only case worth to be evaluated is the 3D one, as the 1D implementation is just a proof of concept. In this section we will analyze the performance of the 3D implementation in terms of scalability.
  The following graphs are been built by using the paper's first case of parameters, so with:
  \begin{itemize}
-     \item \( T = 40 \) years
-     \item \( \Delta t = 1/3 \) years
-     \item \( d^{ext} = [6.0, 6.0] cm^2/year\)
-     \item \( d^{axn} = [3.0, 3.0] cm^2/year\)
-     \item \( \alpha = [0.3, 0.6] /year\)
+     \item $T=\SI{40}{\year}$
+     \item $\Delta t=\SI{0.333}{\year}$
+     \item $d^{\mathrm{ext}} = [\SI[per-mode = symbol]{1.5}{\centi\meter\squared \per \year}, \SI[per-mode = symbol]{1.5}{\centi\meter\squared \per \year}]$
+     \item $d^{\mathrm{axn}} = [\SI[per-mode = symbol]{0.0}{\centi\meter\squared \per \year}, \SI[per-mode = symbol]{3.0}{\centi\meter\squared \per \year}]$
+     \item $\alpha = [\SI[per-mode = symbol]{0.3}{\per \year}, \SI[per-mode = symbol]{0.6}{\per \year}]$
      \item Diffusion type: Radial
   \end{itemize}.
+  Where the first component of the vectors refers to White Matter and the second to Grey Matter.
 
   And these are some informations about the mesh:
   \begin{table}[h!]
@@ -388,6 +393,9 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
      \item \( d^{axn} = [0.0, 3.0] cm^2/year\)
      \item \( \alpha = [0.3, 0.6] /year\)
  \end{itemize}
+ Where, again, the first component of the vectors refers to White Matter and the second to Grey Matter.
+
+ In both the two configurations, the program was able to run without any issues, and the results were consistent with the expected behavior of the model, compared to the results presented in the paper \cite{WEICKENMEIER2019264}.
  \section{Stability and Convergence}
 
 A complete stability and convergence analysis of the fully discrete nonlinear problem is beyond the scope of this project. However, to ensure that each step of our numerical method is well-posed, we can analyze the linearized problem solved within each Newton iteration. We demonstrate that this linear problem has a unique solution by verifying the conditions of the Lax-Milgram theorem. This reduces the problem at each iteration to a standard elliptic problem, a topic extensively covered in numerical analysis.
@@ -483,9 +491,9 @@ was violated (here $1/\Delta t = 2 < \|\alpha\|_\infty = 3$). As a result, the b
  \chapter{Conclusion}
 As a first thing, we would like to properly thank with our best regards Professor Johannes Weickenmeier, co-author of the paper used for this work, that kindly provided the original mesh used for the paper.
 
-In this project, we have successfully implemented a numerical model to simulate the prion-like propagation of misfolded proteins, a key mechanism in neurodegenerative diseases. By adopting the Fisher-Kolmogorov equation, we modelled the essential dynamics of protein aggregation and diffusion through a nonlinear reaction-diffusion framework. The methodology—involving a weak formulation, the unconditionally stable Backward Euler method for time discretization, and a robust Newton-Raphson linearization—proved to be a highly effective approach.
+In this project, we have implemented a numerical model to simulate the prion-like propagation of misfolded proteins, a key mechanism in neurodegenerative diseases. By adopting the Fisher-Kolmogorov equation, we modelled the essential dynamics of protein aggregation and diffusion through a nonlinear reaction-diffusion framework. The methodology—involving a weak formulation, the unconditionally stable Backward Euler method for time discretization, and Newton-Raphson linearization—proved to be a highly effective approach reaching the same results obtained by Professor Weickenmeier in \cite{WEICKENMEIER2019264}.
 
-Our results align perfectly with the expected behavior, demonstrating logistic growth coupled with spatial diffusion. This work serves not merely as a proof of concept but as a successful validation of the theoretical model, confirming its power to simulate complex biological phenomena.
+Our results align with the expected behavior, demonstrating logistic growth coupled with spatial diffusion. This work serves not merely as a proof of concept but as a successful validation of the theoretical model, confirming its power to simulate complex biological phenomena.
 
 While applied here to neurobiology, the finite element framework used in this project is a cornerstone of modern computational science with vast applicability. Reaction-diffusion systems and similar partial differential equations model phenomena across numerous fields.
 This project, therefore, also serves as a manifest to the versatility of computational methods in translating mathematical models into predictive tools across diverse scientific and industrial domains.
