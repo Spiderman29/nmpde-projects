@@ -329,8 +329,8 @@ Our parallelization approach leverages Trilinos with MPI to distribute the compu
  The only case worth to be evaluated is the 3D one, as the 1D implementation is just a proof of concept. In this section we will analyze the performance of the 3D implementation in terms of scalability.
  The following graphs are been built by using the paper's first case of parameters, so with:
  \begin{itemize}
-     \item $T=\SI{40}{\year}$
-     \item $\Delta t=\SI{0.333}{\year}$
+     \item $T=\SI{20}{\year}$
+     \item $\Delta t=\SI{0.1}{\year}$
      \item $d^{\mathrm{ext}} = [\SI[per-mode = symbol]{1.5}{\centi\meter\squared \per \year}, \SI[per-mode = symbol]{1.5}{\centi\meter\squared \per \year}]$
      \item $d^{\mathrm{axn}} = [\SI[per-mode = symbol]{0.0}{\centi\meter\squared \per \year}, \SI[per-mode = symbol]{3.0}{\centi\meter\squared \per \year}]$
      \item $\alpha = [\SI[per-mode = symbol]{0.3}{\per \year}, \SI[per-mode = symbol]{0.6}{\per \year}]$
@@ -555,7 +555,7 @@ To check whether our result holds in practice, we tried to run our code with the
      \item \( \alpha = [3.0, 3.0] /year\)
  \end{itemize}.
 
-With these parameters we found out that the simulation exploded, since the coercivity condition 
+With these parameters we found out that the simulation doesn't converge, since the coercivity condition 
 \[
 \frac{1}{\Delta t} > \|\alpha\|_{L^\infty}
 \]
