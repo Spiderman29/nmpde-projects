@@ -1,0 +1,43 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Problem model definition}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Kinetics of prion-like spreading}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Fisher–Kolmogorov}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Weak formulation}{4}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Time discretization}{5}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Linearization}{5}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Finite element setting and final assembly}{6}{section.2.6}%
+\contentsline {chapter}{\numberline {3}Set up and computation}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}1D and 3D: Key aspects}{9}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}The mesh}{9}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Diffusion Term}{9}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Similarity}{9}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}Differences}{10}{subsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.1.5}Parameters}{10}{subsection.3.1.5}%
+\contentsline {section}{\numberline {3.2}Implementation}{11}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Implementation in 1D}{11}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Implementation in 3D}{11}{subsection.3.2.2}%
+\contentsline {subsubsection}{Parallelization}{12}{subsubsection*.2}%
+\contentsline {subsubsection}{Parameters representation}{12}{subsubsection*.3}%
+\contentsline {chapter}{\numberline {4}Performance evaluation}{13}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Setup time}{13}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Solve time}{14}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Total time}{14}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Different parameters}{15}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Stability and Convergence}{15}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Lax-Milgram Analysis for the Linearized Step}{16}{subsection.4.5.1}%
+\contentsline {subsubsection}{Assumptions}{16}{subsubsection*.5}%
+\contentsline {subsubsection}{Coercivity of the Bilinear Form $a(\delta , v)$}{16}{subsubsection*.6}%
+\contentsline {subsection}{\numberline {4.5.2}Continuity of the Bilinear Form $a(u, v)$}{17}{subsection.4.5.2}%
+\contentsline {paragraph}{1. Time Derivative and Reaction Term}{17}{paragraph*.7}%
+\contentsline {paragraph}{2. Isotropic Diffusion Term}{17}{paragraph*.8}%
+\contentsline {paragraph}{3. Anisotropic Diffusion Term}{18}{paragraph*.9}%
+\contentsline {subsection}{\numberline {4.5.3}Continuity of the Linear Functional $F(v)$}{18}{subsection.4.5.3}%
+\contentsline {paragraph}{1. Terms without Gradient of $v$}{18}{paragraph*.10}%
+\contentsline {paragraph}{2. Terms with Gradient of $v$}{18}{paragraph*.11}%
+\contentsline {subsubsection}{Summary of Conditions}{19}{subsubsection*.12}%
+\contentsline {paragraph}{Assumptions on Problem Data (assumed to hold):}{19}{paragraph*.13}%
+\contentsline {paragraph}{Assumptions on the Numerical Solution (related to stability):}{19}{paragraph*.14}%
+\contentsline {paragraph}{Critical Condition for Coercivity and Convergence:}{19}{paragraph*.15}%
+\contentsline {chapter}{\numberline {5}Conclusion}{21}{chapter.5}%
+\contentsline {chapter}{Bibliography}{23}{chapter*.16}%
