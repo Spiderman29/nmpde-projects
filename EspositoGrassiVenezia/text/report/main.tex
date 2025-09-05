@@ -201,15 +201,15 @@ The right-hand side of \autoref{delta_residual} with exception of $\mathcal{O}((
 Now, solving the \autoref{time_discretization} it's equivalent to find $c^{n+1} \in H^1(\Omega)$ such that $R(c^{n+1}, v)=0, \ \forall v \in H^1(\Omega)$. To solve this we use the Newton's method: given an initial guess $c^{(0)}$,
 \begin{algorithmic}
 \While{$k=1,2,...,N \ and \ not \ convergent$}
-    \State $\textbf{find} \ \delta^{(k)} \ s.t \ a(c^{(k)})(\delta^{(k)}, v) = -(c^{(k)}, v) \ \forall v \in H^1(\Omega)$
-    \State $c^{(k+1)}=c^{(k)}+\delta^{(k)}$
+    \State $\textbf{find} \ \delta^{(k)} \ s.t \ a(c_k^{n+1})(\delta^{(k)}, v) = -(c_k^{n+1}, v) \ \forall v \in H^1(\Omega)$
+    \State $c^{(k+1)}=c_k^{n+1}+\delta^{(k)}$
 \EndWhile
 \end{algorithmic}
 
-The problem $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$ is a linear differential problem and can be solved used finite elements.
+The problem $a(c_k^{n+1})(\delta^{(k)}, v) = -R(c_k^{n+1}, v)$ is a linear differential problem and can be solved used finite elements.
 
  \section{Finite element setting and final assembly}
-  After a linear differential form of the original problem in \autoref{fisher-kolmogorov} is find in the form of $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$, we can discretize this problem in space using the Galerkin finite element method. To do so, we consider a vector space  $V_h \subset H^1(\Omega)$ which dimension are bounded and equals to $N_h$, our aim is to find $c_h^{(k)}$ solution of the problem $a(c_h^{(k)})(\delta^{(k)}, v_h) = -R(c_h^{(k)}, v_h) \ \forall v_h \in H^1(\Omega)$. We introduce the bases of $V_h$: \( \{\phi_j\}_{j=1}^N \), now it's possible to write:
+  After a linear differential form of the original problem in \autoref{fisher-kolmogorov} is find in the form of $a(c_k^{n+1})(\delta^{(k)}, v) = -R(c_k^{n+1}, v)$, we can discretize this problem in space using the Galerkin finite element method. To do so, we consider a vector space  $V_h \subset H^1(\Omega)$ which dimension are bounded and equals to $N_h$, our aim is to find $c_h^{(k)}$ solution of the problem $a(c_h^{(k)})(\delta^{(k)}, v_h) = -R(c_h^{(k)}, v_h) \ \forall v_h \in H^1(\Omega)$. We introduce the bases of $V_h$: \( \{\phi_j\}_{j=1}^N \), now it's possible to write:
     $$c_h^{(k)}(x) = \sum_{j=1}^N c_j^{(k)} \phi_j(x), \qquad \delta^{(k)}(x) = \sum_{j=1}^N \delta_j^{(k)} \phi_j(x).$$
  and substitute these expressions in the problem considering the test functions $v=\phi_i$.
 \begin{equation}
@@ -405,10 +405,10 @@ At each time step $n+1$ and for each Newton iteration $k$, we solve for an updat
 \[
 a(\delta^{(k)}, v) = F(v) \quad \forall v \in H^1(\Omega).
 \]
-This corresponds to the system $a(c^{(k)})(\delta^{(k)}, v) = -R(c^{(k)}, v)$. To maintain clarity in this section, we relabel the unknown update $\delta^{(k)}$ as $\delta$. The bilinear form $a(\cdot, \cdot)$ and linear functional $F(\cdot)$ are defined as:
+This corresponds to the system $a(c_k^{n+1})(\delta^{(k)}, v) = -R(c_k^{n+1}, v)$. To maintain clarity in this section, we relabel the unknown update $\delta^{(k)}$ as $\delta$. The bilinear form $a(\cdot, \cdot)$ and linear functional $F(\cdot)$ are defined as:
 \begin{align*}
-a(\delta, v) &= \int_{\Omega} \frac{1}{\Delta t} \delta v \, d\mathbf{x} + \int_{\Omega}   D \nabla \delta, \nabla v   \, d\mathbf{x} - \int_{\Omega} \alpha (1 - 2 c^{(k)}) \delta v \, d\mathbf{x}, \\
-F(v) &= -\int_{\Omega} \frac{c^{(k)} - c^n}{\Delta t} v \, d\mathbf{x} - \int_{\Omega}   D \nabla c^{(k)}, \nabla v   \, d\mathbf{x} + \int_{\Omega} \alpha c^{(k)} (1 - c^{(k)}) v \, d\mathbf{x}.
+a(\delta, v) &= \int_{\Omega} \frac{1}{\Delta t} \delta v \, d\mathbf{x} + \int_{\Omega}   D \nabla \delta, \nabla v   \, d\mathbf{x} - \int_{\Omega} \alpha (1 - 2 c_k^{(n+1)}) \delta v \, d\mathbf{x}, \\
+F(v) &= -\int_{\Omega} \frac{c_k^{(n+1)} - c^n}{\Delta t} v \cdot d\mathbf{x} - \int_{\Omega}   D \nabla c_k^{(n+1)}, \nabla v   \, d\mathbf{x} + \int_{\Omega} \alpha c_k^{(n+1)} (1 - c_k^{(n+1)}) v \, d\mathbf{x}.
 \end{align*}
 
 \subsubsection{Assumptions}
@@ -416,16 +416,16 @@ The analysis relies on the following reasonable assumptions:
 \begin{itemize}
     \item \textbf{Function Space:} The solution and test functions belong to $V = H^1(\Omega)$, with the norm $\|v\|_{H^1}^2 = \|v\|_{L^2}^2 + \|\nabla v\|_{L^2}^2$.
     \item \textbf{Diffusion Tensor:} The tensor $D = d^{\text{ext}} \mathbf{I} + d^{\text{axn}} \mathbf{n} \otimes \mathbf{n}$ is symmetric and positive definite. We denote $d^{\text{ext}}$ as $D_{\text{iso}}$ and $d^{\text{axn}}$ as $D_{\text{aniso}}$ for clarity in the proof, with $D_{\text{iso}}, D_{\text{aniso}} \ge 0$.
-    \item \textbf{Stability Assumption:} The numerical method is assumed to be stable up to the current state, implying that concentrations remain physical, i.e., $c^n, c^{(k)} \in [0, 1]$ in $\Omega$.
+    \item \textbf{Stability Assumption:} The numerical method is assumed to be stable up to the current state, implying that concentrations remain physical, i.e., $c^n, c_k^{(n+1)} \in [0, 1]$ in $\Omega$.
 \end{itemize}
 To apply the Lax-Milgram theorem, we must show that $a(\cdot, \cdot)$ is coercive and continuous on $H^1(\Omega)$.
 
 \subsubsection{Coercivity of the Bilinear Form $a(\delta, v)$}
 We must show there exists a constant $\alpha     > 0$ such that $a(v,v) \ge \alpha \|v\|_{H^1}^2$ for all $v \in H^1(\Omega)$.
 \begin{align*}
-    a(v,v) &= \int_{\Omega} \frac{1}{\Delta t} v^2 \, d\mathbf{x} + \int_{\Omega} D \nabla v, \nabla v   \, d\mathbf{x} - \int_{\Omega} \alpha(1 - 2c^{(k)}) v^2 \, d\mathbf{x} \\
-    &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1 - 2c^{(k)}) \right) v^2 \, d\mathbf{x} + \int_{\Omega} \nabla v (D_{\text{iso}}+ D_{\text{aniso}}) \mathbf{n} \otimes \mathbf{n} \nabla v \, d\mathbf{x} \\
-    &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1 - 2c^{(k)}) \right) v^2 \, d\mathbf{x} + \int_{\Omega} D_{\text{iso}} \|\nabla v\|^2 \, d\mathbf{x} + \int_{\Omega} D_{\text{aniso}} (\mathbf{n} \nabla v)^2 \, d\mathbf{x}.
+    a(v,v) &= \int_{\Omega} \frac{1}{\Delta t} v^2 \, d\mathbf{x} + \int_{\Omega} D \nabla v, \nabla v   \, d\mathbf{x} - \int_{\Omega} \alpha(1 - 2c_k^{n+1}) v^2 \, d\mathbf{x} \\
+    &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha \left(1 - 2c_k^{n+1}\right) \right) v^2 \, d\mathbf{x} + \int_{\Omega} \nabla v \left( D_{\text{iso}}+ D_{\text{aniso}} \right) \mathbf{n} \otimes \mathbf{n} \nabla v \, d\mathbf{x} \\
+    &= \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha \left(1 - 2c_k^{n+1}\right) \right) v^2 \, d\mathbf{x} + \int_{\Omega} D_{\text{iso}} \|\nabla v\|^2 \, d\mathbf{x} + \int_{\Omega} D_{\text{aniso}} (\mathbf{n} \nabla v)^2 \, d\mathbf{x}.
 \end{align*}
 Since $D_{\text{aniso}} \ge 0$, the last term is non-negative. We can establish a lower bound:
 \[
@@ -433,37 +433,37 @@ a(v,v) \ge M \|v\|_{L^2}^2 + N \|\nabla v\|_{L^2}^2,
 \]
 where the constants $M$ and $N$ are defined as the essential infima over the domain:
 \[
-M := \underset{\Omega}{\operatorname{ess\,inf}} \left( \frac{1}{\Delta t} - \alpha(1 - 2c^{(k)}) \right), \quad N := \underset{\Omega}{\operatorname{ess\,inf}} \, D_{\text{iso}}.
+M := \underset{\Omega}{\operatorname{ess\,inf}} \left( \frac{1}{\Delta t} - \alpha \left(1 - 2c_k^{n+1}\right) \right), \quad N := \underset{\Omega}{\operatorname{ess\,inf}} \, D_{\text{iso}}.
 \]
 For coercivity, we require $M > 0$ and $N > 0$. If these hold, we can set $\alpha = \min(M, N) > 0$, and it follows that:
 \[
-a(v,v) \ge M \|v\|_{L^2}^2 + N \|\nabla v\|_{L^2}^2 \ge \alpha (\|v\|_{L^2}^2 + \|\nabla v\|_{L^2}^2) = \alpha \|v\|_{H^1}^2.
+a(v,v) \ge M \|v\|_{L^2}^2 + N \|\nabla v\|_{L^2}^2 \ge \alpha \left(\|v\|_{L^2}^2 + \|\nabla v\|_{L^2}^2\right) = \alpha \|v\|_{H^1}^2.
 \]
 This leads to two conditions for well-posedness at each Newton step:
 \begin{enumerate}
     \item $\underset{\Omega}{\operatorname{ess\,inf}} \, D_{\text{iso}} > 0$ (diffusion is non-degenerate).
-    \item $\dfrac{1}{\Delta t} > \underset{\Omega}{\operatorname{ess\,sup}} \, \alpha(1 - 2c^{(k)}) = \|\alpha(1 - 2c^{(k)})\|_{L^\infty}$.
+    \item $\dfrac{1}{\Delta t} > \underset{\Omega}{\operatorname{ess\,sup}} \, \alpha\left(1 - 2c_k^{n+1}\right) = \|\alpha(1 - 2c_k^{n+1})\|_{L^\infty}$.
 \end{enumerate}
 
 \subsection{Continuity of the Bilinear Form $a(u, v)$}
 
 The bilinear form arises from the left-hand side of the linearized weak formulation and is defined as:
 \[
-  a(u, v) = \int_{\Omega} \frac{u v}{\Delta t} \, dx + \int_{\Omega} D \nabla u \cdot \nabla v \, dx - \int_{\Omega} \alpha(1-2c^{(k)}) u v \, dx
+  a(u, v) = \int_{\Omega} \frac{u v}{\Delta t} \, dx + \int_{\Omega} D \nabla u \cdot \nabla v \, dx - \int_{\Omega} \alpha(1-2c_k^{n+1}) u v \, dx
   \]
   where the diffusion tensor is $D = D_{\text{const}} + d \mathbf{n} \otimes \mathbf{n}$. We need to find a constant $M > 0$ such that $|a(u, v)| \leq M \|u\|_{V} \|v\|_{V}$ for all $u, v \in V$. We analyze the form term by term using the triangle inequality.
 
   \begin{align*}
-  |a(u, v)| \leq \left| \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right) u v \, dx \right| + \left| \int_{\Omega} D_{\text{const}} \nabla u \cdot \nabla v \, dx \right| + \left| \int_{\Omega} d' (\mathbf{n} \cdot \nabla u)(\mathbf{n} \cdot \nabla v) \, dx \right|
+  |a(u, v)| \leq \left| \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha\left(1-2c_k^{n+1}\right) \right) u v \, dx \right| + \left| \int_{\Omega} D_{\text{const}} \nabla u \cdot \nabla v \, dx \right| + \left| \int_{\Omega} d' (\mathbf{n} \cdot \nabla u)(\mathbf{n} \cdot \nabla v) \, dx \right|
   \end{align*}
 
   \paragraph{1. Time Derivative and Reaction Term}
   We bound the first term using the Cauchy-Schwarz and Poincaré inequalities.
   \begin{align*}
-  \left| \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right) u v \, dx \right|
-  &\leq \left\| \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right\|_{L^\infty} \int_{\Omega} |uv| \, dx \\
-    &\overset{\text{C.S.}}{\leq} \left\| \frac{1}{\Delta t} - \alpha(1-2c^{(k)}) \right\|_{L^\infty} \|u\|_{L^2} \|v\|_{L^2} \\
-    &\overset{\text{Poincaré}}{\leq} C_P \left( \frac{1}{\Delta t} + \|\alpha(1-2c^{(k)})\|_{L^\infty} \right) \|u\|_{V} \|v\|_{V}
+  \left| \int_{\Omega} \left( \frac{1}{\Delta t} - \alpha(1-2c_k^{n+1}) \right) u v \, dx \right|
+  &\leq \left\| \frac{1}{\Delta t} - \alpha \left(1-2c_k^{n+1}\right) \right\|_{L^\infty} \int_{\Omega} |uv| \, dx \\
+    &\overset{\text{C.S.}}{\leq} \left\| \frac{1}{\Delta t} - \alpha \left(1-2c_k^{n+1}\right) \right\|_{L^\infty} \|u\|_{L^2} \|v\|_{L^2} \\
+    &\overset{\text{Poincaré}}{\leq} C_P \left( \frac{1}{\Delta t} + \|\alpha \left(1-2c_k^{n+1}\right)\|_{L^\infty} \right) \|u\|_{V} \|v\|_{V}
     \end{align*}
 
     \paragraph{2. Isotropic Diffusion Term}
@@ -475,30 +475,30 @@ The bilinear form arises from the left-hand side of the linearized weak formulat
       \paragraph{3. Anisotropic Diffusion Term}
       For the anisotropic part, we again apply Cauchy-Schwarz, recalling that $\mathbf{m}$ is a unit vector field ($\|\mathbf{m}\|_{L^\infty} = 1$).
       \begin{align*}
-      \left| \int_{\Omega} d' (\mathbf{n} \cdot \nabla u)(\mathbf{n} \cdot \nabla v) \, dx \right|
+      \left| \int_{\Omega} d' \left(\mathbf{n} \cdot \nabla u\right)(\mathbf{n} \cdot \nabla v) \, dx \right|
       &\leq \|d'\|_{L^\infty} \int_{\Omega} |\mathbf{n} \cdot \nabla u| |\mathbf{n} \cdot \nabla v| \, dx \\
         &\overset{\text{C.S.}}{\leq} \|d'\|_{L^\infty} \|\mathbf{n} \cdot \nabla u\|_{L^2} \|\mathbf{n} \cdot \nabla v\|_{L^2} \\
         &\leq \|d'\|_{L^\infty} \|\nabla u\|_{L^2} \|\nabla v\|_{L^2}
         \end{align*}
 
-        By combining these bounds, we conclude that the bilinear form $a(u,v)$ is continuous, provided that the concentration $c^{(k)}$ is bounded in the $L^\infty$-norm at each iteration, which is a reasonable physical assumption since $c$ represents a normalized concentration.
+        By combining these bounds, we conclude that the bilinear form $a(u,v)$ is continuous, provided that the concentration $c_k^{n+1}$ is bounded in the $L^\infty$-norm at each iteration, which is a reasonable physical assumption since $c$ represents a normalized concentration.
 
         \subsection{Continuity of the Linear Functional $F(v)$}
 
         The linear functional $F(v)$ represents the residual from the right-hand side of the linearized system:
         \[
-          F(v) = - \int_{\Omega} \frac{c^{(k)} - c^n}{\Delta t} v \, dx - \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx + \int_{\Omega} \alpha c^{(k)}(1-c^{(k)}) v \, dx
+          F(v) = - \int_{\Omega} \frac{c_k^{n+1} - c^n}{\Delta t} v \, dx - \int_{\Omega} D \cdot \nabla c_k^{n+1} \cdot \nabla v \, dx + \int_{\Omega} \alpha \cdot c_k^{n+1}\left(1-c_k^{n+1}\right) \cdot v \, dx
             \]
               We need to show there exists a constant $\bar{K} > 0$ such that $|F(v)| \leq \bar{K} \|v\|_{V}$. Using the triangle inequality, we have:
               \begin{align*}
-            |F(v)| \leq \left| \int_{\Omega} \left( \alpha c^{(k)}(1-c^{(k)}) - \frac{c^{(k)} - c^n}{\Delta t} \right) v \, dx \right| + \left| \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx \right|
+            |F(v)| \leq \left| \int_{\Omega} \left( \alpha c_k^{n+1}\cdot \left(1-c_k^{n+1}\right) - \frac{c_k^{n+1} - c^n}{\Delta t} \right) v \, dx \right| + \left| \int_{\Omega} D \nabla c_k^{n+1} \cdot \nabla v \, dx \right|
               \end{align*}
 
             \paragraph{1. Terms without Gradient of $v$}
             This part combines the reaction and time-stepping terms. We apply the Cauchy-Schwarz and Poincaré inequalities.
               \begin{align*}
-            \left| \int_{\Omega} \left( \alpha c^{(k)}(1-c^{(k)}) - \frac{c^{(k)} - c^n}{\Delta t} \right) v \, dx \right|
-              &\leq \left( \left\| \alpha c^{(k)}(1-c^{(k)}) \right\|_{L^\infty} + \left\| \frac{c^{(k)} - c^n}{\Delta t} \right\|_{L^\infty} \right) \int_{\Omega} |v| \, dx \\
+            \left| \int_{\Omega} \left( \alpha c_k^{n+1} \cdot \left(1-c_k^{n+1}\right) - \frac{c_k^{n+1} - c^n}{\Delta t} \right) v \, dx \right|
+              &\leq \left( \left\| \alpha c_k^{n+1}(1-c_k^{n+1}) \right\|_{L^\infty} + \left\| \frac{c_k^{n+1} - c^n}{\Delta t} \right\|_{L^\infty} \right) \int_{\Omega} |v| \, dx \\
               &\leq C \left( \dots \right) V(\Omega) \|v\|_{L^2} \leq C' \|v\|_{V}
             \end{align*}
             where $C'$ depends on the volume of the domain $V(\Omega)$ and the $L^\infty$-norms of the concentration terms.
@@ -506,19 +506,19 @@ The bilinear form arises from the left-hand side of the linearized weak formulat
               \paragraph{2. Terms with Gradient of $v$}
             This part arises from the diffusion operator. We split it into its isotropic and anisotropic components and apply Cauchy-Schwarz.
               \begin{align*}
-            \left| \int_{\Omega} D \nabla c^{(k)} \cdot \nabla v \, dx \right| &\leq \left| \int_{\Omega} D_{\text{const}} \nabla c^{(k)} \cdot \nabla v \, dx \right| + \left| \int_{\Omega} d' (\mathbf{m} \cdot \nabla c^{(k)})(\mathbf{m} \cdot \nabla v) \, dx \right| \\
-              &\overset{\text{C.S.}}{\leq} \left( \|D_{\text{const}}\|_{L^\infty} + \|d'\|_{L^\infty} \right) \|\nabla c^{(k)}\|_{L^2} \|\nabla v\|_{L^2}
+            \left| \int_{\Omega} D  \cdot \nabla c_k^{n+1} \cdot \nabla v \, dx \right| &\leq \left| \int_{\Omega} D_{\text{const}} \cdot \nabla c_k^{n+1} \cdot \nabla v \, dx \right| + \left| \int_{\Omega} d' \cdot \left(\mathbf{m} \cdot \nabla c_k^{n+1}\right)\left(\mathbf{m} \cdot \nabla v\right) \, dx \right| \\
+              &\overset{\text{C.S.}}{\leq} \left( \|D_{\text{const}}\|_{L^\infty} + \|d'\|_{L^\infty} \right) \|\nabla c_k^{n+1}\|_{L^2} \|\nabla v\|_{L^2}
             \end{align*}
 
             Combining the bounds yields:
               \[
-              |F(v)| \leq \left[ C' + \left( \|D_{\text{const}}\|_{L^\infty} + \|d'\|_{L^\infty} \right) \|\nabla c^{(k)}\|_{L^2} \right] \|v\|_{V}
+              |F(v)| \leq \left[ C' + \left( \|D_{\text{const}}\|_{L^\infty} + \|d'\|_{L^\infty} \right) \|\nabla c_k^{n+1}\|_{L^2} \right] \|v\|_{V}
             \]
               Thus, the linear functional $F(v)$ is continuous, provided that the following quantities remain bounded during the iterative process:
               \begin{itemize}
-            \item $\|c^{(k)} - c^n\|_{L^\infty}$
-              \item $\|\alpha c^{(k)}(1 - c^{(k)})\|_{L^\infty}$
-              \item $\|\nabla c^{(k)}\|_{L^2}$
+            \item $\|c_k^{n+1} - c^n\|_{L^\infty}$
+              \item $\|\alpha c_k^{n+1}(1 - c_k^{n+1})\|_{L^\infty}$
+              \item $\|\nabla c_k^{n+1}\|_{L^2}$
               \end{itemize}
             These conditions are physically and mathematically reasonable for a well-behaved solution over a finite domain.
 \subsubsection{Summary of Conditions}
@@ -536,16 +536,16 @@ The Lax-Milgram theorem guarantees a unique solution for the linear system at ea
 
 \paragraph{Assumptions on the Numerical Solution (related to stability):}
 \begin{itemize}
-    \item Concentrations are bounded: $c^n, c^{(k)} \in [0,1]$.
-    \item The previous iterate is sufficiently regular: $\|c^{(k)}\|_{H^1} < \infty$.
+    \item Concentrations are bounded: $c^n, c_k^{n+1} \in [0,1]$.
+    \item The previous iterate is sufficiently regular: $\|c_k^{n+1}\|_{H^1} < \infty$.
 \end{itemize}
 
 \paragraph{Critical Condition for Coercivity and Convergence:}
 Given the assumptions above, the crucial condition that must be satisfied for the problem to be well-posed is the time step restriction:
 \[
-\frac{1}{\Delta t} > \|\alpha (1 - 2c^{(k)})\|_{L^\infty}.
+\frac{1}{\Delta t} > \|\alpha \cdot \left(1 - 2c_k^{n+1}\right)\|_{L^\infty}.
 \]
-Since our stability assumption implies $c^{(k)} \in [0,1]$, we have $|1-2c^{(k)}| \le 1$. Therefore, a sufficient condition is $\frac{1}{\Delta t} > \|\alpha\|_{L^\infty}$. This highlights the critical trade-off: a large reaction rate $\alpha$ requires a small time step $\Delta t$ to ensure the coercivity of the system matrix. If this inequality is violated, the bilinear form may cease to be coercive, leading to the divergence of the Newton iteration and failure of the simulation.
+Since our stability assumption implies $c_k^{n+1} \in [0,1]$, we have $|1-2c_k^{n+1}| \le 1$. Therefore, a sufficient condition is $\frac{1}{\Delta t} > \|\alpha\|_{L^\infty}$. This highlights the critical trade-off: a large reaction rate $\alpha$ requires a small time step $\Delta t$ to ensure the coercivity of the system matrix. If this inequality is violated, the bilinear form may cease to be coercive, leading to the divergence of the Newton iteration and failure of the simulation.
 To check whether our result holds in practice, we tried to run our code with the following parameters:
  \begin{itemize}
      \item \( T = 40 \) years
