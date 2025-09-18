@@ -310,7 +310,7 @@ void Brain::output(const unsigned int &time_step) const
   data_out.build_patches();
 
   data_out.write_vtu_with_pvtu_record(
-      "./", "output_" + std::to_string(dim) + "D_dt" + std::to_string(deltat) + "_alpha" + std::to_string(alpha[0]) + "_dext" + std::to_string(d_ext[0]) + "_diffusion-" + type_of_diffusion, time_step, MPI_COMM_WORLD, 3);
+      "./", "output_" + std::to_string(dim) + "D_dt" + std::to_string(deltat) + "_alpha" + std::to_string(alpha[1]) + "_dext" + std::to_string(d_ext[1]) + "_diffusion-" + type_of_diffusion, time_step, MPI_COMM_WORLD, 3);
 }
 
 void Brain::solve()

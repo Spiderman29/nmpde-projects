@@ -46,3 +46,7 @@ EspositoGrassiVenezia/text/report/*
 !EspositoGrassiVenezia/text/report/main.pdf
 !EspositoGrassiVenezia/text/report/main.txt
 !EspositoGrassiVenezia/text/report/preamble.txt
+.vscode/settings.json
+src/EspositoGrassiVenezia/scripts/create_plot.bat
+src/EspositoGrassiVenezia/text/report/main.synctex.gz
+src/EspositoGrassiVenezia/text/slides/

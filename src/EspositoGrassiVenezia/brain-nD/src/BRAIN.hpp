@@ -80,11 +80,11 @@ public:
           const unsigned int component = 0) const override
     {
       if (component == 1)
-        return d_ext[0];
+        return d_ext[1];
       else if (component == 2)
-        return d_ext[1];
+        return d_ext[2];
       else
-        return d_ext[1];
+        return d_ext[2];
     }
 
   protected:
@@ -106,13 +106,13 @@ public:
           const unsigned int component = 0) const override
     {
       if (component == 1)
-        return d_axn[0];
+        return d_axn[1];
       else if (component == 2)
       {
-        return d_axn[1];
+        return d_axn[2];
       }
       else
-        return d_axn[1];
+        return d_axn[2];
     }
 
   protected:
@@ -135,13 +135,13 @@ public:
           const unsigned int component = 0) const override
     {
       if (component == 1)
-        return alpha[0];
+        return alpha[1];
       else if (component == 2)
       {
-        return alpha[1];
+        return alpha[2];
       }
       else
-        return alpha[1];
+        return alpha[2];
     }
 
   protected:

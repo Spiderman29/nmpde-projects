@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
   prm.declare_entry("T", "40.0",Patterns::Double());
   prm.declare_entry("deltat", "0.333333333",Patterns::Double());
   prm.declare_entry("theta", "1.0",Patterns::Double());
-  prm.declare_entry("alpha", "0.3,0.6");
-  prm.declare_entry("d_ext", "6.0,6.0");
-  prm.declare_entry("d_axn", "3.0,3.0");
+  prm.declare_entry("alpha", "1:0.3,2:0.6");
+  prm.declare_entry("d_ext", "1:6.0,2:6.0");
+  prm.declare_entry("d_axn", "1:3.0,2:3.0");
   prm.declare_entry("diffusion_type", "radial");
 
 
@@ -55,15 +55,54 @@ int main(int argc, char *argv[])
 
 
   //keep old structure with Params
+  // Parse alpha as map
+  std::map<unsigned int, double> alpha_map;
+  std::string alpha_str = prm.get("alpha");
+  std::vector<std::string> alpha_pairs = Utilities::split_string_list(alpha_str, ',');
+  for (const auto& pair : alpha_pairs) {
+    std::vector<std::string> key_value = Utilities::split_string_list(pair, ':');
+    if (key_value.size() == 2) {
+      unsigned int key = std::stoi(key_value[0]);
+      double value = std::stod(key_value[1]);
+      alpha_map[key] = value;
+    }
+  }
+
+  // Parse d_ext as map
+  std::map<unsigned int, double> d_ext_map;
+  std::string d_ext_str = prm.get("d_ext");
+  std::vector<std::string> d_ext_pairs = Utilities::split_string_list(d_ext_str, ',');
+  for (const auto& pair : d_ext_pairs) {
+    std::vector<std::string> key_value = Utilities::split_string_list(pair, ':');
+    if (key_value.size() == 2) {
+      unsigned int key = std::stoi(key_value[0]);
+      double value = std::stod(key_value[1]);
+      d_ext_map[key] = value;
+    }
+  }
+
+  // Parse d_axn as map
+  std::map<unsigned int, double> d_axn_map;
+  std::string d_axn_str = prm.get("d_axn");
+  std::vector<std::string> d_axn_pairs = Utilities::split_string_list(d_axn_str, ',');
+  for (const auto& pair : d_axn_pairs) {
+    std::vector<std::string> key_value = Utilities::split_string_list(pair, ':');
+    if (key_value.size() == 2) {
+      unsigned int key = std::stoi(key_value[0]);
+      double value = std::stod(key_value[1]);
+      d_axn_map[key] = value;
+    }
+  }
+
   Params p{
     prm.get("mesh_file_name"),
     static_cast<unsigned int>(prm.get_integer("degree")),
     prm.get_double("T"),
     prm.get_double("deltat"),
     prm.get_double("theta"),
-    Utilities::string_to_double(Utilities::split_string_list(prm.get("alpha"), ',')),
-    Utilities::string_to_double(Utilities::split_string_list(prm.get("d_ext"), ',')),
-    Utilities::string_to_double(Utilities::split_string_list(prm.get("d_axn"), ',')),
+    alpha_map,
+    d_ext_map,
+    d_axn_map,
     prm.get("diffusion_type")
   };
 
@@ -88,14 +127,14 @@ int main(int argc, char *argv[])
       {
         setup_time_file << "n,time,alpha grey, alpha white" << std::endl;
       }
-      setup_time_file << mpi_size << "," << setup_time <<","<< p.alpha[0] <<","<<p.alpha[1] << std::endl;
+      setup_time_file << mpi_size << "," << setup_time <<","<< p.alpha[1] <<","<<p.alpha[2] << std::endl;
 
       std::ofstream solve_time_file("../csv/solve_time.csv", mode);
       if (solve_time_file.tellp() == 0)
       {
         solve_time_file << "n,time,alpha grey, alpha white" << std::endl;
       } 
-      solve_time_file << mpi_size << "," << solve_time << "," << p.alpha[0] << "," << p.alpha[1] << std::endl;
+      solve_time_file << mpi_size << "," << solve_time << "," << p.alpha[1] << "," << p.alpha[2] << std::endl;
 
       std::ofstream total_time_file("../csv/total_time.csv", mode);
       if (total_time_file.tellp() == 0)

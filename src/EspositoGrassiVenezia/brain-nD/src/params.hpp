@@ -9,9 +9,9 @@ struct Params{
     const double T;
     const double deltat;
     const double theta;
-    const std::vector<double> alpha;
-    const std::vector<double> d_ext;
-    const std::vector<double> d_axn;
+    const std::map<unsigned int, double> alpha;
+    const std::map<unsigned int, double> d_ext;
+    const std::map<unsigned int, double> d_axn;
     const std::string diffusion;
 };
 
